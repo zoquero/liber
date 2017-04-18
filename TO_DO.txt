@@ -1,0 +1,4 @@
+* Backup & Restore de SQL via web pels administradors
+* Millores estètiques (menú més petit, en taula)
+* Enviar correu via API de FJE
+* Agafar sessió web de FJE

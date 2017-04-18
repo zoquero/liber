@@ -1,0 +1,2 @@
+root: el bàsic de cristina
+liberdb: password

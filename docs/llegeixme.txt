@@ -1,0 +1,75 @@
+Requeriments:
+
+* Autenticació: per SSO aportat pel Framework (Jesuïtes Educació)
+
+* Usuari, taula "members"
+** Atributs
+###### *** Nom d'usuari: clau primària, unique (l'ha de definir el Framework !!!)
+*** mail (aportat pel Framework), utilitzat per enviar-li notificacions sobre els seus anuncis
+*** fullname
+** Accions:
+*** Alta: Si l'usuari accepta les Condicions d'Usuari Final que permetin publicar parcialment dades seves cap a d'altres usuaris del Tenant (Jesuïtes Educació) s'insereix la seva clau primària
+*** Baixa:
+**** Proposo (!! PENDENT !!) que no esborrem l'usuari, només marquem com a ESBORRATS els seus anuncis
+
+* Anuncis, taula "ads":
+** Atributs:
+*** id: unique serial pk
+*** owner: pk de la taula members de qui ha publicat tal anunci. Foreign key.
+*** isbn: 13 dígits, http://www.isbn.org/faqs_general_questions#isbn_faq3
+*** status Estat de l'Anunci (LLIURE | DONAT | ESBORRAT)
+*** summary: Descripció curta (una línia)
+*** description: Missatge de text opcional.
+*** ad_publishing_date: Data de publicació de l'anunci
+######  *** Filename de l'imatge  ###  No cal, és calculada a partir del id
+** Accions de l'usuari:
+*** Alta
+*** Baixa (marcar com esborrat)
+*** Modificació:
+***** missatge de text
+***** Marcar com a ja donat
+** Accions de l'AMPA:
+*** Alta (establint la clau primària de l'usuari donant)
+*** Baixa (marcar com esborrat)
+*** Modificació:
+**** Marcar com a ja donat
+
+
+Dubtes:
+* Es cobra pel llibre?
+* Es cobra una part per l'AMPA?
+* Qualifiquem els llibres? (bon estat, regular, mal estat)
+* Participem de la venda? Cal que un anunci passi a estar "VENUT".
+* Com implementem la baixa de l'usuari? Proposo que no l'esborrem, que només marquem com a ESBORRATS els seus anuncis
+
+
+
+Notes tècniques:
+
+agalindo@xps64:~$ sudo passwd postgres
+agalindo@xps64:~$ su - postgres
+postgres@xps64:~$ psql -d template1 -c "ALTER USER postgres WITH PASSWORD 'SEUPASSWORD';"
+postgres@xps64:~$ createuser liber --pwprompt
+postgres@xps64:~$ createdb liber 
+postgres@xps64:~$ psql liber 
+postgres@xps64:~$ psql liber 
+grant all privileges on database liber to liber;
+
+agalindo@xps64:~$ pgadmin3 
+
+
+
+CREATE TABLE public."user"
+(
+   mail character(100) NOT NULL, 
+   fullname character(100), 
+   town character(100), 
+   telephone_number character(15), 
+   CONSTRAINT pk PRIMARY KEY (mail)
+) 
+WITH (
+  OIDS = FALSE
+)
+;
+
+

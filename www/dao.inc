@@ -68,29 +68,6 @@ class Dao {
 		return $this->errConnecting;
 	}
 
-	public function getCurrentUser() {
-		$u = ''; // PENDENT de veure com agafar-ho de la sessió FJE
-		if($GLOBALS['mock']) {
-			if(! empty($_SESSION["dummyUsername"])) {
-				$u = $_SESSION["dummyUsername"];
-			}
-			else {
-				trigger_error("Error de programa: Sempre ha d'haver una sessi&oacute; d'usuari", E_USER_WARNING);
-				return NULL;
-			}
-		}
-		if($u === '') {
-			if($GLOBALS['mock']) {
-				trigger_error("Error d'aplicaci&oacute;: Sempre ha d'haver una sessi&oacute; d'usuari", E_USER_WARNING);
-				return NULL;
-			}
-			else {
-				trigger_error("Error d'aplicaci&oacute;: Sempre ha d'haver una sessi&oacute; d'usuari", E_USER_WARNING);
-				return NULL;
-			}
-		}
-		return $this->getUserByMail($u);
-	}
 
 	/**
 	 * Retorna l'objecte User a partir de l'entrada a taula d'usuaris amb tal mail

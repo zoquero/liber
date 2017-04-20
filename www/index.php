@@ -239,11 +239,11 @@ trigger_error("AQUESTA ACCIÓ MAI SALTARÀ, UN COP DEPURAT HO ESBORRAREM.", E_US
 		
 		break;
 	case ACTION_BACKUP:
-		die("Not implemented");
+		die("Bad link");
 		break;
 	case ACTION_RESTORE:
 		//
-		die("PENDENT D'IMPLEMENTAR");
+		die("Bad link. Unimplemented");
 		break;
 	case ACTION_SEE_NOTIFICATIONS:
 		//

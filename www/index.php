@@ -239,8 +239,7 @@ trigger_error("AQUESTA ACCIÓ MAI SALTARÀ, UN COP DEPURAT HO ESBORRAREM.", E_US
 		
 		break;
 	case ACTION_BACKUP:
-		//
-		die("PENDENT D'IMPLEMENTAR");
+		die("Not implemented");
 		break;
 	case ACTION_RESTORE:
 		//

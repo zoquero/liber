@@ -76,8 +76,15 @@ $GLOBALS['htmlBodyTitle'] = "Liber: Socialització de llibres";
 $GLOBALS['MAIL_LIB'] = "FJEAPI";
 $GLOBALS['MAIL_FJEAPI_URL']='http://srv.fje.edu/api/conNETctor.php/enviaInformacio';
 
-// $GLOBALS['MAIL_FJEAPI_URL']='http://srv.fje.edu/api/conNETctor.php/enviaInformacio';
-$GLOBALS['MAIL_FJEAPI_HTTP_HOST']='srv.fje.edu';
+//
+// Fins 2017:   $GLOBALS['MAIL_FJEAPI_URL']='http://srv.fje.edu/api/conNETctor.php/enviaInformacio';
+// Des de 2017: $GLOBALS['MAIL_FJEAPI_URL']='http://apis.net.fje.edu/api/conNETctor.php/enviaInformacio';
+//
+// 20170420: 
+// GET http://apis.net.fje.edu/api/conNETctor.php/validatokenCookie/0000-0000
+// POST http://apis.net.fje.edu/api/conNETctor.php/enviaInformacio
+//
+$GLOBALS['MAIL_FJEAPI_HTTP_HOST']='apis.net.fje.edu';
 $GLOBALS['MAIL_FJEAPI_HTTP_PORT']='80';
 $GLOBALS['MAIL_FJEAPI_HTTP_PATH']='/api/conNETctor.php/enviaInformacio';
 $GLOBALS['MAIL_FJEAPI_MAX_BUFF']='8192';

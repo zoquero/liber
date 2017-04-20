@@ -1023,7 +1023,7 @@ function sendMailAboutInterest($user, $theAd, $theAdUser, $fDescription) {
 			$out .= "Connection: Close\r\n\r\n";
 			$out .= "$jsonMsg\r\n";
 			
-// print "DEBUG: MAIL: Anem a escriure això:\n$out\n<br/>\n";
+print "DEBUG: MAIL: Anem a escriure això:\n$out\n<br/>\n";
 				
 			fwrite($fp, $out);
 			while (!feof($fp)) {
@@ -1031,12 +1031,12 @@ function sendMailAboutInterest($user, $theAd, $theAdUser, $fDescription) {
 				$apiResponse .= fread($fp, $GLOBALS['MAIL_FJEAPI_MAX_BUFF']);
 				if (strlen($apiResponse) > $GLOBALS['MAIL_FJEAPI_MAX_RESPONSE_SIZE']) {
 					$result = FALSE;
-					$resultText="Mail API response exceeds max size";
+					$resultText="Mail API response exceeds max size (" . $GLOBALS['MAIL_FJEAPI_MAX_RESPONSE_SIZE'] . " bytes" ;
 					break;
 				}
 			}
 			fclose($fp);
-// print "DEBUG: API response complet: $apiResponse<br/>\n";
+print "DEBUG: API response complet: $apiResponse<br/>\n";
 
 			/*
 			 * La respost de l'API de JFE no sembla JSON compliant
@@ -1060,13 +1060,14 @@ print "DEBUG: API response body: [$apiResponseBody]<br/>\n";
 			print "DEBUG: API response body sesgat: [$apiResponseBody]<br/>\n";
 			*/
 
-
+/*
 aquesta regexp no funicona bé, millor passem a fer primer quelcom com:
 str_replace("\r\n", '', $str);
 str_replace("\n\r", '', $str);
 str_replace("\n", '', $str);
 str_replace("\r", '', $str);
 i després simplificar la regexp treient els [\s\r\n]*
+*/
 
 			// if ($apiResponseSmpl != "{resultat::1}")
 			if (preg_match("/^[\s\r\n]*\{[\s\r\n]*\"?resultat[\s\r\n]*:?[\s\r\n]*\"?[\s\r\n]*:?[\s\r\n]*\"?[\s\r\n]*1[\s\r\n]*\"?[\s\r\n]*\}[\s\r\n]*/i", $apiResponseBody)) {

@@ -1,0 +1,4 @@
+
+mysql> GRANT ALL PRIVILEGES ON liberdb TO 'liberdbuser'@'localhost';
+mysql> GRANT ALL PRIVILEGES ON liberdb.* TO 'liberdbuser'@'localhost';
+mysql> flush privileges;

@@ -1,8 +1,14 @@
 <?php
+
+require_once("conf.inc");
+
+/*
+TO_DO : Backup authorization
 	if(! isAdmin()) {
 		die("Just for admins");
 	}
-	$filename = "backup-" . date("d-m-Y") . ".sql.gz";
+*/
+	$filename = $GLOBALS['dbName'] . "-" . date("Ymd-Gis") . ".sql.gz";
 	$mime = "application/x-gzip";
 	header( "Content-Type: " . $mime );
 	header( 'Content-Disposition: attachment; filename="' . $filename . '"' );

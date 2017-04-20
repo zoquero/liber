@@ -270,7 +270,7 @@ function showAdminOptionsMenu() {
 	<table border="1"><tr><td bgcolor="#FFF0F0">
 		<p>Opcions d'administrador:</p>
 		<ul>
-			<li><a href="?actionId=<?php echo ACTION_BACKUP ?>">
+			<li><a href="dbbackup.php">
 				Backup</a></li>
 			<li><a href="?actionId=<?php echo ACTION_RESTORE ?>">
 				Restore</a></li>

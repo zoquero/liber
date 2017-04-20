@@ -68,12 +68,39 @@ class Dao {
 		return $this->errConnecting;
 	}
 
+/** 
+	public function getCurrentUser() {
+		$u = ''; // PENDENT de veure com agafar-ho de la sessió FJE
+		if($GLOBALS['mock']) {
+			if(! empty($_SESSION["dummyUsername"])) {
+				$u = $_SESSION["dummyUsername"];
+			}
+			else {
+				trigger_error("Error de programa: Sempre ha d'haver una sessi&oacute; d'usuari", E_USER_WARNING);
+				return NULL;
+			}
+		}
+		if($u === '') {
+			if($GLOBALS['mock']) {
+				trigger_error("Error d'aplicaci&oacute;: Sempre ha d'haver una sessi&oacute; d'usuari", E_USER_WARNING);
+				return NULL;
+			}
+			else {
+				trigger_error("Error d'aplicaci&oacute;: Sempre ha d'haver una sessi&oacute; d'usuari", E_USER_WARNING);
+				return NULL;
+			}
+		}
+		return $this->getUserByMail($u);
+	}
+ */
 
-	/**
+/*
+
+	 **
 	 * Retorna l'objecte User a partir de l'entrada a taula d'usuaris amb tal mail
 	 * @param String $m El mail
 	 * @return User|NULL L'objecte User o NULL si no es troba.
-	 */
+	 *
 	public function getUserByMail($m) {
 		if($m == NULL || $m == ''){
 			trigger_error("Error de programació: Rebut mail NULL fent getUserByMail", E_USER_WARNING);
@@ -112,11 +139,11 @@ class Dao {
 		return NULL;
 	}
 
-	/**
+	 **
 	 * Retorna l'objecte User a partir de l'entrada a taula d'usuaris amb tal id
 	 * @param String $i L'id de l'usuari
 	 * @return User|NULL L'objecte User o NULL si no es troba.
-	 */
+	 * 
 	public function getUserById($i) {
 		$aId='';
 		$aMail='';
@@ -154,6 +181,8 @@ class Dao {
 		}
 		return NULL;
 	}
+
+*/
 
 	public function createAd($user, $fIsbn, $fSummary, $fDescription, $fImage, $grade) {
 		if($user == NULL){

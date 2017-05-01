@@ -2,7 +2,7 @@
 
 $GLOBALS['mock']=FALSE;
 $GLOBALS['mockToken']=FALSE;      // Forçar que el token 
-$GLOBALS['mockSess']=TRUE;        // Recuperar sessió de fitxer
+$GLOBALS['mockSess']=FALSE;        // Recuperar sessió de fitxer
 $GLOBALS['mockInjectSess']=FALSE; // Injectar cookie de sessió
 $GLOBALS['debug']=FALSE;
 

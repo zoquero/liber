@@ -934,6 +934,7 @@ function showInterestForm($ad) {
 		i de resum &quot;<i><?php echo $ad->getSummary()?></i>&quot;
 		deixa aqu&iacute; les teves dades de contacte i qui l'hagi anunciat
 		les utilitzar&agrave; per posar-se en contacte amb tu.</p>
+	<p>Recorda que nom&eacute;s rebr&agrave; les dades de contacte que decideixis donar-li a continuaci&oacute;.
 
 	<form action="?" method="post" accept-charset="utf-8">
 		<input type="hidden" name="actionId"
@@ -952,7 +953,7 @@ function getFjeApiJsonHtmlMsg($user, $theAd, $theAdUserMail, $fDescription) {
 	$isbn=$theAd->getIsbn();
 	$summary=$theAd->getSummary();
 	$body = <<<EOBODY
-<html><body><H1>Socialització de llibres</H1><p>Benvolgut/da:</p><p>Alg&uacute; est&agrave; interessat en el llibre que vas anunciar amb ISBN <b>$isbn</b> i de t&iacute;tol <b><i>$summary</i></b> i t'ha enviat aquest missatge:</p><p><b>$fDescription</b></p><p>Pots posar-te en contacte amb ell/ella. Tan de bo que pugui aprofitar el teu llibre</p><p>Moltes gr&agrave;cies per utilitzar aquest servei de socialitzaci&oacute;.</p><p>AMPA de Joan XXIII</p></body></html>
+<html><body><H1>Socialització de llibres</H1><p>Benvolgut/da:</p><p>Alg&uacute; est&agrave; interessat en el llibre que vas anunciar amb ISBN <b>$isbn</b> i de t&iacute;tol <b><i>$summary</i></b> i t'ha enviat aquest missatge:</p><hr/><p><b>$fDescription</b><hr/></p><p>Pots posar-te en contacte amb ell/ella. Tan de bo que pugui aprofitar el teu llibre</p><p>Moltes gr&agrave;cies per utilitzar aquest servei de socialitzaci&oacute;.</p><p>AMPA de Joan XXIII</p></body></html>
 EOBODY;
 	
 	$to=$theAdUserMail;
@@ -1084,7 +1085,9 @@ function sendMailAboutInterest($user, $theAd, $theAdUserMail, $fDescription) {
 			$out .= "Connection: Close\r\n\r\n";
 			$out .= "$jsonMsg\r\n";
 			
-print "DEBUG: MAIL: Anem a escriure això:\n$out\n<br/>\n";
+if($GLOBALS['debug']) {
+print "DEBUG: MAIL: Anem a escriure això:<br/>\n<pre><code>$out</code></pre><br/>\n";
+}
 				
 			fwrite($fp, $out);
 			while (!feof($fp)) {
@@ -1097,19 +1100,58 @@ print "DEBUG: MAIL: Anem a escriure això:\n$out\n<br/>\n";
 				}
 			}
 			fclose($fp);
-print "DEBUG: API response complet: $apiResponse<br/>\n";
+			
+if($GLOBALS['debug']) {
+print "DEBUG: API response complet:<br/>\n<pre><code>$apiResponse</code></pre><br/>\n";
+}
 
-			/*
-			 * La respost de l'API de JFE no sembla JSON compliant
-			 * doncs escapa les cometes i el nom de variable acaba en ":"
-			 *
-			 * '"{ \"resultat:\":\"1\"}"'
-			 */
+/*
+ * Exemple de resposta davant d'error:
+ HTTP/1.1 500 Internal Server Error
+Date: Mon, 01 May 2017 20:20:40 GMT
+Server: Apache/2.4.7 (Ubuntu)
+X-Powered-By: PHP/5.5.9-1ubuntu4.21
+Content-Length: 1466
+Connection: close
+Content-Type: text/html
+
+ 
+
+ 
+<html><head><title>Slim Application Error</title>...
+ */
+
+/*
+ * Exemple de resposta exitosa:
+HTTP/1.1 200 OK
+Date: Mon, 01 May 2017 20:24:29 GMT
+Server: Apache/2.4.7 (Ubuntu)
+X-Powered-By: PHP/5.5.9-1ubuntu4.21
+Content-Length: 7
+Connection: close
+Content-Type: text/html
+
+ 
+
+ 
+
+
+ */
+ 
+/*
+ * La respost de l'API de JFE no sembla JSON compliant
+ * doncs escapa les cometes i el nom de variable acaba en ":"
+ *
+ * '"{ \"resultat:\":\"1\"}"'
+ */
 
 // $apiResponseSmpl = preg_replace('/^.*\r\n\r\n(.*)$/', '\1', $apiResponse);
 			list($apiResponseHeaders, $apiResponseBody) = explode("\r\n\r\n", $apiResponse, 2);
+
+if($GLOBALS['debug']) {
 print "DEBUG: API response body: [$apiResponseBody]<br/>\n";
-			
+}
+
 			/*
 			$apiResponseSmpl = str_replace('\r\n', '', $apiResponseSmpl);
 			$apiResponseSmpl = str_replace('\n\r', '', $apiResponseSmpl);
@@ -1136,7 +1178,7 @@ i després simplificar la regexp treient els [\s\r\n]*
 				return FALSE;
 			}
 			else {
-				print "<b>ben enviat</b></br>\n";
+				print "<b>Correu enviat amb èxit</b></br>\n";
 				return TRUE;
 			}
 

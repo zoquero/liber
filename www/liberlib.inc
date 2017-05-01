@@ -57,24 +57,81 @@ function echoErr() {
 			. "</td></tr></table>";
 }
 
-function getUser($dao) {
-	$user = $dao->getCurrentUser();
+
+/**
+  Retorna el hash de valors trobats al JSON emmagatzemat el fitxer o NULL si no pot llegir o decodificar
+  */
+function getUserDo_FileMock() {
+  $testFile = ROOT_PATH . "/../docs/exemple_sess/jfe_validatokenCookie.DUMMY.json";
+  if($GLOBALS['debug']) {
+     echo "Obrirem testFile = $testFile<br>\n"; 
+  }
+  $myfile = fopen($testFile, "r") or die ("Unable to open the file $testFile!");
+  $fileContents = fread($myfile, filesize($testFile));
+  if(! $fileContents) {
+    die ("Can't read from $myfile");
+  }
+  fclose($myfile) or die ("Unable to close the file $testFile!");
+  // echo "file = $fileContents\n";
+  $json = json_decode($fileContents, true);
+  // print_r ($json);
+  return $json;
+}
+
+/**
+  * Retorna el hash de valors trobats al JSON recuperat
+  * del servidor de sessions o NULL si no pot llegir o decodificar
+  */
+function getUserDo($token) {
+  $sessUrl = $GLOBALS['SESS_FJEAPI_BASE_URL'] . "/" . $token;
+  // echo "Reading contents from sess url $sessUrl\n";
+  $sessContents = file_get_contents($sessUrl);
+  if(! $sessContents) {
+    die ("Can't read from $sessContents");
+  }
+  // echo "sess = $sessContents\n";
+  $json = json_decode($sessContents, true);
+  // print_r ($json);
+  return $json;
+}
+
+function getUserToken() {
+  if($GLOBALS['mockToken']) {
+    return $GLOBALS['SESS_FJEAPI_MOCKING_COOKIE_VALUE'];
+  }
+  else {
+    if($GLOBALS['mockInjectSess']) {
+      setcookie($GLOBALS['SESS_FJEAPI_COOKIE_NAME'],
+        $GLOBALS['SESS_FJEAPI_MOCKING_COOKIE_VALUE'],
+        time() + (86400 * 30 * 365 * 10), "/"); // 10 anys
+    }
+    return $_COOKIE[$GLOBALS['SESS_FJEAPI_COOKIE_NAME']];
+  }
+}
+
+function getUser() {
+	if($GLOBALS['mockSess']) {
+		$user = getUserDo_FileMock();
+	}
+	else {
+		$token = getUserToken();
+		if($GLOBALS['debug']) {
+			echo "Token = $token<br\n";
+		}
+		$user = getUserDo($token);
+	}
 	if($user == NULL) {
-		if($GLOBALS['mock']) {
-		}
-		else {
-			
-		}
-		if($GLOBALS['mock']) {
-			trigger_error("No us hem trobat a la base de dades de <b>socis de l'AMPA</b>.<br/>
-				Podeu <a href= \"mailto:ampa.joan23@fje.edu\" >contactar amb l'AMPA</a> per corregir-ho.", E_USER_WARNING);
-		}
-		else {
-			trigger_error("No us hem trobat a la base de dades de <b>socis de l'AMPA</b>.<br/>
-				Podeu <a href= \"mailto:ampa.joan23@fje.edu\" >contactar amb l'AMPA</a> per corregir-ho.", E_USER_ERROR);
-		}
+		trigger_error("No hem pogut recuperar les seves dades de sessió.<br/>
+				Podeu <a href= \"mailto:ampa.joan23@fje.edu\" >contactar amb l'AMPA</a> per depurar-ho.", E_USER_ERROR);
 	}
 	return $user;
+}
+
+function isAdmin($user) {
+	if($user == NULL || !isset($user['mail'])) {
+		return false;
+	}
+	return (in_array($user['mail'], $GLOBALS['appAdmins']));
 }
 
 /**
@@ -280,6 +337,9 @@ function showAdminOptionsMenu() {
 }
 
 
+//
+// obsolet vers $GLOBALS['mockToken'], $GLOBALS['mockSess'] i $GLOBALS['mockInjectSess']
+//
 /**
  * Mostra el form que permet establir l'username al desenvolupador.
  *
@@ -287,6 +347,7 @@ function showAdminOptionsMenu() {
  * quan no es disposa de servei de sessió.</p>
  */
 function showDummyForm($user) {
+  die ("obsolet vers GLOBALS[mockToken], GLOBALS[mockSess] i GLOBALS[mockInjectSess]");
 ?>
 <table border="1"><tr><td bgcolor="#FFF0F0">
 	<b>Sessi&oacute; <i>dummy</i></b> per a administradors:<br/>

@@ -1,6 +1,9 @@
 <?php
 
-$GLOBALS['mock']=TRUE;
+$GLOBALS['mock']=FALSE;
+$GLOBALS['mockToken']=FALSE;      // Forçar que el token 
+$GLOBALS['mockSess']=FALSE;       // Recuperar sessió de fitxer
+$GLOBALS['mockInjectSess']=FALSE; // Injectar cookie de sessió
 $GLOBALS['debug']=TRUE;
 
 define("ACTION_SET_DUMMY_USERNAME",       1);
@@ -63,7 +66,7 @@ define("IMAGE_LANDSCAPE_TO_RESIZE",	4);
 
 
 /*** Llista separada per espais dels administradors de l'aplicació. */
-$GLOBALS['appAdmins'] = "zoquero@gmail.com ampa.joan23@fje.edu";
+$GLOBALS['appAdmins'] = array("zoquero@gmail.com", "ampa.joan23@fje.edu");
 
 
 /*** Títol head de les pàgines */
@@ -90,6 +93,11 @@ $GLOBALS['MAIL_FJEAPI_HTTP_PATH']='/api/conNETctor.php/enviaInformacio';
 $GLOBALS['MAIL_FJEAPI_MAX_BUFF']='8192';
 $GLOBALS['MAIL_FJEAPI_MAX_RESPONSE_SIZE']='102400';
 
+$GLOBALS['SESS_FJEAPI_BASE_URL']='http://apis.net.fje.edu/api/conNETctor.php/validatokenCookie';
+$GLOBALS['SESS_FJEAPI_COOKIE_NAME']='tokenNet';
+// 0000-0000 per Usuari de prova
+// A0CEF30D-4D35-4CEE-8B5B-F643C8C52384
+$GLOBALS['SESS_FJEAPI_MOCKING_COOKIE_VALUE']='A0CEF30D-4D35-4CEE-8B5B-F643C8C52384';
 
 /*** Timeout de connexió fent fsockopen per enviar correu via L'API de FJE */
 $GLOBALS['SOCKET_CONN_TIMEOUT']=30;

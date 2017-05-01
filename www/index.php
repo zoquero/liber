@@ -1,9 +1,12 @@
 <?php
 
-require_once("conf.inc");
-require_once("class.user.inc.php");
-require_once("liberlib.inc");
-require_once("dao.inc");
+define('ROOT_PATH', dirname(__FILE__));
+
+require_once(ROOT_PATH . "/conf.inc");
+require_once(ROOT_PATH . "/class.user.inc.php");
+require_once(ROOT_PATH . "/liberlib.inc");
+require_once(ROOT_PATH . "/dao.inc");
+
 set_error_handler("myErrorHandler");
 
 safeSessionStart();
@@ -19,15 +22,14 @@ if($dao->isErrConnecting()) {
 showRegularBodyHeaders();
 showRegularOptionsMenu($dao);
 
-$user=getUser($dao);
-
-// Peu amb eines de sessió
-if($GLOBALS['mock']) {
-	echo "<br/>";
-	showDummyForm($user);
+$user=getUser();
+if($GLOBALS['debug']) {
+  echo "Debug: Dades de sessió recuperades:<br>\n";
+  print_r($user);
 }
+
 // Menú d'administrador
-if(! empty($user) && $user != NULL) {
+if(isAdmin($user)) {
 	echo "<br/>";
 	showAdminOptionsMenu();
 }

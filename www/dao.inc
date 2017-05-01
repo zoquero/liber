@@ -70,6 +70,7 @@ class Dao {
 
 /** 
 	public function getCurrentUser() {
+		die ("Dao.getCurrentUser deprecated");
 		$u = ''; // PENDENT de veure com agafar-ho de la sessió FJE
 		if($GLOBALS['mock']) {
 			if(! empty($_SESSION["dummyUsername"])) {

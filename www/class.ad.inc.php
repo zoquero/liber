@@ -98,6 +98,10 @@ class Ad {
 	 * @return string
 	 */	
 	public function toHtmlAnchoredRowNotOwn($aGrade) {
+		$d_id     = '';
+		$d_owner  = '';
+		$d_status = '';
+	
 		if($aGrade == NULL) {
 			trigger_error("Error de programació: no s'ha rebut el curs associat a l'anunci", E_USER_WARNING);
 		}
@@ -270,6 +274,9 @@ class Ad {
 	 * @return string
 	 */
 	public static function getHtmlAdsRowHeaderNotOwn() {
+		$d_id="";
+		$d_owner="";
+		$d_status="";
 		if($GLOBALS['debug']) {
 			$d_id="<td>id</td>";
 			$d_owner="<td>owner</td>";

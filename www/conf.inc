@@ -2,9 +2,9 @@
 
 $GLOBALS['mock']=FALSE;
 $GLOBALS['mockToken']=FALSE;      // Forçar que el token 
-$GLOBALS['mockSess']=FALSE;       // Recuperar sessió de fitxer
+$GLOBALS['mockSess']=TRUE;       // Recuperar sessió de fitxer
 $GLOBALS['mockInjectSess']=FALSE; // Injectar cookie de sessió
-$GLOBALS['debug']=TRUE;
+$GLOBALS['debug']=FALSE;
 
 define("ACTION_SET_DUMMY_USERNAME",       1);
 define("ACTION_NEW_AD_FORM",              2);
@@ -97,7 +97,7 @@ $GLOBALS['SESS_FJEAPI_BASE_URL']='http://apis.net.fje.edu/api/conNETctor.php/val
 $GLOBALS['SESS_FJEAPI_COOKIE_NAME']='tokenNet';
 // 0000-0000 per Usuari de prova
 // A0CEF30D-4D35-4CEE-8B5B-F643C8C52384
-$GLOBALS['SESS_FJEAPI_MOCKING_COOKIE_VALUE']='A0CEF30D-4D35-4CEE-8B5B-F643C8C52384';
+$GLOBALS['SESS_FJEAPI_MOCKING_COOKIE_VALUE']='916A1AF5-239A-40A3-838E-A13617DEF11E';
 
 /*** Timeout de connexió fent fsockopen per enviar correu via L'API de FJE */
 $GLOBALS['SOCKET_CONN_TIMEOUT']=30;

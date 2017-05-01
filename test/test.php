@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * SQL Command run:
+ * mysql        -h localhost -u $liberdbuser -p$password -D liberdb -e "select * from ads"
+ * 
+ * DDL gen:
+ * mysqldump -d -h localhost -u $liberdbuser -p$password liberdb
+*/
+
+
 define('ROOT_PATH', dirname(__FILE__) . '/../www/');
 
 require_once(ROOT_PATH . "conf.inc");

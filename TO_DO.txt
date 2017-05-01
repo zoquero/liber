@@ -6,7 +6,9 @@
 branques:
 
 * backup      : fer backup de db i descarregar-ho via web
+
 * sso         : integració amb sso de fje
+
 * nousertable : treure la taula d'usuaris:
 ** alter table de "ads" i "interests" per a identificar a l'usuari pel seu mail extret de la sessió (ads.owner i interests.interested)
 *** treure constraint de foreign key
@@ -22,4 +24,7 @@ branques:
   DROP TABLE members
 ** Genera nou DDL
 ** codi: corregir DAO a totes les accions sobre "ads" i "interests"
+
+* mailapi
+** revisar ús d'API
 

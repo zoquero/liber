@@ -142,6 +142,10 @@ class Ad {
 	 * @return string
 	 */
 	public function toHtmlAnchoredRowOwn($aGrade) {
+		$d_id='';
+		$d_owner='';
+		$d_status='';
+				
 		$url="";
 		$d_accio = "<td bgcolor=\"#F2F2F2\">
 					<form action=\"?\" method=\"post\" accept-charset=\"utf-8\">
@@ -246,6 +250,10 @@ class Ad {
 	 * @return string
 	 */
 	public static function getHtmlAdsRowHeaderOwn() {
+		$d_id="";
+		$d_owner="";
+		$d_status="";
+			
 		if($GLOBALS['debug']) {
 			$d_id="<td>id</td>";
 			$d_owner="<td>owner</td>";

@@ -45,6 +45,9 @@ class Interest {
 	 * @return string
 	 */
 	public static function getHtmlInterestsRowHeader() {
+		$d_id='';
+		$d_userId='';
+		$d_adId='';
 		if($GLOBALS['debug']) {
 			$d_id="<td>id</td>";
 			$d_userId="<td>userId</td>";
@@ -71,6 +74,9 @@ class Interest {
 	 * @return string
 	 */
 	public function toHtmlRow() {
+		$d_id = '';
+		$d_userId = '';
+		$d_adId = '';
 		if($GLOBALS['debug']) {
 			$d_id     = Interest::toHtmlCell($this->getId());
 			$d_userId = Interest::toHtmlCell($this->getUserId());

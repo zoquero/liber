@@ -3,7 +3,7 @@
 define('ROOT_PATH', dirname(__FILE__));
 
 require_once(ROOT_PATH . "/conf.inc");
-require_once(ROOT_PATH . "/class.user.inc.php");
+// require_once(ROOT_PATH . "/class.user.inc.php"); // no user table
 require_once(ROOT_PATH . "/liberlib.inc");
 require_once(ROOT_PATH . "/dao.inc");
 
@@ -218,13 +218,15 @@ trigger_error("AQUESTA ACCIÓ MAI SALTARÀ, UN COP DEPURAT HO ESBORRAREM.", E_US
 		if($theAd == NULL) {
 			trigger_error("No s'ha trobat tal anunci a la Base de Dades", E_USER_ERROR);
 		}
-		$theAdUser=$dao->getUserById($theAd->getOwner());
-		if($theAdUser == NULL) {
-			trigger_error("No s'ha trobat l'usuari propietari de l'anunci a la Base de Dades", E_USER_ERROR);
-		}
+		// $theAdUserMail=$dao->getUserById($theAd->getOwner()); ja no tabla d'usuaris
+		$theAdUserMail=$theAd->getOwner();
+		// ja no cal validar-ho
+		// if($theAdUserMail == NULL) {
+		// 	trigger_error("No s'ha trobat l'usuari propietari de l'anunci a la Base de Dades", E_USER_ERROR);
+		//}
 // echo "Usuari id " . $user->getId() . " té interès en anunci (id $fId) [$theAd], descripció = [$fDescription]<br/>";
 		if(createInterest($dao, $user, $theAd, $fDescription)) {
-//		if(createInterest($dao, $user, $theAd, $theAdUser, $fDescription))
+//		if(createInterest($dao, $user, $theAd, $theAdUserMail, $fDescription))
 			// function createInterest($dao, $user, $theAd, $fDescription) 
 			showMessage("Hem enregistrat el teu inter&egrave;s");
 		}
@@ -232,7 +234,7 @@ trigger_error("AQUESTA ACCIÓ MAI SALTARÀ, UN COP DEPURAT HO ESBORRAREM.", E_US
 			trigger_error("Hi ha hagut algun problema enregistrant el teu inter&egrave;s", E_USER_ERROR);
 		}
 		
-		if(sendMailAboutInterest($user, $theAd, $theAdUser, $fDescription)) {
+		if(sendMailAboutInterest($user, $theAd, $theAdUserMail, $fDescription)) {
 			showMessage("Hem enviat un missatge a l'anunciant convidant-lo a que es posi en contacte amb tu");
 		}
 		else {

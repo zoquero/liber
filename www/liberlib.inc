@@ -878,7 +878,7 @@ function showAdsDEPRECATED($adsArray, $user) {
 			echo "<!-- deleted ad -->";
 			continue;
 		}
-		if($anAd->getOwner() == $user->getId()) {
+		if($anAd->getOwner() == $user['mail']) {
 			// $aLink = "?actionId=" . ACTION_SHOW_OTHERS_ADS . "&id=" . $anAd->getId();
 			echo $anAd->toHtmlAnchoredRowDEPRECATED(Ad::$ROW_TO_DELETE) . "\n";
 		}
@@ -896,7 +896,7 @@ function showAdsOwn($dao, $adsArray, $user) {
 			echo "<!-- deleted ad -->";
 			continue;
 		}
-		if($anAd->getOwner() != $user->getId()) {
+		if($anAd->getOwner() != $user['mail']) {
 			trigger_error("Error: Recuperats anuncis d'altri quan tractant de mostrar els propis", E_USER_WARNING);
 			return FALSE;
 		}
@@ -912,7 +912,7 @@ function showAdsNotOwn($dao, $adsArray, $user) {
 			echo "<!-- skip deleted ad -->";
 			continue;
 		}
-		if($anAd->getOwner() == $user->getId()) {
+		if($anAd->getOwner() == $user['mail']) {
 			echo "<!-- skip own ad -->";
 			continue;
 		}
@@ -948,14 +948,14 @@ function showInterestForm($ad) {
 /***
  * Retorna un string amb el Json que espera l'API de FJE per enviar mails.
  */
-function getFjeApiJsonHtmlMsg($user, $theAd, $theAdUser, $fDescription) {
+function getFjeApiJsonHtmlMsg($user, $theAd, $theAdUserMail, $fDescription) {
 	$isbn=$theAd->getIsbn();
 	$summary=$theAd->getSummary();
 	$body = <<<EOBODY
 <html><body><H1>Socialització de llibres</H1><p>Benvolgut/da:</p><p>Alg&uacute; est&agrave; interessat en el llibre que vas anunciar amb ISBN <b>$isbn</b> i de t&iacute;tol <b><i>$summary</i></b> i t'ha enviat aquest missatge:</p><p><b>$fDescription</b></p><p>Pots posar-te en contacte amb ell/ella. Tan de bo que pugui aprofitar el teu llibre</p><p>Moltes gr&agrave;cies per utilitzar aquest servei de socialitzaci&oacute;.</p><p>AMPA de Joan XXIII</p></body></html>
 EOBODY;
 	
-	$to=$theAdUser->getMail();
+	$to=$theAdUserMail;
 	$fromName=$GLOBALS['MAIL_FROM_NAME'];
 
 	$subject = scapeBody($GLOBALS['MAIL_SUBJECT']);
@@ -981,11 +981,11 @@ function scapeBody($msg) {
  * Envia un mail a l'anunciant dient-li que algú està interessat en l'anunci. 
  * @param User $user Qui està interessat
  * @param Ad $theAd L'anunci
- * @param AD $theAdUser L'anunciant
+ * @param AD $theAdUserMail L'anunciant
  * @param String $fDescription El text a enviar
  * @return boolean True si OK, False si errors.
  */
-function sendMailAboutInterest($user, $theAd, $theAdUser, $fDescription) {
+function sendMailAboutInterest($user, $theAd, $theAdUserMail, $fDescription) {
 	if($GLOBALS['MAIL_LIB'] == "PHPMailer") {
 		$mail = new PHPMailer;
 		$mail->CharSet = "UTF-8";
@@ -1012,7 +1012,7 @@ function sendMailAboutInterest($user, $theAd, $theAdUser, $fDescription) {
 		
 		$mail->From 	= $GLOBALS['MAIL_FROM'];
 		$mail->FromName = $GLOBALS['MAIL_FROM_NAME'];
-		$mail->addAddress($theAdUser->getMail(), $theAdUser->getFullname());	// Add a recipient
+		$mail->addAddress($theAdUserMail, $theAdUserMail);	// Add a recipient
 		$mail->addReplyTo($GLOBALS['MAIL_REPLYTO'], $GLOBALS['MAIL_REPLYTO_NAME']);
 		//	$mail->addCC('cc@example.com');
 		//	$mail->addBCC('bcc@example.com');
@@ -1058,7 +1058,7 @@ function sendMailAboutInterest($user, $theAd, $theAdUser, $fDescription) {
 		// $GLOBALS['MAIL_FJEAPI_HTTP_PORT']='80';
 		// $GLOBALS['MAIL_FJEAPI_HTTP_PATH']='/api/conNETctor.php/enviaInformacio';
 		
-		$jsonMsg=getFjeApiJsonHtmlMsg($user, $theAd, $theAdUser, $fDescription);
+		$jsonMsg=getFjeApiJsonHtmlMsg($user, $theAd, $theAdUserMail, $fDescription);
 	
 		$apiResponse='';
 		$apiResponseHeaders='';

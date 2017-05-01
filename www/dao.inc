@@ -3,7 +3,7 @@
 require_once("conf.inc");
 require_once("class.ad.inc.php");
 require_once("class.grade.inc.php");
-require_once("class.user.inc.php");
+// require_once("class.user.inc.php"); // no user table
 require_once("class.interest.inc.php");
 require_once("liberlib.inc");
 
@@ -101,8 +101,10 @@ class Dao {
 	 * Retorna l'objecte User a partir de l'entrada a taula d'usuaris amb tal mail
 	 * @param String $m El mail
 	 * @return User|NULL L'objecte User o NULL si no es troba.
+	 * @deprecated Finalment no hi ha taula de membres
 	 *
 	public function getUserByMail($m) {
+		die ("deprecated Finalment no hi ha taula de membres");
 		if($m == NULL || $m == ''){
 			trigger_error("Error de programació: Rebut mail NULL fent getUserByMail", E_USER_WARNING);
 			return NULL;
@@ -144,8 +146,10 @@ class Dao {
 	 * Retorna l'objecte User a partir de l'entrada a taula d'usuaris amb tal id
 	 * @param String $i L'id de l'usuari
 	 * @return User|NULL L'objecte User o NULL si no es troba.
+ 	 * @deprecated Finalment no hi ha taula de membres	 
 	 * 
 	public function getUserById($i) {
+		die ("Finalment no hi ha taula de membres");
 		$aId='';
 		$aMail='';
 		$aFullname='';
@@ -204,7 +208,7 @@ class Dao {
 		
 		// utilitzem un prepared statement
 		if($stmt = $this->mysqliCon->prepare($sql)) {
-			if($stmt->bind_param("iiisssi", $this->mysqliCon->real_escape_string($user->getId()), $this->mysqliCon->real_escape_string($fIsbn), $this->mysqliCon->real_escape_string(AD_STATUS_PUBLISHED), $this->mysqliCon->real_escape_string($fSummary), $this->mysqliCon->real_escape_string($fDescription), $this->mysqliCon->real_escape_string($fImage), $this->mysqliCon->real_escape_string($grade->getId())) === FALSE) {
+			if($stmt->bind_param("siisssi", $this->mysqliCon->real_escape_string($user['mail']), $this->mysqliCon->real_escape_string($fIsbn), $this->mysqliCon->real_escape_string(AD_STATUS_PUBLISHED), $this->mysqliCon->real_escape_string($fSummary), $this->mysqliCon->real_escape_string($fDescription), $this->mysqliCon->real_escape_string($fImage), $this->mysqliCon->real_escape_string($grade->getId())) === FALSE) {
 				trigger_error("Errors associant variables a la consulta a la base de dades: <br/>(" .  $this->mysqliCon->errno . ") " . $this->mysqliCon->error, E_USER_WARNING);
 				return FALSE;
 			}
@@ -255,19 +259,23 @@ class Dao {
 		// La consulta
 		$sql = "SELECT id, owner, isbn, status, summary, description, ad_publishing_date, image, grade FROM ads where owner = ?";
 
-		/* Per aconseguir també mail i nom de l'anunciant:
+		/*
+		 * Comentari legacy, de quan hi havia una taula d'usuaris:
 		 *
-		* SELECT ads.id, ads.owner, ads.isbn, ads.status,
-		* 		ads.summary, ads.description, ads.ad_publishing_date, members.id,
-		* 		members.mail, members.fullname FROM ads
-		* 		INNER JOIN members on ads.owner = 1 and ads.owner = members.id
-		*/
+		 * Per aconseguir també mail i nom de l'anunciant:
+		 *
+		 * SELECT ads.id, ads.owner, ads.isbn, ads.status,
+		 * 		ads.summary, ads.description, ads.ad_publishing_date, members.id,
+		 * 		members.mail, members.fullname FROM ads
+		 * 		INNER JOIN members on ads.owner = 1 and ads.owner = members.id
+		 */
 		 
 
 		// utilitzem un prepared statement
 		if($stmt = $this->mysqliCon->prepare($sql)) {
-				
-			if($stmt->bind_param("i", $this->mysqliCon->real_escape_string($user->getId())) === FALSE) {
+		
+			$scaped = $this->mysqliCon->real_escape_string($user['mail']);
+			if($stmt->bind_param("s", $scaped) === FALSE) {
 				trigger_error("Errors associant variables a la consulta a la base de dades", E_USER_WARNING);
 				return NULL;
 			}
@@ -319,13 +327,16 @@ class Dao {
 		// La consulta
 		$sql = "SELECT id, owner, isbn, status, summary, description, ad_publishing_date, image, grade FROM ads where grade = ?";
 	
-		/* Per aconseguir també mail i nom de l'anunciant:
+		/*
+		 * Comentari legacy, de quan hi havia una taula d'usuaris:
+		 * 
+		 * Per aconseguir també mail i nom de l'anunciant:
 		 *
-		* SELECT ads.id, ads.owner, ads.isbn, ads.status,
-		* 		ads.summary, ads.description, ads.ad_publishing_date, members.id,
-		* 		members.mail, members.fullname FROM ads
-		* 		INNER JOIN members on ads.owner = 1 and ads.owner = members.id
-		*/
+		 * SELECT ads.id, ads.owner, ads.isbn, ads.status,
+		 * 		ads.summary, ads.description, ads.ad_publishing_date, members.id,
+		 * 		members.mail, members.fullname FROM ads
+		 * 		INNER JOIN members on ads.owner = 1 and ads.owner = members.id
+		 */
 			
 	
 		// utilitzem un prepared statement
@@ -377,7 +388,8 @@ class Dao {
 		// utilitzem un prepared statement
 		if($stmt = $this->mysqliCon->prepare($sql)) {
 
-			if($stmt->bind_param("i", $this->mysqliCon->real_escape_string($id)) === FALSE) {
+			$scaped = $this->mysqliCon->real_escape_string($id);
+			if($stmt->bind_param("i", $scaped) === FALSE) {
 				trigger_error("Errors associant variables a la consulta a la base de dades:<br/>(" .  $this->mysqliCon->errno . ") " . $this->mysqliCon->error, E_USER_WARNING);
 			}
 
@@ -458,19 +470,23 @@ class Dao {
 		// La consulta
 		$sql = "SELECT id, owner, isbn, status, summary, description, ad_publishing_date, image, grade FROM ads where isbn = ?";
 
-		/* Per aconseguir també mail i nom de l'anunciant:
+		/*
+		 * Comentari legacy, de quan hi havia una taula d'usuaris:
 		 *
-		* SELECT ads.id, ads.owner, ads.isbn, ads.status,
-		* 		ads.summary, ads.description, ads.ad_publishing_date, members.id,
-		* 		members.mail, members.fullname FROM ads
-		* 		INNER JOIN members on ads.owner = 1 and ads.owner = members.id
-		*/
+		 * Per aconseguir també mail i nom de l'anunciant:
+		 *
+		 * SELECT ads.id, ads.owner, ads.isbn, ads.status,
+		 * 		ads.summary, ads.description, ads.ad_publishing_date, members.id,
+		 * 		members.mail, members.fullname FROM ads
+		 * 		INNER JOIN members on ads.owner = 1 and ads.owner = members.id
+		 */
 			
 
 		// utilitzem un prepared statement
 		if($stmt = $this->mysqliCon->prepare($sql)) {
 
-			if($stmt->bind_param("i", $this->mysqliCon->real_escape_string($pIsbn)) === FALSE) {
+			$scaped = $this->mysqliCon->real_escape_string($pIsbn);
+			if($stmt->bind_param("i", $scaped) === FALSE) {
 				trigger_error("Errors associant variables a la consulta a la base de dades", E_USER_WARNING);
 				return NULL;
 			}
@@ -502,13 +518,13 @@ class Dao {
 
 	/**
 	 * Creació d'un interès sobre un anunci
-	 * @param User $user Objecte associat a l'usuari que està interessat
+	 * @param User $user Objecte associat a l'usuari que està interessat (has tret del json)
 	 * @param Ad $theAd objecte Ad amb l'anunci sobre el que hi ha interès
 	 * @param String $fDescription Descripció associada a l'interès
 	 * @return boolean|NULL True si ok, false o NULL si error
 	 */
 	public function createInterest($user, $theAd, $fDescription) {
-// echo "dao.createAd: rebem user id = " . $user->getId() . " ad id = " . $theAd->getId() . "<br/>\n";
+// echo "dao.createAd: rebem user mail = " . $user['mail'] . " ad id = " . $theAd->getId() . "<br/>\n";
 		if($user == NULL){
 			trigger_error("Error de programació: Rebut usuari NULL fent createInterest", E_USER_WARNING);
 		}
@@ -519,7 +535,10 @@ class Dao {
 		// utilitzem un prepared statement
 		if($stmt = $this->mysqliCon->prepare($sql)) {
 // echo "dao.createAd: Fem stmt->bind_param amb usuari adId = " . $this->mysqliCon->real_escape_string($theAd->getId()) . " userId = ". $this->mysqliCon->real_escape_string($user->getId()) . " i descripció = " . $this->mysqliCon->real_escape_string($fDescription) . "<br/>";
-			if($stmt->bind_param("iis", $this->mysqliCon->real_escape_string($theAd->getId()), $this->mysqliCon->real_escape_string($user->getId()), $this->mysqliCon->real_escape_string($fDescription)) === FALSE) {
+			$scapedId          = $this->mysqliCon->real_escape_string($theAd->getId());
+			$scapedMail        = $this->mysqliCon->real_escape_string($user['mail']);
+			$scapedDescription = $this->mysqliCon->real_escape_string($fDescription);
+			if($stmt->bind_param("iss", $scapedId, $scapedMail, $scapedDescription) === FALSE) {
 				trigger_error("Errors associant variables a la consulta a la base de dades<br/>(" .  $this->mysqliCon->errno . ") " . $this->mysqliCon->error, E_USER_WARNING);
 				return NULL;
 			}
@@ -652,31 +671,46 @@ class Dao {
 		if($stmt = $this->mysqliCon->prepare($sql)) {
 			switch(count($m)) {
 				case 1:
-					if($stmt->bind_param("s", $this->mysqliCon->real_escape_string($m[0])) === FALSE) {
+					$scaped0 = $this->mysqliCon->real_escape_string($m[0]);
+					if($stmt->bind_param("s", $scaped0) === FALSE) {
 						trigger_error("Errors associant variables a la consulta a la base de dades", E_USER_WARNING);
 						return NULL;
 					}
 					break;
 				case 2:
-					if($stmt->bind_param("ss", $this->mysqliCon->real_escape_string($m[0]), $this->mysqliCon->real_escape_string($m[1])) === FALSE) {
+					$scaped0 = $this->mysqliCon->real_escape_string($m[0]);
+					$scaped1 = $this->mysqliCon->real_escape_string($m[1]);
+					if($stmt->bind_param("ss", $scaped0, $scaped1) === FALSE) {
 						trigger_error("Errors associant variables a la consulta a la base de dades", E_USER_WARNING);
 						return NULL;
 					}
 					break;
 				case 3:
-					if($stmt->bind_param("sss", $this->mysqliCon->real_escape_string($m[0]), $this->mysqliCon->real_escape_string($m[1]), $this->mysqliCon->real_escape_string($m[2])) === FALSE) {
+					$scaped0 = $this->mysqliCon->real_escape_string($m[0]);
+					$scaped1 = $this->mysqliCon->real_escape_string($m[1]);
+					$scaped2 = $this->mysqliCon->real_escape_string($m[2]);
+					if($stmt->bind_param("sss", $scaped0, $scaped1, $scaped2) === FALSE) {
 						trigger_error("Errors associant variables a la consulta a la base de dades", E_USER_WARNING);
 						return NULL;
 					}
 					break;
 				case 4:
-					if($stmt->bind_param("ssss", $this->mysqliCon->real_escape_string($m[0]), $this->mysqliCon->real_escape_string($m[1]), $this->mysqliCon->real_escape_string($m[2]), $this->mysqliCon->real_escape_string($m[3])) === FALSE) {
+					$scaped0 = $this->mysqliCon->real_escape_string($m[0]);
+					$scaped1 = $this->mysqliCon->real_escape_string($m[1]);
+					$scaped2 = $this->mysqliCon->real_escape_string($m[2]);
+					$scaped3 = $this->mysqliCon->real_escape_string($m[3]);
+					if($stmt->bind_param("ssss", $scaped0, $scaped1, $scaped2, $scaped3) === FALSE) {
 						trigger_error("Errors associant variables a la consulta a la base de dades", E_USER_WARNING);
 						return NULL;
 					}
 					break;
 				case 5:
-					if($stmt->bind_param("sssss", $this->mysqliCon->real_escape_string($m[0]), $this->mysqliCon->real_escape_string($m[1]), $this->mysqliCon->real_escape_string($m[2]), $this->mysqliCon->real_escape_string($m[3]), $this->mysqliCon->real_escape_string($m[4])) === FALSE) {
+					$scaped0 = $this->mysqliCon->real_escape_string($m[0]);
+					$scaped1 = $this->mysqliCon->real_escape_string($m[1]);
+					$scaped2 = $this->mysqliCon->real_escape_string($m[2]);
+					$scaped3 = $this->mysqliCon->real_escape_string($m[3]);
+					$scaped4 = $this->mysqliCon->real_escape_string($m[4]);
+					if($stmt->bind_param("sssss", $scaped0, $scaped1, $scaped2, $scaped3, $scaped4) === FALSE) {
 						trigger_error("Errors associant variables a la consulta a la base de dades", E_USER_WARNING);
 						return NULL;
 					}

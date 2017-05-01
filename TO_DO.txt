@@ -2,3 +2,24 @@
 * Millores estètiques (menú més petit, en taula)
 * Enviar correu via API de FJE
 * Agafar sessió web de FJE
+
+branques:
+
+* backup      : fer backup de db i descarregar-ho via web
+* sso         : integració amb sso de fje
+* nousertable : treure la taula d'usuaris:
+** alter table de "ads" i "interests" per a identificar a l'usuari pel seu mail extret de la sessió (ads.owner i interests.interested)
+*** treure constraint de foreign key
+  ALTER TABLE ads       DROP FOREIGN KEY memberfk;
+  ALTER TABLE ads       CHANGE owner owner VARCHAR(255) NOT NULL;
+  ALTER TABLE interests DROP FOREIGN KEY fkMember;
+  ALTER TABLE interests CHANGE interested interested VARCHAR(255) NOT NULL;
+  UPDATE ads       SET owner      = 'zoquero@gmail.com'  WHERE owner = '1' ;
+  UPDATE ads       SET owner      = 'perico@palotes.com' WHERE owner = '2' ;
+  UPDATE interests SET interested = 'zoquero@gmail.com'  WHERE interested = '1' ;
+  UPDATE interests SET interested = 'perico@palotes.com' WHERE interested = '2' ;
+** esborra taula "members"
+  DROP TABLE members
+** Genera nou DDL
+** codi: corregir DAO a totes les accions sobre "ads" i "interests"
+

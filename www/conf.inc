@@ -1,10 +1,9 @@
 <?php
 
-$GLOBALS['mock']=FALSE;
-$GLOBALS['mockToken']=FALSE;      // Forçar que el token 
-$GLOBALS['mockSess']=TRUE;        // Recuperar sessió de fitxer
-$GLOBALS['mockInjectSess']=FALSE; // Injectar cookie de sessió
-$GLOBALS['debug']=FALSE;
+$GLOBALS['debug']          = FALSE;  // Mostrar info pel troubleshooting
+$GLOBALS['mockToken']      = FALSE;  // Fixar el token per codi, no cookie 
+$GLOBALS['mockSess']       = FALSE;  // Recuperar sessió de fitxer
+$GLOBALS['mockInjectSess'] = FALSE;  // Injectar cookie de sessió
 
 define("ACTION_SET_DUMMY_USERNAME",       1);
 define("ACTION_NEW_AD_FORM",              2);

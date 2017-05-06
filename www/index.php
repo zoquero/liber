@@ -235,7 +235,7 @@ trigger_error("AQUESTA ACCIÓ MAI SALTARÀ, UN COP DEPURAT HO ESBORRAREM.", E_US
 		}
 		
 		if(sendMailAboutInterest($user, $theAd, $theAdUserMail, $fDescription)) {
-			showMessage("Hem enviat un missatge a l'anunciant convidant-lo a que es posi en contacte amb tu");
+			showMessage("Hem enviat el teu missatge a l'anunciant i l'hem convidat a que es posi en contacte amb tu");
 		}
 		else {
 			trigger_error("No ha estat possible enviar un missatge a l'anunciant convidant-lo a que es posi en contacte amb tu. Torna a provar-ho m&eacute;s tard.", E_USER_ERROR);

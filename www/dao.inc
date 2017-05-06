@@ -72,7 +72,7 @@ class Dao {
 	public function getCurrentUser() {
 		die ("Dao.getCurrentUser deprecated");
 		$u = ''; // PENDENT de veure com agafar-ho de la sessió FJE
-		if($GLOBALS['mock']) {
+		if($GLOBALS['mockSess']) {
 			if(! empty($_SESSION["dummyUsername"])) {
 				$u = $_SESSION["dummyUsername"];
 			}
@@ -82,7 +82,7 @@ class Dao {
 			}
 		}
 		if($u === '') {
-			if($GLOBALS['mock']) {
+			if($GLOBALS['mockSess']) {
 				trigger_error("Error d'aplicaci&oacute;: Sempre ha d'haver una sessi&oacute; d'usuari", E_USER_WARNING);
 				return NULL;
 			}

@@ -208,7 +208,14 @@ class Dao {
 		
 		// utilitzem un prepared statement
 		if($stmt = $this->mysqliCon->prepare($sql)) {
-			if($stmt->bind_param("siisssi", $this->mysqliCon->real_escape_string($user['mail']), $this->mysqliCon->real_escape_string($fIsbn), $this->mysqliCon->real_escape_string(AD_STATUS_PUBLISHED), $this->mysqliCon->real_escape_string($fSummary), $this->mysqliCon->real_escape_string($fDescription), $this->mysqliCon->real_escape_string($fImage), $this->mysqliCon->real_escape_string($grade->getId())) === FALSE) {
+			$scapedMail            = $this->mysqliCon->real_escape_string($user['mail']);
+			$scapedFIsbn           = $this->mysqliCon->real_escape_string($fIsbn);
+			$scapedStatusPublished = $this->mysqliCon->real_escape_string(AD_STATUS_PUBLISHED);
+			$scapedSummary         = $this->mysqliCon->real_escape_string($fSummary);
+			$scapedFDescription    = $this->mysqliCon->real_escape_string($fDescription);
+			$scapedImage           = $this->mysqliCon->real_escape_string($fImage);
+			$scapedGradeId         = $this->mysqliCon->real_escape_string($grade->getId());
+			if($stmt->bind_param("siisssi", $scapedMail, $scapedFIsbn, $scapedStatusPublished, $scapedSummary, $scapedFDescription, $scapedImage, $scapedGradeId) === FALSE) {
 				trigger_error("Errors associant variables a la consulta a la base de dades: <br/>(" .  $this->mysqliCon->errno . ") " . $this->mysqliCon->error, E_USER_WARNING);
 				return FALSE;
 			}
@@ -342,7 +349,8 @@ class Dao {
 		// utilitzem un prepared statement
 		if($stmt = $this->mysqliCon->prepare($sql)) {
 	
-			if($stmt->bind_param("i", $this->mysqliCon->real_escape_string($grade->getId())) === FALSE) {
+			$scapedId = $this->mysqliCon->real_escape_string($grade->getId());
+			if($stmt->bind_param("i", $scapedId) === FALSE) {
 				trigger_error("Errors associant variables a la consulta a la base de dades", E_USER_WARNING);
 				return NULL;
 			}
@@ -427,7 +435,9 @@ class Dao {
 		// echo "<p>Executarem sql = " . $sql . "</p>";
 		// utilitzem un prepared statement
 		if($stmt = $this->mysqliCon->prepare($sql)) {
-			if($stmt->bind_param("ii", $this->mysqliCon->real_escape_string($rId), $this->mysqliCon->real_escape_string($rOwner)) === FALSE) {
+			$scapedRId = $this->mysqliCon->real_escape_string($rId);
+			$scapedROwner = $this->mysqliCon->real_escape_string($rOwner);
+			if($stmt->bind_param("ii", $scapedRId, $scapedROwner) === FALSE) {
 				trigger_error("Errors associant variables a la consulta a la base de dades", E_USER_WARNING);
 				return FALSE;
 			}

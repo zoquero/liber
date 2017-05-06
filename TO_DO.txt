@@ -31,3 +31,9 @@ branques:
 * logging
 ** taula "log", camps : timestamp, action, user, description
 
+
+
+
+Features:
+* empobrir els ISBNS (esborrar guions, espais, comes)
+* opció de mostrar logs a administradors

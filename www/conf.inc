@@ -1,6 +1,6 @@
 <?php
 
-$GLOBALS['debug']          = TRUE;  // Mostrar info pel troubleshooting
+$GLOBALS['debug']          = FALSE;  // Mostrar info pel troubleshooting
 $GLOBALS['mockToken']      = FALSE;  // Fixar el token per codi, no cookie 
 $GLOBALS['mockSess']       = FALSE;  // Recuperar sessió de fitxer
 $GLOBALS['mockInjectSess'] = FALSE;  // Injectar cookie de sessió

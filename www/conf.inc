@@ -1,10 +1,13 @@
 <?php
 
-$GLOBALS['debug']          = FALSE;  // Mostrar info pel troubleshooting
+$GLOBALS['debug']          = TRUE;  // Mostrar info pel troubleshooting
 $GLOBALS['mockToken']      = FALSE;  // Fixar el token per codi, no cookie 
 $GLOBALS['mockSess']       = FALSE;  // Recuperar sessió de fitxer
 $GLOBALS['mockInjectSess'] = FALSE;  // Injectar cookie de sessió
+                                    // Estableix-la llavors a
+                                    // $GLOBALS['SESS_FJEAPI_MOCKING_COOKIE_VALUE']
 
+define("ACTION_NONE",                     0);
 define("ACTION_SET_DUMMY_USERNAME",       1);
 define("ACTION_NEW_AD_FORM",              2);
 define("ACTION_SEARCH_BY_ISBN",           3);
@@ -33,10 +36,12 @@ $GLOBALS['dbPassword'] 	= 'password';
 /*** mysql database name ***/
 $GLOBALS['dbName'] 		= 'liberdb';
 
-/*** Subcarpeta temporal dins de la carpeta web, per la recepció i compressió d'imatges,
- * previ a l'acceptació i emmagatzemament.
- * Qualsevol fitxer que contingui i que no hagi estat modificat en menys d'1 hora pot ser esborrat.
- ***/
+/*** Subcarpeta temporal dins de la carpeta web,
+  ** per recepció i compressió d'imatges,
+  ** previ a l'acceptació i emmagatzemament.
+  ** Qualsevol fitxer que contingui
+  ** i que no hagi estat modificat en menys d'1 hora pot ser esborrat.
+  ***/
 $GLOBALS['uploadFolderTmp'] 		= 'uploadtmp';
 /*** Subcarpeta dins de la carpeta web, on es guarden les imatges dels anuncis. ***/
 $GLOBALS['uploadFolderStore'] 		= 'uploadstore';
@@ -96,7 +101,7 @@ $GLOBALS['SESS_FJEAPI_BASE_URL']='http://apis.net.fje.edu/api/conNETctor.php/val
 $GLOBALS['SESS_FJEAPI_COOKIE_NAME']='tokenNet';
 // 0000-0000 per Usuari de prova
 // A0CEF30D-4D35-4CEE-8B5B-F643C8C52384
-$GLOBALS['SESS_FJEAPI_MOCKING_COOKIE_VALUE']='916A1AF5-239A-40A3-838E-A13617DEF11E';
+$GLOBALS['SESS_FJEAPI_MOCKING_COOKIE_VALUE']='966C3F91-BDE7-4118-84F3-4955B78A7E04';
 
 /*** Timeout de connexió fent fsockopen per enviar correu via L'API de FJE */
 $GLOBALS['SOCKET_CONN_TIMEOUT']=30;

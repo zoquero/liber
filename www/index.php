@@ -35,8 +35,13 @@ if(isAdmin($user)) {
 }
 
 
-$GLOBALS["actionId"]=getParamInt('actionId');
-// showMessage("Liber: actionId = " . $GLOBALS["actionId"]);
+$GLOBALS["actionId"] = getParamInt('actionId');
+if($GLOBALS['debug']) {
+  showMessage("Debug: actionId = " . $GLOBALS["actionId"]);
+}
+
+doLog($dao, $GLOBALS["actionId"], $user, "Action");
+
 switch($GLOBALS["actionId"]) {
 	case ACTION_SET_DUMMY_USERNAME:
 		// Establir dummyUsername

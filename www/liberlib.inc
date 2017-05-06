@@ -3,6 +3,11 @@
 require_once("conf.inc");
 require_once("lib/PHPMailer/PHPMailerAutoload.php");
 
+function doLog($dao, $actionId, $user, $description) {
+  $dao->insertLog($actionId, $user, $description);
+}
+
+
 function myErrorHandler($errno, $errstr, $errfile, $errline) {
 	if (!(error_reporting() & $errno)) {
 		// Codi no inclòs a l'error_reporting
@@ -85,9 +90,10 @@ function getUserDo_FileMock() {
 function getUserDo($token) {
   $sessUrl = $GLOBALS['SESS_FJEAPI_BASE_URL'] . "/" . $token;
   // echo "Reading contents from sess url $sessUrl\n";
-  $sessContents = file_get_contents($sessUrl);
+  $sessContents = @file_get_contents($sessUrl);
   if(! $sessContents) {
-    die ("Can't read from $sessContents");
+    // die ("Errors accedint al servidor de sessions o sessió invàlida");
+    return NULL;
   }
   // echo "sess = $sessContents\n";
   $json = json_decode($sessContents, true);
@@ -116,13 +122,18 @@ function getUser() {
 	else {
 		$token = getUserToken();
 		if($GLOBALS['debug']) {
-			echo "Token = $token<br\n";
+			echo "Token = $token<br/>\n";
 		}
 		$user = getUserDo($token);
 	}
 	if($user == NULL) {
-		trigger_error("No hem pogut recuperar les seves dades de sessió.<br/>
-				Podeu <a href= \"mailto:ampa.joan23@fje.edu\" >contactar amb l'AMPA</a> per depurar-ho.", E_USER_ERROR);
+		trigger_error(
+		  "No hem pogut recuperar les seves dades de sessió.<br/>
+		  Torni a accedir a <em>la Net</em>
+		  i provi altre cop a aquesta aplicació.<br/>
+		  Si el problema persisteix
+		  podeu <a href= \"mailto:ampa.joan23@fje.edu\" >contactar amb l'AMPA</a>
+		   per depurar-ho.", E_USER_ERROR);
 	}
 	return $user;
 }

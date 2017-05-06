@@ -823,6 +823,56 @@ class Dao {
 		}
 		return $r;
 	}
+
+	public function insertLog($actionId, $user, $description) {
+		if($user == NULL){
+//			trigger_error("Error de programació: usuari NULL: <br/>(" .  $this->mysqliCon->errno . ") " . $this->mysqliCon->error, E_USER_WARNING);
+			return FALSE;
+		}
+		if($actionId == NULL){
+			$actionId = ACTION_NONE;
+		}
+		if($description == NULL){
+//			trigger_error("Error de programació: description NULL: <br/>(" .  $this->mysqliCon->errno . ") " . $this->mysqliCon->error, E_USER_WARNING);
+			return FALSE;
+		}
+		// La consulta
+		$sql = "INSERT INTO logs (action, user, description) VALUES (?, ?, ?);";
+//echo "dao.insertLog: Anem a executar sql= " . $sql . "<br>\n";
+		
+		// utilitzem un prepared statement
+		if($stmt = $this->mysqliCon->prepare($sql)) {
+			$scapedAction      = $this->mysqliCon->real_escape_string($actionId);
+			$scapedMail        = $this->mysqliCon->real_escape_string($user['mail']);
+			$scapedDescription = $this->mysqliCon->real_escape_string($description);
+			if($stmt->bind_param("iss", $scapedAction, $scapedMail, $scapedDescription) === FALSE) {
+//				trigger_error("Errors associant variables a la consulta a la base de dades: <br/>(" .  $this->mysqliCon->errno . ") " . $this->mysqliCon->error, E_USER_WARNING);
+				return FALSE;
+			}
+
+			// executem la consulta
+			if( $stmt->execute() === FALSE) {
+//				trigger_error("No s'ha pogut executar la inserció a la base de dades: <br/>(" .  $this->mysqliCon->errno . ") " . $this->mysqliCon->error, E_USER_WARNING);
+				return FALSE;
+			}
+			if ($this->mysqliCon->affected_rows != 1) {
+//				trigger_error("No s'ha pogut inserir el log a la Base de Dades", E_USER_WARNING);
+				return FALSE;
+			}
+			if (! $stmt->close()) {
+//				trigger_error("Error tancant l'statement de la Base de Dades: <br/>(" .  $this->mysqliCon->errno . ") " . $this->mysqliCon->error, E_USER_WARNING);
+				return FALSE;
+			}
+// echo "dao.insertLog: Fet<br>\n";
+			return TRUE;
+		}
+		else {
+//			trigger_error("No s'ha pogut preparar l'acció sobre la base de dades: <br/>(" .  $this->mysqliCon->errno . ") " . $this->mysqliCon->error, E_USER_WARNING);
+			return FALSE;
+		}
+		return FALSE;
+	}
 	
 }
+
 ?>

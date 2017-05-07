@@ -64,7 +64,24 @@ class LogEntry {
 	}
 	
 	public static function showLogEntryPresentation($numEntries) {
-		return "<p>Volcat dels $numEntries logs de l'aplicació:</p>\n";
+		return "
+<table border=1>
+<tr><td>0</td><td>ACTION_NONE</td></tr>
+<tr><td>1</td><td>ACTION_SET_DUMMY_USERNAME</td></tr>
+<tr><td>2</td><td>ACTION_NEW_AD_FORM</td></tr>
+<tr><td>3</td><td>ACTION_SEARCH_BY_ISBN</td></tr>
+<tr><td>4</td><td>ACTION_SEARCH_BY_KEYWORDS</td></tr>
+<tr><td>5</td><td>ACTION_NEW_AD_PREVIEW</td></tr>
+<tr><td>6</td><td>ACTION_SHOW_MY_ADS</td></tr>
+<tr><td>8</td><td>ACTION_DELETE_ADD</td></tr>
+<tr><td>9</td><td>ACTION_BE_INTERESTED_IN_ADD</td></tr>
+<tr><td>10</td><td>ACTION_BE_INTERESTED_IN_ADD_DO</td></tr>
+<tr><td>12</td><td>ACTION_RESTORE</td></tr>
+<tr><td>13</td><td>ACTION_SEE_NOTIFICATIONS</td></tr>
+<tr><td>14</td><td>ACTION_SEARCH_BY_GRADE</td></tr>
+<tr><td>15</td><td>ACTION_SHOW_LOGS</td></tr>
+</table>
+		<p>Volcat dels $numEntries logs de l'aplicació:</p>\n";
 	}
 	
 }

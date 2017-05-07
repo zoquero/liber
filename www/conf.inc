@@ -2,10 +2,10 @@
 
 $GLOBALS['debug']          = FALSE;  // Mostrar info pel troubleshooting
 $GLOBALS['mockToken']      = FALSE;  // Fixar el token per codi, no cookie 
-$GLOBALS['mockSess']       = TRUE ;  // Recuperar sessió de fitxer
+$GLOBALS['mockSess']       = FALSE;  // Recuperar sessió de fitxer
 $GLOBALS['mockInjectSess'] = FALSE;  // Injectar cookie de sessió
-                                    // Estableix-la llavors a
-                                    // $GLOBALS['SESS_FJEAPI_MOCKING_COOKIE_VALUE']
+                                     // Estableix-la llavors a
+                                     // $GLOBALS['SESS_FJEAPI_MOCKING_COOKIE_VALUE']
 
 define("ACTION_NONE",                     0);
 define("ACTION_SET_DUMMY_USERNAME",       1);

@@ -39,7 +39,7 @@ CREATE TABLE `ads` (
   KEY `grade` (`grade`),
   FULLTEXT KEY `ftsearch` (`summary`,`description`) COMMENT 'full text search de textos',
   CONSTRAINT `gradefk` FOREIGN KEY (`grade`) REFERENCES `grades` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8 COMMENT='Taula amb els anuncis de llibres a socialitzar';
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8 COMMENT='Taula amb els anuncis de llibres a socialitzar';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -101,4 +101,4 @@ CREATE TABLE `logs` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-05-06 10:43:04
+-- Dump completed on 2017-05-07 22:43:48

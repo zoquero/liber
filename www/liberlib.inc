@@ -3,6 +3,18 @@
 require_once("conf.inc");
 require_once("lib/PHPMailer/PHPMailerAutoload.php");
 
+function doLog($dao, $actionId, $user, $description) {
+  $dao->insertLogEntry($actionId, $user, $description);
+}
+
+function printLogEntries($dao) {
+  $entries /* LogEntry */ = $dao->getLogEntries();
+  showLogEntryPresentation(sizeof($entries));
+  showLogEntryHeader();
+  showLogEntries($entries);
+  showLogEntryFooter();
+}
+
 function myErrorHandler($errno, $errstr, $errfile, $errline) {
 	if (!(error_reporting() & $errno)) {
 		// Codi no inclòs a l'error_reporting
@@ -85,9 +97,10 @@ function getUserDo_FileMock() {
 function getUserDo($token) {
   $sessUrl = $GLOBALS['SESS_FJEAPI_BASE_URL'] . "/" . $token;
   // echo "Reading contents from sess url $sessUrl\n";
-  $sessContents = file_get_contents($sessUrl);
+  $sessContents = @file_get_contents($sessUrl);
   if(! $sessContents) {
-    die ("Can't read from $sessContents");
+    // die ("Errors accedint al servidor de sessions o sessió invàlida");
+    return NULL;
   }
   // echo "sess = $sessContents\n";
   $json = json_decode($sessContents, true);
@@ -116,13 +129,18 @@ function getUser() {
 	else {
 		$token = getUserToken();
 		if($GLOBALS['debug']) {
-			echo "Token = $token<br\n";
+			echo "Token = $token<br/>\n";
 		}
 		$user = getUserDo($token);
 	}
 	if($user == NULL) {
-		trigger_error("No hem pogut recuperar les seves dades de sessió.<br/>
-				Podeu <a href= \"mailto:ampa.joan23@fje.edu\" >contactar amb l'AMPA</a> per depurar-ho.", E_USER_ERROR);
+		trigger_error(
+		  "No hem pogut recuperar les seves dades de sessió.<br/>
+		  Torni a accedir a <em>la Net</em>
+		  i provi altre cop a aquesta aplicació.<br/>
+		  Si el problema persisteix
+		  podeu <a href= \"mailto:ampa.joan23@fje.edu\" >contactar amb l'AMPA</a>
+		   per depurar-ho.", E_USER_ERROR);
 	}
 	return $user;
 }
@@ -193,6 +211,15 @@ function getParamSanitizedStringPost($paramName) {
 
 	$t = strip_tags(stripslashes(filter_var($_POST[$paramName], FILTER_SANITIZE_STRING)));
 	return preg_replace('/[^a-zA-Z0-9À-ÿ @\n\._\-]/i', '', $t);
+}
+
+/**
+ * Empobreis un ISBN, esborrant caracters prescindibles, per a facilitar una cerca
+ * @param String $originalIsbn el isbn
+ * @return String
+ */
+function getSimplifiedIsbn($originalIsbn) {
+	return preg_replace('/[:\s\._\-]/i', '', $originalIsbn);
 }
 
 
@@ -327,6 +354,8 @@ function showAdminOptionsMenu() {
 	<table border="1"><tr><td bgcolor="#FFF0F0">
 		<p>Opcions d'administrador:</p>
 		<ul>
+			<li><a href="?actionId=<?php echo ACTION_SHOW_LOGS ?>">
+				Logs</a></li>
 			<li><a href="dbbackup.php">
 				Backup</a></li>
 			<li><a href="?actionId=<?php echo ACTION_RESTORE ?>">
@@ -441,7 +470,7 @@ else {
 		<tr>
 			<td>ISBN:</td>
 			<td><input type="text" name="isbn" value="<?php echo $fIsbn ?>"
-				size="13" maxlength="13" /></td>
+				size="13" maxlength="20" /></td>
 		</tr>
 		<tr>
 			<td>Títol</td>
@@ -486,7 +515,7 @@ else {
 		<tr>
 			<td>ISBN:</td>
 			<td><input type="text" name="isbn" value="<?php echo $fIsbn ?>"
-				size="13" maxlength="13" readonly /></td>
+				size="13" maxlength="20" readonly /></td>
 		</tr>
 		<tr>
 			<td>Títol</td>
@@ -716,7 +745,7 @@ $fCorrectOrSend=getParamSanitizedString('CorrectOrSend');
 <form action="?" method="post" accept-charset="utf-8">
 <input type="hidden" name="actionId" value="<?php echo ACTION_NEW_AD_CONFIRM ?>"/>
 <table border="1" bgcolor="#fafafa">
-<tr><td>ISBN:</td><td><input type="text" name="isbn" value="<?php echo $fIsbn ?>" size="13" maxlength="13" readonly/></td></tr>
+<tr><td>ISBN:</td><td><input type="text" name="isbn" value="<?php echo $fIsbn ?>" size="13" maxlength="20" readonly/></td></tr>
 <tr><td>Títol</td><td><input type="text" name="summary" value="<?php echo $fSummary ?>" size="50" maxlength="199" readonly/></td></tr>
 <tr><td>Descripció</td><td><textarea name="description" rows="5" cols="50" maxlength="249" readonly><?php echo $fDescription ?></textarea></td></tr>
 <tr><td colspan="2">&nbsp;<input type="submit" name="CorrectOrSend" value="Corregeix"/></td></tr>
@@ -945,6 +974,28 @@ function showInterestForm($ad) {
 	</form>		
 <?php
 }
+
+
+function showLogEntryPresentation($numEntries) {
+	echo LogEntry::showLogEntryPresentation($numEntries) . "\n";
+}
+
+
+function showLogEntryHeader() {
+	echo LogEntry::getHtmlHeader() . "\n";
+}
+
+
+function showLogEntryFooter() {
+	echo LogEntry::getHtmlFooter() . "\n";
+}
+
+function showLogEntries($logEntries) {
+	foreach ($logEntries as $aLogEntry) {
+		echo $aLogEntry->toHtmlRow() . "\n";
+	}
+}
+
 
 /***
  * Retorna un string amb el Json que espera l'API de FJE per enviar mails.

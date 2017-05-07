@@ -5,6 +5,7 @@ require_once("class.ad.inc.php");
 require_once("class.grade.inc.php");
 // require_once("class.user.inc.php"); // no user table
 require_once("class.interest.inc.php");
+require_once("class.logentry.inc.php");
 require_once("liberlib.inc");
 
 
@@ -208,7 +209,14 @@ class Dao {
 		
 		// utilitzem un prepared statement
 		if($stmt = $this->mysqliCon->prepare($sql)) {
-			if($stmt->bind_param("siisssi", $this->mysqliCon->real_escape_string($user['mail']), $this->mysqliCon->real_escape_string($fIsbn), $this->mysqliCon->real_escape_string(AD_STATUS_PUBLISHED), $this->mysqliCon->real_escape_string($fSummary), $this->mysqliCon->real_escape_string($fDescription), $this->mysqliCon->real_escape_string($fImage), $this->mysqliCon->real_escape_string($grade->getId())) === FALSE) {
+			$scapedMail            = $this->mysqliCon->real_escape_string($user['mail']);
+			$scapedFIsbn           = $this->mysqliCon->real_escape_string($fIsbn);
+			$scapedStatusPublished = $this->mysqliCon->real_escape_string(AD_STATUS_PUBLISHED);
+			$scapedSummary         = $this->mysqliCon->real_escape_string($fSummary);
+			$scapedFDescription    = $this->mysqliCon->real_escape_string($fDescription);
+			$scapedImage           = $this->mysqliCon->real_escape_string($fImage);
+			$scapedGradeId         = $this->mysqliCon->real_escape_string($grade->getId());
+			if($stmt->bind_param("siisssi", $scapedMail, $scapedFIsbn, $scapedStatusPublished, $scapedSummary, $scapedFDescription, $scapedImage, $scapedGradeId) === FALSE) {
 				trigger_error("Errors associant variables a la consulta a la base de dades: <br/>(" .  $this->mysqliCon->errno . ") " . $this->mysqliCon->error, E_USER_WARNING);
 				return FALSE;
 			}
@@ -342,7 +350,8 @@ class Dao {
 		// utilitzem un prepared statement
 		if($stmt = $this->mysqliCon->prepare($sql)) {
 	
-			if($stmt->bind_param("i", $this->mysqliCon->real_escape_string($grade->getId())) === FALSE) {
+			$scapedId = $this->mysqliCon->real_escape_string($grade->getId());
+			if($stmt->bind_param("i", $scapedId) === FALSE) {
 				trigger_error("Errors associant variables a la consulta a la base de dades", E_USER_WARNING);
 				return NULL;
 			}
@@ -427,7 +436,9 @@ class Dao {
 		// echo "<p>Executarem sql = " . $sql . "</p>";
 		// utilitzem un prepared statement
 		if($stmt = $this->mysqliCon->prepare($sql)) {
-			if($stmt->bind_param("ii", $this->mysqliCon->real_escape_string($rId), $this->mysqliCon->real_escape_string($rOwner)) === FALSE) {
+			$scapedRId = $this->mysqliCon->real_escape_string($rId);
+			$scapedROwner = $this->mysqliCon->real_escape_string($rOwner);
+			if($stmt->bind_param("ii", $scapedRId, $scapedROwner) === FALSE) {
 				trigger_error("Errors associant variables a la consulta a la base de dades", E_USER_WARNING);
 				return FALSE;
 			}
@@ -823,6 +834,98 @@ class Dao {
 		}
 		return $r;
 	}
+
+	public function insertLogEntry($actionId, $user, $description) {
+		if($user == NULL){
+//			trigger_error("Error de programació: usuari NULL: <br/>(" .  $this->mysqliCon->errno . ") " . $this->mysqliCon->error, E_USER_WARNING);
+			return FALSE;
+		}
+		if($actionId == NULL){
+			$actionId = ACTION_NONE;
+		}
+		if($description == NULL){
+//			trigger_error("Error de programació: description NULL: <br/>(" .  $this->mysqliCon->errno . ") " . $this->mysqliCon->error, E_USER_WARNING);
+			return FALSE;
+		}
+		// La consulta
+		$sql = "INSERT INTO logs (action, user, description) VALUES (?, ?, ?);";
+//echo "dao.insertLog: Anem a executar sql= " . $sql . "<br>\n";
+		
+		// utilitzem un prepared statement
+		if($stmt = $this->mysqliCon->prepare($sql)) {
+			$scapedAction      = $this->mysqliCon->real_escape_string($actionId);
+			$scapedMail        = $this->mysqliCon->real_escape_string($user['mail']);
+			$scapedDescription = $this->mysqliCon->real_escape_string($description);
+			if($stmt->bind_param("iss", $scapedAction, $scapedMail, $scapedDescription) === FALSE) {
+//				trigger_error("Errors associant variables a la consulta a la base de dades: <br/>(" .  $this->mysqliCon->errno . ") " . $this->mysqliCon->error, E_USER_WARNING);
+				return FALSE;
+			}
+
+			// executem la consulta
+			if( $stmt->execute() === FALSE) {
+//				trigger_error("No s'ha pogut executar la inserció a la base de dades: <br/>(" .  $this->mysqliCon->errno . ") " . $this->mysqliCon->error, E_USER_WARNING);
+				return FALSE;
+			}
+			if ($this->mysqliCon->affected_rows != 1) {
+//				trigger_error("No s'ha pogut inserir el log a la Base de Dades", E_USER_WARNING);
+				return FALSE;
+			}
+			if (! $stmt->close()) {
+//				trigger_error("Error tancant l'statement de la Base de Dades: <br/>(" .  $this->mysqliCon->errno . ") " . $this->mysqliCon->error, E_USER_WARNING);
+				return FALSE;
+			}
+// echo "dao.insertLog: Fet<br>\n";
+			return TRUE;
+		}
+		else {
+//			trigger_error("No s'ha pogut preparar l'acció sobre la base de dades: <br/>(" .  $this->mysqliCon->errno . ") " . $this->mysqliCon->error, E_USER_WARNING);
+			return FALSE;
+		}
+		return FALSE;
+	}
+	
+	
+	/**
+	 * Retorna un array amb els objectes LogEntry les entrades de log llegides
+	 * @return NULL|multitype: array d'objectes LogEntry o NULL si errors o no n'hi ha
+	 */
+	function getLogEntries() {
+		$r = array(); // Ad
+		$aTimestamp='';
+		$aAction='';
+		$aUser='';
+		$aDescription='';
+		// La consulta
+		$sql = "SELECT timestamp, action, user, description FROM logs";
+	
+		// utilitzem un prepared statement
+		if($stmt = $this->mysqliCon->prepare($sql)) {
+	
+			// executem la consulta
+			if( $stmt->execute() === FALSE) {
+				trigger_error("No s'ha pogut executar la consulta a la base de dades: <br/>(" .  $this->mysqliCon->errno . ") " . $this->mysqliCon->error, E_USER_WARNING);
+				return NULL;
+			}
+			// associem resposta a variables
+			$stmt->bind_result($aTimestamp, $aAction, $aUser, $aDescription);
+			// llegim la resposta
+			while($stmt->fetch()) {
+				array_push($r, new LogEntry($aTimestamp, $aAction, $aUser, $aDescription));
+			}
+			if (! $stmt->close()) {
+				trigger_error("Error tancant l'statement de la Base de Dades:<br/>(" .  $this->mysqliCon->errno . ") " . $this->mysqliCon->error, E_USER_WARNING);
+				return NULL;
+			}
+		}
+		else {
+			trigger_error("No s'ha pogut preparar l'acció sobre la base de dades: <br/>(" .  $this->mysqliCon->errno . ") " . $this->mysqliCon->error, E_USER_WARNING);
+			return NULL;
+		}
+		return $r;
+	}
+	
+	
 	
 }
+
 ?>

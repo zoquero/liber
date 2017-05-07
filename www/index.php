@@ -6,6 +6,8 @@ require_once(ROOT_PATH . "/conf.inc");
 // require_once(ROOT_PATH . "/class.user.inc.php"); // no user table
 require_once(ROOT_PATH . "/liberlib.inc");
 require_once(ROOT_PATH . "/dao.inc");
+require_once(ROOT_PATH . "/class.logentry.inc.php");
+
 
 set_error_handler("myErrorHandler");
 
@@ -35,8 +37,13 @@ if(isAdmin($user)) {
 }
 
 
-$GLOBALS["actionId"]=getParamInt('actionId');
-// showMessage("Liber: actionId = " . $GLOBALS["actionId"]);
+$GLOBALS["actionId"] = getParamInt('actionId');
+if($GLOBALS['debug']) {
+  showMessage("Debug: actionId = " . $GLOBALS["actionId"]);
+}
+
+doLog($dao, $GLOBALS["actionId"], $user, "Action");
+
 switch($GLOBALS["actionId"]) {
 	case ACTION_SET_DUMMY_USERNAME:
 		// Establir dummyUsername
@@ -44,7 +51,7 @@ switch($GLOBALS["actionId"]) {
 		break;
 	case ACTION_NEW_AD_FORM:
 		// Cal mostrar a l'usuari el formulari per a que descrigui el seu llibre 
-		$fIsbn=getParamSanitizedString('isbn');
+		$fIsbn=getSimplifiedIsbn(getParamSanitizedString('isbn'));
 		$fSummary=getParamSanitizedString('summary');
 		$fDescription=getParamSanitizedString('description');
 		$fWhat=getParamSanitizedString('what');
@@ -78,11 +85,15 @@ switch($GLOBALS["actionId"]) {
 		echo "type=" . $_FILES['imageBasenameF']['type'] ."<br/>\n";
 		echo "tmp_name=" . $_FILES['imageBasenameF']['tmp_name'] ."<br/>\n";
 		*/
-		$fIsbn=getParamSanitizedString('isbn');
+		$fIsbn=getSimplifiedIsbn(getParamSanitizedString('isbn'));
 		$fSummary=getParamSanitizedString('summary');
 		$fDescription=getParamSanitizedString('description');
 		$fGrade=getParamInt('grade');
 		$fWhat=getParamSanitizedString('what');
+		
+		if($fGrade == NULL || $fGrade < 0) {
+			trigger_error("Sisplau, sel·lecciona el curs al que pertany per a facilitar les cerques", E_USER_ERROR);
+		}
 		
 		// hidden (arrossegant-se de previ file upload)
 		$fImageBasenameH=getParamSanitizedString('imageBasenameH');
@@ -96,7 +107,7 @@ switch($GLOBALS["actionId"]) {
 		}
 		
 		if(isset($_FILES['imageBasenameF']) && file_exists($_FILES['imageBasenameF']['tmp_name']) && is_uploaded_file($_FILES['imageBasenameF']['tmp_name'])) {
-			$fImageBasename=compressAndSaveTmpImatge($GLOBALS['imageFilenamePrefix'] . $user->getId() . "_");
+			$fImageBasename=compressAndSaveTmpImatge($GLOBALS['imageFilenamePrefix'] . $user['mail'] . "_");
 		}
 		else {
 			$fImageBasename=$fImageBasenameH;
@@ -104,9 +115,12 @@ switch($GLOBALS["actionId"]) {
 
 		if($fWhat == "Envia") {
 			$createdAd = createAd($dao, $user, $fIsbn, $fSummary, $fDescription, $fImageBasename, $loadedGrade);
-			rename($GLOBALS['uploadFolderTmp'] . "/" . $fImageBasename, $GLOBALS['uploadFolderStore'] . "/" . $fImageBasename);
-			rename($GLOBALS['uploadFolderTmp'] . "/" . $fImageBasename . $GLOBALS['thumbFilenameSufix'], $GLOBALS['uploadFolderStore'] . "/" . $fImageBasename . $GLOBALS['thumbFilenameSufix']);
-			showMessage("S'ha donat d'alta l'anunci del llibre amb ISBN <b><i>$fIsbn</i></b> i sumari <b><i>$fSummary</i></b>");			
+			if($fImageBasename != NULL & $fImageBasename != "") {
+				rename($GLOBALS['uploadFolderTmp'] . "/" . $fImageBasename, $GLOBALS['uploadFolderStore'] . "/" . $fImageBasename);
+				rename($GLOBALS['uploadFolderTmp'] . "/" . $fImageBasename . $GLOBALS['thumbFilenameSufix'], $GLOBALS['uploadFolderStore'] . "/" . $fImageBasename . $GLOBALS['thumbFilenameSufix']);
+			}
+			showMessage("S'ha donat d'alta l'anunci del llibre amb ISBN <b><i>$fIsbn</i></b>, del curs <b><i>$loadedGrade</i></b> i sumari <b><i>$fSummary</i></b>");
+            doLog($dao, $GLOBALS["actionId"], $user, "Anunci creat de llibre amb ISBN $fIsbn");
 		}
 		else {
 			newAdFormShow($dao, $fIsbn, $fSummary, $fDescription, $fWhat, $fImageBasename, $loadedGrade);
@@ -123,12 +137,14 @@ switch($GLOBALS["actionId"]) {
 		$foundAds=$dao->getAdsByGrade($loadedGrade);
 		if($foundAds == NULL || sizeof($foundAds) == 0) {
 			showNoAdsFound();
+			doLog($dao, $GLOBALS["actionId"], $user, "Cerca per curs '" . $loadedGrade->getName() . "' (id " . $fGrade . "). 0 trobats");
 		}
 		else {
 			showAdsFoundPresentation();
 			showAdsHeaderNotOwn();
 			showAdsNotOwn($dao, $foundAds, $user);
 			showAdsFooter();
+			doLog($dao, $GLOBALS["actionId"], $user, "Cerca per curs '" . $loadedGrade->getName() . "' (id " . $fGrade . "). " . sizeof($foundAds) . " trobats");
 		}
 		break;
 	case ACTION_SEARCH_BY_ISBN:
@@ -137,12 +153,14 @@ switch($GLOBALS["actionId"]) {
 		$foundAds=$dao->getAdsByIsbn($aIsbn);
 		if($foundAds == NULL || sizeof($foundAds) == 0) {
 			showNoAdsFound();
+			doLog($dao, $GLOBALS["actionId"], $user, "Cerca per ISBN '" . $aIsbn . "'. 0 trobats");
         }
         else { 
         	showAdsFoundPresentation();
 			showAdsHeaderNotOwn();
 			showAdsNotOwn($dao, $foundAds, $user);
 			showAdsFooter();
+			doLog($dao, $GLOBALS["actionId"], $user, "Cerca per ISBN '" . $aIsbn . "'. " . sizeof($foundAds) . " trobats");
         }
         break;
 	case ACTION_SHOW_MY_ADS:
@@ -182,16 +200,6 @@ switch($GLOBALS["actionId"]) {
 			trigger_error("<p>No ha estat possible esborrar l'anunci</p>\n");
 		}
 		break;
-/*
-	case ACTION_SHOW_OTHERS_ADS:
-		//
-		
-trigger_error("AQUESTA ACCIÓ MAI SALTARÀ, UN COP DEPURAT HO ESBORRAREM.", E_USER_ERROR);
-
-		$fId=getParamSanitizedString('id');
-		echo "<p> mirarem anunci amb id = " . $fId;
-		break;
-*/
 	case ACTION_SEARCH_BY_KEYWORDS:
 		// 
 		//
@@ -201,12 +209,14 @@ trigger_error("AQUESTA ACCIÓ MAI SALTARÀ, UN COP DEPURAT HO ESBORRAREM.", E_US
 		$foundAds=$dao->searchAdsByKeywords($aFKeywords);
 		if($foundAds == NULL || sizeof($foundAds) == 0) {
 			showNoAdsFound();
+			doLog($dao, $GLOBALS["actionId"], $user, "Cerca per paraules '" . $fKeywords . "'. 0 trobats");
 		}
 		else {
 			showAdsFoundPresentation();
 			showAdsHeaderNotOwn();
 			showAdsNotOwn($dao, $foundAds, $user);
 			showAdsFooter();
+			doLog($dao, $GLOBALS["actionId"], $user, "Cerca per paraules '" . $fKeywords . "'. " . sizeof($foundAds) . " trobats");
 		}
 		break;
 
@@ -229,6 +239,7 @@ trigger_error("AQUESTA ACCIÓ MAI SALTARÀ, UN COP DEPURAT HO ESBORRAREM.", E_US
 //		if(createInterest($dao, $user, $theAd, $theAdUserMail, $fDescription))
 			// function createInterest($dao, $user, $theAd, $fDescription) 
 			showMessage("Hem enregistrat el teu inter&egrave;s");
+			doLog($dao, $GLOBALS["actionId"], $user, "Interès enregistrat sobre anunci amb id '" . $fId . "' descr = " . $fDescription . " ...");
 		}
 		else {
 			trigger_error("Hi ha hagut algun problema enregistrant el teu inter&egrave;s", E_USER_ERROR);
@@ -236,14 +247,15 @@ trigger_error("AQUESTA ACCIÓ MAI SALTARÀ, UN COP DEPURAT HO ESBORRAREM.", E_US
 		
 		if(sendMailAboutInterest($user, $theAd, $theAdUserMail, $fDescription)) {
 			showMessage("Hem enviat el teu missatge a l'anunciant i l'hem convidat a que es posi en contacte amb tu");
+			doLog($dao, $GLOBALS["actionId"], $user, "Correu enviat sobre interès enregistrat associat amb anunci id '" . $fId . "'");
 		}
 		else {
 			trigger_error("No ha estat possible enviar un missatge a l'anunciant convidant-lo a que es posi en contacte amb tu. Torna a provar-ho m&eacute;s tard.", E_USER_ERROR);
 		}
 		
 		break;
-	case ACTION_BACKUP:
-		die("Bad link");
+	case ACTION_SHOW_LOGS:
+		printLogEntries($dao);
 		break;
 	case ACTION_RESTORE:
 		//

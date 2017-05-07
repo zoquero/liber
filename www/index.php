@@ -6,6 +6,8 @@ require_once(ROOT_PATH . "/conf.inc");
 // require_once(ROOT_PATH . "/class.user.inc.php"); // no user table
 require_once(ROOT_PATH . "/liberlib.inc");
 require_once(ROOT_PATH . "/dao.inc");
+require_once(ROOT_PATH . "/class.logentry.inc.php");
+
 
 set_error_handler("myErrorHandler");
 
@@ -49,7 +51,7 @@ switch($GLOBALS["actionId"]) {
 		break;
 	case ACTION_NEW_AD_FORM:
 		// Cal mostrar a l'usuari el formulari per a que descrigui el seu llibre 
-		$fIsbn=getParamSanitizedString('isbn');
+		$fIsbn=getSimplifiedIsbn(getParamSanitizedString('isbn'));
 		$fSummary=getParamSanitizedString('summary');
 		$fDescription=getParamSanitizedString('description');
 		$fWhat=getParamSanitizedString('what');
@@ -83,7 +85,7 @@ switch($GLOBALS["actionId"]) {
 		echo "type=" . $_FILES['imageBasenameF']['type'] ."<br/>\n";
 		echo "tmp_name=" . $_FILES['imageBasenameF']['tmp_name'] ."<br/>\n";
 		*/
-		$fIsbn=getParamSanitizedString('isbn');
+		$fIsbn=getSimplifiedIsbn(getParamSanitizedString('isbn'));
 		$fSummary=getParamSanitizedString('summary');
 		$fDescription=getParamSanitizedString('description');
 		$fGrade=getParamInt('grade');
@@ -252,8 +254,8 @@ switch($GLOBALS["actionId"]) {
 		}
 		
 		break;
-	case ACTION_BACKUP:
-		die("Bad link");
+	case ACTION_SHOW_LOGS:
+		printLogEntries($dao);
 		break;
 	case ACTION_RESTORE:
 		//

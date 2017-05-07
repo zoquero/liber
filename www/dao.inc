@@ -5,6 +5,7 @@ require_once("class.ad.inc.php");
 require_once("class.grade.inc.php");
 // require_once("class.user.inc.php"); // no user table
 require_once("class.interest.inc.php");
+require_once("class.logentry.inc.php");
 require_once("liberlib.inc");
 
 
@@ -834,7 +835,7 @@ class Dao {
 		return $r;
 	}
 
-	public function insertLog($actionId, $user, $description) {
+	public function insertLogEntry($actionId, $user, $description) {
 		if($user == NULL){
 //			trigger_error("Error de programació: usuari NULL: <br/>(" .  $this->mysqliCon->errno . ") " . $this->mysqliCon->error, E_USER_WARNING);
 			return FALSE;
@@ -882,6 +883,48 @@ class Dao {
 		}
 		return FALSE;
 	}
+	
+	
+	/**
+	 * Retorna un array amb els objectes LogEntry les entrades de log llegides
+	 * @return NULL|multitype: array d'objectes LogEntry o NULL si errors o no n'hi ha
+	 */
+	function getLogEntries() {
+		$r = array(); // Ad
+		$aTimestamp='';
+		$aAction='';
+		$aUser='';
+		$aDescription='';
+		// La consulta
+		$sql = "SELECT timestamp, action, user, description FROM logs";
+	
+		// utilitzem un prepared statement
+		if($stmt = $this->mysqliCon->prepare($sql)) {
+	
+			// executem la consulta
+			if( $stmt->execute() === FALSE) {
+				trigger_error("No s'ha pogut executar la consulta a la base de dades: <br/>(" .  $this->mysqliCon->errno . ") " . $this->mysqliCon->error, E_USER_WARNING);
+				return NULL;
+			}
+			// associem resposta a variables
+			$stmt->bind_result($aTimestamp, $aAction, $aUser, $aDescription);
+			// llegim la resposta
+			while($stmt->fetch()) {
+				array_push($r, new LogEntry($aTimestamp, $aAction, $aUser, $aDescription));
+			}
+			if (! $stmt->close()) {
+				trigger_error("Error tancant l'statement de la Base de Dades:<br/>(" .  $this->mysqliCon->errno . ") " . $this->mysqliCon->error, E_USER_WARNING);
+				return NULL;
+			}
+		}
+		else {
+			trigger_error("No s'ha pogut preparar l'acció sobre la base de dades: <br/>(" .  $this->mysqliCon->errno . ") " . $this->mysqliCon->error, E_USER_WARNING);
+			return NULL;
+		}
+		return $r;
+	}
+	
+	
 	
 }
 

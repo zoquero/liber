@@ -4,9 +4,16 @@ require_once("conf.inc");
 require_once("lib/PHPMailer/PHPMailerAutoload.php");
 
 function doLog($dao, $actionId, $user, $description) {
-  $dao->insertLog($actionId, $user, $description);
+  $dao->insertLogEntry($actionId, $user, $description);
 }
 
+function printLogEntries($dao) {
+  $entries /* LogEntry */ = $dao->getLogEntries();
+  showLogEntryPresentation(sizeof($entries));
+  showLogEntryHeader();
+  showLogEntries($entries);
+  showLogEntryFooter();
+}
 
 function myErrorHandler($errno, $errstr, $errfile, $errline) {
 	if (!(error_reporting() & $errno)) {
@@ -206,6 +213,15 @@ function getParamSanitizedStringPost($paramName) {
 	return preg_replace('/[^a-zA-Z0-9À-ÿ @\n\._\-]/i', '', $t);
 }
 
+/**
+ * Empobreis un ISBN, esborrant caracters prescindibles, per a facilitar una cerca
+ * @param String $originalIsbn el isbn
+ * @return String
+ */
+function getSimplifiedIsbn($originalIsbn) {
+	return preg_replace('/[:\s\._\-]/i', '', $originalIsbn);
+}
+
 
 	/**
 	 * Retorna sanejat un paràmetre String rebut via POST de forma segura.
@@ -338,6 +354,8 @@ function showAdminOptionsMenu() {
 	<table border="1"><tr><td bgcolor="#FFF0F0">
 		<p>Opcions d'administrador:</p>
 		<ul>
+			<li><a href="?actionId=<?php echo ACTION_SHOW_LOGS ?>">
+				Logs</a></li>
 			<li><a href="dbbackup.php">
 				Backup</a></li>
 			<li><a href="?actionId=<?php echo ACTION_RESTORE ?>">
@@ -452,7 +470,7 @@ else {
 		<tr>
 			<td>ISBN:</td>
 			<td><input type="text" name="isbn" value="<?php echo $fIsbn ?>"
-				size="13" maxlength="13" /></td>
+				size="13" maxlength="20" /></td>
 		</tr>
 		<tr>
 			<td>Títol</td>
@@ -497,7 +515,7 @@ else {
 		<tr>
 			<td>ISBN:</td>
 			<td><input type="text" name="isbn" value="<?php echo $fIsbn ?>"
-				size="13" maxlength="13" readonly /></td>
+				size="13" maxlength="20" readonly /></td>
 		</tr>
 		<tr>
 			<td>Títol</td>
@@ -727,7 +745,7 @@ $fCorrectOrSend=getParamSanitizedString('CorrectOrSend');
 <form action="?" method="post" accept-charset="utf-8">
 <input type="hidden" name="actionId" value="<?php echo ACTION_NEW_AD_CONFIRM ?>"/>
 <table border="1" bgcolor="#fafafa">
-<tr><td>ISBN:</td><td><input type="text" name="isbn" value="<?php echo $fIsbn ?>" size="13" maxlength="13" readonly/></td></tr>
+<tr><td>ISBN:</td><td><input type="text" name="isbn" value="<?php echo $fIsbn ?>" size="13" maxlength="20" readonly/></td></tr>
 <tr><td>Títol</td><td><input type="text" name="summary" value="<?php echo $fSummary ?>" size="50" maxlength="199" readonly/></td></tr>
 <tr><td>Descripció</td><td><textarea name="description" rows="5" cols="50" maxlength="249" readonly><?php echo $fDescription ?></textarea></td></tr>
 <tr><td colspan="2">&nbsp;<input type="submit" name="CorrectOrSend" value="Corregeix"/></td></tr>
@@ -956,6 +974,28 @@ function showInterestForm($ad) {
 	</form>		
 <?php
 }
+
+
+function showLogEntryPresentation($numEntries) {
+	echo LogEntry::showLogEntryPresentation($numEntries) . "\n";
+}
+
+
+function showLogEntryHeader() {
+	echo LogEntry::getHtmlHeader() . "\n";
+}
+
+
+function showLogEntryFooter() {
+	echo LogEntry::getHtmlFooter() . "\n";
+}
+
+function showLogEntries($logEntries) {
+	foreach ($logEntries as $aLogEntry) {
+		echo $aLogEntry->toHtmlRow() . "\n";
+	}
+}
+
 
 /***
  * Retorna un string amb el Json que espera l'API de FJE per enviar mails.

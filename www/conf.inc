@@ -2,7 +2,7 @@
 
 $GLOBALS['debug']          = FALSE;  // Mostrar info pel troubleshooting
 $GLOBALS['mockToken']      = FALSE;  // Fixar el token per codi, no cookie 
-$GLOBALS['mockSess']       = FALSE;  // Recuperar sessió de fitxer
+$GLOBALS['mockSess']       = TRUE ;  // Recuperar sessió de fitxer
 $GLOBALS['mockInjectSess'] = FALSE;  // Injectar cookie de sessió
                                     // Estableix-la llavors a
                                     // $GLOBALS['SESS_FJEAPI_MOCKING_COOKIE_VALUE']
@@ -18,10 +18,11 @@ define("ACTION_SHOW_MY_ADS",              6);
 define("ACTION_DELETE_ADD",               8);
 define("ACTION_BE_INTERESTED_IN_ADD",     9);
 define("ACTION_BE_INTERESTED_IN_ADD_DO", 10);
-define("ACTION_BACKUP",                  11);
+// define("ACTION_BACKUP",                  11);
 define("ACTION_RESTORE",                 12);
 define("ACTION_SEE_NOTIFICATIONS",       13);
 define("ACTION_SEARCH_BY_GRADE",         14);
+define("ACTION_SHOW_LOGS",               15);
 
 define("AD_STATUS_PUBLISHED", 1);
 define("AD_STATUS_GRANTED",   2);

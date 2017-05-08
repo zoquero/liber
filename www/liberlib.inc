@@ -118,7 +118,10 @@ function getUserToken() {
         $GLOBALS['SESS_FJEAPI_MOCKING_COOKIE_VALUE'],
         time() + (86400 * 30 * 365 * 10), "/"); // 10 anys
     }
-    return $_COOKIE[$GLOBALS['SESS_FJEAPI_COOKIE_NAME']];
+    if($_COOKIE != NULL & in_array($GLOBALS['SESS_FJEAPI_COOKIE_NAME'], $_COOKIE)) {
+	    return $_COOKIE[$GLOBALS['SESS_FJEAPI_COOKIE_NAME']];
+    }
+    return NULL;
   }
 }
 
@@ -503,7 +506,7 @@ else {
 	}
 ?>
 
-			  <input type="file" name="imageBasenameF" id="imageBasenameF">
+			  <input type="file" name="imageBasenameF" id="imageBasenameF" accept="image/*" />
 			</td>
 		</tr>
 		<tr>
@@ -820,6 +823,25 @@ function sendHtmlHeaders() {
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <title><?php echo htmlentities($GLOBALS['htmlHeadTitle'], ENT_QUOTES, "UTF-8") ?>
 </title>
+
+<style> 
+table,tr,td {
+    padding: 4px 4px;
+}
+input[type=text],textarea {
+    width: 100%;
+    padding: 4px 4px;
+    margin: 4px 0;
+    box-sizing: border-box;
+    border: 1px solid #555;
+    outline: none;
+    background-color: #F5F5E5;
+}
+
+input[type=text]:focus,textarea:focus {
+    background-color: #F5F5B5;
+}
+</style>
 
 <?php
 // includeJfeStyle();

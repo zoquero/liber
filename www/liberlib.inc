@@ -1136,10 +1136,10 @@ function sendMailAboutInterest($user, $theAd, $theAdUserMail, $fDescription) {
 			$out .= "Connection: Close\r\n\r\n";
 			$out .= "$jsonMsg\r\n";
 			
-if($GLOBALS['debug']) {
-print "DEBUG: MAIL: Anem a escriure això:<br/>\n<pre><code>$out</code></pre><br/>\n";
-}
-				
+			if($GLOBALS['debug']) {
+				print "DEBUG: MAIL: Anem a escriure això:<br/>\n<pre><code>$out</code></pre><br/>\n";
+			}
+			
 			fwrite($fp, $out);
 			while (!feof($fp)) {
 				// fgets($fp, 128);
@@ -1152,9 +1152,10 @@ print "DEBUG: MAIL: Anem a escriure això:<br/>\n<pre><code>$out</code></pre><br
 			}
 			fclose($fp);
 			
-if($GLOBALS['debug']) {
-print "DEBUG: API response complet:<br/>\n<pre><code>$apiResponse</code></pre><br/>\n";
-}
+			if($GLOBALS['debug']) {
+				print "DEBUG: API response complet:<br/>\n<pre><code>$apiResponse</code></pre><br/>\n";
+			}
+
 
 /*
  * Exemple de resposta davant d'error:
@@ -1182,50 +1183,27 @@ Content-Length: 7
 Connection: close
 Content-Type: text/html
 
- 
+ {  "Resultat"  : "Ok"} 
 
- 
 
 
  */
  
-/*
- * La respost de l'API de JFE no sembla JSON compliant
- * doncs escapa les cometes i el nom de variable acaba en ":"
- *
- * '"{ \"resultat:\":\"1\"}"'
- */
-
-// $apiResponseSmpl = preg_replace('/^.*\r\n\r\n(.*)$/', '\1', $apiResponse);
 			list($apiResponseHeaders, $apiResponseBody) = explode("\r\n\r\n", $apiResponse, 2);
 
-if($GLOBALS['debug']) {
-print "DEBUG: API response body: [$apiResponseBody]<br/>\n";
-}
+			$simplifiedApiResponseBody = preg_replace('/[\s"]+/S', "", $apiResponseBody);
 
-			/*
-			$apiResponseSmpl = str_replace('\r\n', '', $apiResponseSmpl);
-			$apiResponseSmpl = str_replace('\n\r', '', $apiResponseSmpl);
-			$apiResponseSmpl = str_replace('\r',   '', $apiResponseSmpl);
-			$apiResponseSmpl = str_replace('\n',   '', $apiResponseSmpl);
-			$apiResponseSmpl = str_replace('\\',   '', $apiResponseSmpl);
-			$apiResponseSmpl = str_replace('"',    '', $apiResponseSmpl);
-			$apiResponseSmpl = str_replace(' ',    '', $apiResponseSmpl);			
-			print "DEBUG: API response body sesgat: [$apiResponseBody]<br/>\n";
-			*/
+			if($GLOBALS['debug']) {
+				print "DEBUG: API response body: [$apiResponseBody]<br/>\n";
+				print "DEBUG: API response body sesgat: [$simplifiedApiResponseBody]<br/>\n";
+				print "DEBUG: Referència = [" . $GLOBALS['MAIL_FJEAPI_OKRESPONSE_SIMPLIFIED'] . "]<br/>\n";
+			}
 
-/*
-aquesta regexp no funicona bé, millor passem a fer primer quelcom com:
-str_replace("\r\n", '', $str);
-str_replace("\n\r", '', $str);
-str_replace("\n", '', $str);
-str_replace("\r", '', $str);
-i després simplificar la regexp treient els [\s\r\n]*
-*/
-
-			// if ($apiResponseSmpl != "{resultat::1}")
-			if (preg_match("/^[\s\r\n]*\{[\s\r\n]*\"?resultat[\s\r\n]*:?[\s\r\n]*\"?[\s\r\n]*:?[\s\r\n]*\"?[\s\r\n]*1[\s\r\n]*\"?[\s\r\n]*\}[\s\r\n]*/i", $apiResponseBody)) {
-				trigger_error("L'API per enviar correus sembla retornar errors: $apiResponse : $apiResponseBody" , E_USER_WARNING);
+			$sarbLower = strtolower($simplifiedApiResponseBody);
+			$refLower  = strtolower($GLOBALS['MAIL_FJEAPI_OKRESPONSE_SIMPLIFIED']);
+			
+			if (strcmp($sarbLower, $refLower) != 0) {
+				trigger_error("L'API per enviar correus sembla retornar errors ($apiResponseBody). Probablement el correu no s'enviï, et recomanem esperar i reintentar fins que funcioni." , E_USER_WARNING);
 				return FALSE;
 			}
 			else {
@@ -1241,7 +1219,7 @@ i després simplificar la regexp treient els [\s\r\n]*
 		}
 	}
 	else {
-		trigger_error("Error de configuració (MAIL_LIB). No ha estat possible enviar el correu", E_USER_WARNING);
+		trigger_error("Error de configuració (MAIL_LIB). No ha estat possible enviar el correu. Probablement el correu no s'enviï, et recomanem esperar i reintentar fins que funcioni.", E_USER_WARNING);
 		return FALSE;
 	}
 

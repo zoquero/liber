@@ -437,8 +437,8 @@ class Dao {
 		// utilitzem un prepared statement
 		if($stmt = $this->mysqliCon->prepare($sql)) {
 			$scapedRId = $this->mysqliCon->real_escape_string($rId);
-			$scapedROwner = $this->mysqliCon->real_escape_string($rOwner);
-			if($stmt->bind_param("ii", $scapedRId, $scapedROwner) === FALSE) {
+			$scapedROwner = $this->mysqliCon->real_escape_string($rOwner['mail']  );
+			if($stmt->bind_param("is", $scapedRId, $scapedROwner) === FALSE) {
 				trigger_error("Errors associant variables a la consulta a la base de dades", E_USER_WARNING);
 				return FALSE;
 			}

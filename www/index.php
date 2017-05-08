@@ -193,7 +193,7 @@ switch($GLOBALS["actionId"]) {
 	case ACTION_DELETE_ADD:
 		//
 		$fId=getParamSanitizedString('id');
-		if($dao->deleteAdById($fId, $user->getId())) {
+		if($dao->deleteAdById($fId, $user)) {
 			echo "<p>Anunci esborrat</p>\n";
 		}
 		else {

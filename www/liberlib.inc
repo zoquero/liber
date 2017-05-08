@@ -626,7 +626,11 @@ function removeOldFiles($folder, $seconds) {
 function compressImatge($origFilename, $destFilename, $dim1, $dim2) {
 //echo "compressImatge: rebut origFilename = $origFilename i destFilename = $destFilename<br/>\n";
 
-	$imageInfo = getimagesize($origFilename);
+	$imageInfo = 0;
+	$imageInfo = @getimagesize($origFilename);
+	if($imageInfo == 0) {
+		trigger_error("Imatge buida o errors mirant la seva mida. Només suportem JPEG, GIF i PNG. Sentint-ho hauràs de tornar a crear l'anunci" , E_USER_ERROR);
+	}
 	$width=$imageInfo[0];
 	$height=$imageInfo[1];
 

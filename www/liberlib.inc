@@ -110,17 +110,30 @@ function getUserDo($token) {
 
 function getUserToken() {
   if($GLOBALS['mockToken']) {
+	if($GLOBALS['debug']) {
+		echo "DEBUG: Token de sessió fake: " . $GLOBALS['SESS_FJEAPI_COOKIE_NAME'] . " = [" . $GLOBALS['SESS_FJEAPI_MOCKING_COOKIE_VALUE'] . "]<br/>\n";
+	}
     return $GLOBALS['SESS_FJEAPI_MOCKING_COOKIE_VALUE'];
   }
   else {
     if($GLOBALS['mockInjectSess']) {
+      if($GLOBALS['debug']) {
+		echo "DEBUG: Injectem aquest token de sessió (cookie): " . $GLOBALS['SESS_FJEAPI_COOKIE_NAME'] . " = [" . $GLOBALS['SESS_FJEAPI_MOCKING_COOKIE_VALUE'] . "]<br/>\n";
+	  }
       setcookie($GLOBALS['SESS_FJEAPI_COOKIE_NAME'],
         $GLOBALS['SESS_FJEAPI_MOCKING_COOKIE_VALUE'],
         time() + (86400 * 30 * 365 * 10), "/"); // 10 anys
     }
-    if($_COOKIE != NULL & in_array($GLOBALS['SESS_FJEAPI_COOKIE_NAME'], $_COOKIE)) {
+    if($_COOKIE != NULL && array_key_exists($GLOBALS['SESS_FJEAPI_COOKIE_NAME'], $_COOKIE)) {
+       	if($GLOBALS['debug']) {
+			echo "DEBUG: Rebem el token de sessió (cookie): " . $GLOBALS['SESS_FJEAPI_COOKIE_NAME'] . " = [" . $_COOKIE[$GLOBALS['SESS_FJEAPI_COOKIE_NAME']] . "]<br/>\n";
+		}
+    
 	    return $_COOKIE[$GLOBALS['SESS_FJEAPI_COOKIE_NAME']];
     }
+   	if($GLOBALS['debug']) {
+		echo "DEBUG: No hi ha token de sessió (cookie): " . $GLOBALS['SESS_FJEAPI_COOKIE_NAME'] . " = [" . $_COOKIE[$GLOBALS['SESS_FJEAPI_COOKIE_NAME']] . "]<br/>\n";
+	}
     return NULL;
   }
 }
@@ -821,6 +834,7 @@ function sendHtmlHeaders() {
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title><?php echo htmlentities($GLOBALS['htmlHeadTitle'], ENT_QUOTES, "UTF-8") ?>
 </title>
 

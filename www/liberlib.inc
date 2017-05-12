@@ -132,7 +132,7 @@ function getUserToken() {
 	    return $_COOKIE[$GLOBALS['SESS_FJEAPI_COOKIE_NAME']];
     }
    	if($GLOBALS['debug']) {
-		echo "DEBUG: No hi ha token de sessió (cookie): " . $GLOBALS['SESS_FJEAPI_COOKIE_NAME'] . " = [" . $_COOKIE[$GLOBALS['SESS_FJEAPI_COOKIE_NAME']] . "]<br/>\n";
+		echo "DEBUG: No s'ha rebut token de sessió (cookie " . $GLOBALS['SESS_FJEAPI_COOKIE_NAME'] . ")<br/>\n";
 	}
     return NULL;
   }
@@ -319,6 +319,8 @@ function getEnabledGradesSelect($dao, $fGrade) {
 function showRegularOptionsMenu($dao) {
 	$gradesSelect = getEnabledGradesSelect($dao, NULL);
 ?>
+
+	<!-- ANTIGA TAULA 
 	<table border="1"><tr><td bgcolor="#F0F0F0">
 		<p>Opcions:</p>
 		<ul>
@@ -356,6 +358,48 @@ function showRegularOptionsMenu($dao) {
 			</li>
 		</ul>
 	</td></tr></table>
+	 ANTIGA TAULA --> 
+	
+	<!-- nova taula -->
+	<table border="1">
+		<tr><td bgcolor="#F0F0F0">Opcions:</td></tr>
+		<tr><td bgcolor="#F0F0F0">
+		  <a href="?actionId=<?php echo ACTION_NEW_AD_FORM ?>">
+				Anuncia nou llibre en donaci&oacute;</a>
+        </td></tr>
+		<tr><td bgcolor="#F0F0F0">
+			<a href="?actionId=<?php echo ACTION_SHOW_MY_ADS ?>">
+				Meus llibres anunciats</a>
+        </td></tr>
+		<tr><td bgcolor="#F0F0F0">
+			<form action="?" method="post" accept-charset="utf-8">
+				<input type="submit" name="Envia"
+					value="Mostra llibres anunciats d'un curs" />
+				<input type="hidden" name="actionId"
+					value="<?php echo ACTION_SEARCH_BY_GRADE ?>" />
+				<?php echo $gradesSelect ?>
+			</form>
+        </td></tr>
+		<tr><td bgcolor="#F0F0F0">
+			<form action="?" method="post" accept-charset="utf-8">
+				<input type="submit" name="Envia" value="Busca llibre per ISBN: " />
+				<input type="hidden" name="actionId"
+					value="<?php echo ACTION_SEARCH_BY_ISBN ?>" />
+				<input type="text" name="isbn" placeholder="<Introdueix el ISBN>" />
+			</form>			
+        </td></tr>
+		<tr><td bgcolor="#F0F0F0">
+			<form action="?" method="post" accept-charset="utf-8">
+				<input type="hidden" name="actionId"
+					value="<?php echo ACTION_SEARCH_BY_KEYWORDS ?>" /> <input
+					type="text" name="keywords"  placeholder="<Introdueix paraules>" />
+				<input type="submit" name="Envia"
+					value="Cerca llibre per paraules clau" />
+			</form>
+        </td></tr>
+	</table>
+	<!-- /nova taula -->
+	
 <?php
 }
 

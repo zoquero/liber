@@ -70,6 +70,10 @@ switch($GLOBALS["actionId"]) {
 		
 		// hidden (arrossegant-se de previ file upload)
 		$fImageBasenameH=getParamSanitizedString('imageBasenameH');
+		if($GLOBALS['debug']) {
+		  echo "DEBUG: fImageBasenameH=$fImageBasenameH<br>\n";
+		}
+		
 //		// nou file upload
 //		$fImageBasenameF=getParamSanitizedString('imageBasenameF');
 //		$fImageBasename = empty($fImageBasenameF) ? $fImageBasenameH : $fImageBasenameF;
@@ -80,10 +84,12 @@ switch($GLOBALS["actionId"]) {
 		// L'usuari ha entregat les dades i ara caldrà mostrar-se-les per a confirmar-les o corregir-les
 		
 		/*
-		echo "name=" . $_FILES['imageBasenameF']['name'] ."<br/>\n";
-		echo "size=" . $_FILES['imageBasenameF']['size'] ."<br/>\n";
-		echo "type=" . $_FILES['imageBasenameF']['type'] ."<br/>\n";
-		echo "tmp_name=" . $_FILES['imageBasenameF']['tmp_name'] ."<br/>\n";
+		if($GLOBALS['debug']) {
+			echo "DEBUG: File name="     . $_FILES['imageBasenameF']['name']     ."<br/>\n";
+			echo "DEBUG: File size="     . $_FILES['imageBasenameF']['size']     ."<br/>\n";
+			echo "DEBUG: File type="     . $_FILES['imageBasenameF']['type']     ."<br/>\n";
+			echo "DEBUG: File tmp_name=" . $_FILES['imageBasenameF']['tmp_name'] ."<br/>\n";
+		}
 		*/
 		$fIsbn=getSimplifiedIsbn(getParamSanitizedString('isbn'));
 		$fSummary=getParamSanitizedString('summary');
@@ -108,9 +114,15 @@ switch($GLOBALS["actionId"]) {
 		
 		if(isset($_FILES['imageBasenameF']) && file_exists($_FILES['imageBasenameF']['tmp_name']) && is_uploaded_file($_FILES['imageBasenameF']['tmp_name'])) {
 			$fImageBasename=compressAndSaveTmpImatge($GLOBALS['imageFilenamePrefix'] . $user['mail'] . "_");
+			if($GLOBALS['debug']) {
+				echo "DEBUG: fImageBasename (compressAndSaveTmpImatge) = $fImageBasename<br/>\n";
+			}
 		}
 		else {
 			$fImageBasename=$fImageBasenameH;
+			if($GLOBALS['debug']) {
+				echo "DEBUG: fImageBasename = $fImageBasename<br/>\n";
+			}
 		}
 
 		if($fWhat == "Envia") {

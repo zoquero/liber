@@ -361,40 +361,51 @@ function showRegularOptionsMenu($dao) {
 	 ANTIGA TAULA --> 
 	
 	<!-- nova taula -->
-	<table border="1">
+	<table border="1" cellspacing=1 cellpadding=1 margin=0 padding=0>
 		<tr><td bgcolor="#F0F0F0">Opcions:</td></tr>
 		<tr><td bgcolor="#F0F0F0">
-		  <a href="?actionId=<?php echo ACTION_NEW_AD_FORM ?>">
-				Anuncia nou llibre en donaci&oacute;</a>
+		  <form action="?" method="post" accept-charset="utf-8">
+			<input type="submit" name="Envia"
+				value="Anuncia un nou llibre en donació" />
+			<input type="hidden" name="actionId"
+				value="<?php echo ACTION_NEW_AD_FORM ?>" />
+		  </form>
         </td></tr>
 		<tr><td bgcolor="#F0F0F0">
-			<a href="?actionId=<?php echo ACTION_SHOW_MY_ADS ?>">
-				Meus llibres anunciats</a>
+		  <form action="?" method="post" accept-charset="utf-8">
+			<input type="submit" name="Envia"
+				value="Meus llibres anunciats" />
+			<input type="hidden" name="actionId"
+				value="<?php echo ACTION_SHOW_MY_ADS ?>" />
+		  </form>
         </td></tr>
 		<tr><td bgcolor="#F0F0F0">
+			Veure els llibres anunciats d'un curs:			
 			<form action="?" method="post" accept-charset="utf-8">
-				<input type="submit" name="Envia"
-					value="Mostra llibres anunciats d'un curs" />
 				<input type="hidden" name="actionId"
 					value="<?php echo ACTION_SEARCH_BY_GRADE ?>" />
 				<?php echo $gradesSelect ?>
+				<input type="submit" name="Envia"
+					value="Mostra els resultats" />
 			</form>
         </td></tr>
 		<tr><td bgcolor="#F0F0F0">
+			Busca llibres per ISBN:		
 			<form action="?" method="post" accept-charset="utf-8">
-				<input type="submit" name="Envia" value="Busca llibre per ISBN: " />
 				<input type="hidden" name="actionId"
 					value="<?php echo ACTION_SEARCH_BY_ISBN ?>" />
 				<input type="text" name="isbn" placeholder="<Introdueix el ISBN>" />
+				<input type="submit" name="Envia" value="Mostra els resultats" />
 			</form>			
         </td></tr>
 		<tr><td bgcolor="#F0F0F0">
+			Busca llibres per paraules clau
 			<form action="?" method="post" accept-charset="utf-8">
 				<input type="hidden" name="actionId"
 					value="<?php echo ACTION_SEARCH_BY_KEYWORDS ?>" /> <input
 					type="text" name="keywords"  placeholder="<Introdueix paraules>" />
 				<input type="submit" name="Envia"
-					value="Cerca llibre per paraules clau" />
+					value="Mostra els resultats" />
 			</form>
         </td></tr>
 	</table>
@@ -870,7 +881,7 @@ function sendHttpHeaders() {
 }
 
 /**
- * Envia les capçaleres HTTP i l'inici del body.
+ * Envia les capçaleres HTML (HTML i HEAD) i l'inici del BODY.
  * @see http://runroomclients.com/fje/prototype/v3/style-guide.html
  */
 function sendHtmlHeaders() {
@@ -885,6 +896,10 @@ function sendHtmlHeaders() {
 <style> 
 table,tr,td {
     padding: 4px 4px;
+    border-collapse: collapse;
+}
+    
+    
 }
 input[type=text],textarea {
     width: 100%;

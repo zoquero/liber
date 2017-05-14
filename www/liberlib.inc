@@ -361,9 +361,9 @@ function showRegularOptionsMenu($dao) {
 	 ANTIGA TAULA --> 
 	
 	<!-- nova taula -->
-	<table border="1" cellspacing=1 cellpadding=1 margin=0 padding=0>
-		<tr><td bgcolor="#F0F0F0">Opcions:</td></tr>
-		<tr><td bgcolor="#F0F0F0">
+	<table>
+		<tr><th>Opcions:</th></tr>
+		<tr><td>
 		  <form action="?" method="post" accept-charset="utf-8">
 			<input type="submit" name="Envia"
 				value="Anuncia un nou llibre en donació" />
@@ -371,7 +371,7 @@ function showRegularOptionsMenu($dao) {
 				value="<?php echo ACTION_NEW_AD_FORM ?>" />
 		  </form>
         </td></tr>
-		<tr><td bgcolor="#F0F0F0">
+		<tr><td>
 		  <form action="?" method="post" accept-charset="utf-8">
 			<input type="submit" name="Envia"
 				value="Meus llibres anunciats" />
@@ -379,7 +379,7 @@ function showRegularOptionsMenu($dao) {
 				value="<?php echo ACTION_SHOW_MY_ADS ?>" />
 		  </form>
         </td></tr>
-		<tr><td bgcolor="#F0F0F0">
+		<tr><td>
 			Veure els llibres anunciats d'un curs:			
 			<form action="?" method="post" accept-charset="utf-8">
 				<input type="hidden" name="actionId"
@@ -389,7 +389,7 @@ function showRegularOptionsMenu($dao) {
 					value="Mostra els resultats" />
 			</form>
         </td></tr>
-		<tr><td bgcolor="#F0F0F0">
+		<tr><td>
 			Busca llibres per ISBN:		
 			<form action="?" method="post" accept-charset="utf-8">
 				<input type="hidden" name="actionId"
@@ -398,7 +398,7 @@ function showRegularOptionsMenu($dao) {
 				<input type="submit" name="Envia" value="Mostra els resultats" />
 			</form>			
         </td></tr>
-		<tr><td bgcolor="#F0F0F0">
+		<tr><td>
 			Busca llibres per paraules clau
 			<form action="?" method="post" accept-charset="utf-8">
 				<input type="hidden" name="actionId"
@@ -536,28 +536,28 @@ else {
 <form action="?" method="post" enctype="multipart/form-data" accept-charset="utf-8">
 	<input type="hidden" name="actionId"
 		value="<?php echo ACTION_NEW_AD_PREVIEW ?>" />
-	<table border="1" bgcolor="#fafafa">
+	<table>
 		<?php if(! $doReadOnly) { ?>
 		<tr>
-			<td>ISBN:</td>
+			<th>ISBN:</th>
 			<td><input type="text" name="isbn" value="<?php echo $fIsbn ?>"
 				size="13" maxlength="20" /></td>
 		</tr>
 		<tr>
-			<td>Títol</td>
+			<th>Títol</th>
 			<td><input type="text" name="summary" value="<?php echo $fSummary ?>"
 				size="50" maxlength="199" /></td>
 		</tr>
 		<tr>
-			<td>Descripció</td>
+			<th>Descripció</th>
 			<td><textarea name="description" rows="5" cols="50" maxlength="249"><?php echo $fDescription ?></textarea></td>
 		</tr>
 		<tr>
-			<td>Curs</td>
+			<th>Curs</th>
 			<td><?php echo $gradesSelect ?></td>
 		</tr>
 		<tr>
-			<td>Imatge del llibre<br/>(opcional)</td>
+			<th>Imatge del llibre<br/>(opcional)</th>
 			<td>
 
 <?php
@@ -584,25 +584,25 @@ else {
 		</tr>
 		<?php } else { ?>
 		<tr>
-			<td>ISBN:</td>
+			<th>ISBN:</th>
 			<td><input type="text" name="isbn" value="<?php echo $fIsbn ?>"
 				size="13" maxlength="20" readonly /></td>
 		</tr>
 		<tr>
-			<td>Títol</td>
+			<th>Títol</th>
 			<td><input type="text" name="summary" value="<?php echo $fSummary ?>"
 				size="50" maxlength="199" readonly /></td>
 		</tr>
 		<tr>
-			<td>Descripció</td>
+			<th>Descripció</th>
 			<td><textarea name="description" rows="5" cols="50" maxlength="249" readonly><?php echo $fDescription ?></textarea></td>
 		</tr>
 		<tr>
-			<td>Curs</td>
+			<th>Curs</th>
 			<td><?php echo $gradesSelect ?></td>
 		</tr>
 		<tr>
-			<td>Imatge</td>
+			<th>Imatge</th>
 			<td>
 <?php
 	if(! empty($fImageBasename)) {
@@ -819,7 +819,7 @@ $fCorrectOrSend=getParamSanitizedString('CorrectOrSend');
 <h2>Verifica si les dades s&oacute;n correctes:</h2>
 <form action="?" method="post" accept-charset="utf-8">
 <input type="hidden" name="actionId" value="<?php echo ACTION_NEW_AD_CONFIRM ?>"/>
-<table border="1" bgcolor="#fafafa">
+<table>
 <tr><td>ISBN:</td><td><input type="text" name="isbn" value="<?php echo $fIsbn ?>" size="13" maxlength="20" readonly/></td></tr>
 <tr><td>Títol</td><td><input type="text" name="summary" value="<?php echo $fSummary ?>" size="50" maxlength="199" readonly/></td></tr>
 <tr><td>Descripció</td><td><textarea name="description" rows="5" cols="50" maxlength="249" readonly><?php echo $fDescription ?></textarea></td></tr>
@@ -895,11 +895,21 @@ function sendHtmlHeaders() {
 
 <style> 
 table,tr,td {
-    padding: 4px 4px;
+ 	border: 1;
     border-collapse: collapse;
+	border: 1px solid #aaaaaa;
+ 	cellspacing: 1;
+ 	cellpadding: 1;
+	margin:  2px;
+    padding: 2px 2px;
+ 	text-align: center;
 }
-    
-    
+
+tr:nth-child(even) {background-color: #eaeaea}
+tr:nth-child(odd)  {background-color: #f4f4f4}
+tr:hover           {background-color: #f8f8f8} 
+th                 {background-color: #e0c0d0} 
+
 }
 input[type=text],textarea {
     width: 100%;

@@ -14,7 +14,7 @@ define("ACTION_SEARCH_BY_ISBN",           3);
 define("ACTION_SEARCH_BY_KEYWORDS",       4);
 define("ACTION_NEW_AD_PREVIEW",           5);
 define("ACTION_SHOW_MY_ADS",              6);
-// define("ACTION_SHOW_OTHERS_ADS",          7);
+define("ACTION_SHOW_ALL_ADS",             7);
 define("ACTION_DELETE_ADD",               8);
 define("ACTION_BE_INTERESTED_IN_ADD",     9);
 define("ACTION_BE_INTERESTED_IN_ADD_DO", 10);

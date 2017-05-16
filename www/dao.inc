@@ -380,6 +380,52 @@ class Dao {
 		return $r;
 	}
 	
+	
+	/**
+	 * Retorna l'array de tots els objectes Ad
+	 * @return array d'objectes Ad
+	 */
+	function getAllAds() {
+		$r = array(); // Ad
+		$aId='';
+		$aOwner='';
+		$aIsbn='';
+		$aStatus='';
+		$aSummary='';
+		$aDescription='';
+		$aAdPublishingDate='';
+		$aImage='';
+		$aGrade=-1;
+		// La consulta
+		$sql = "SELECT id, owner, isbn, status, summary, description, ad_publishing_date, image, grade FROM ads";
+	
+		// utilitzem un prepared statement
+		if($stmt = $this->mysqliCon->prepare($sql)) {
+			// executem la consulta
+			if( $stmt->execute() === FALSE) {
+				trigger_error("No s'ha pogut executar la consulta a la base de dades: <br/>(" .  $this->mysqliCon->errno . ") " . $this->mysqliCon->error, E_USER_WARNING);
+				return NULL;
+			}
+			// associem resposta a variables
+			$stmt->bind_result($aId, $aOwner, $aIsbn, $aStatus, $aSummary, $aDescription, $aAdPublishingDate, $aImage, $aGrade);
+			// llegim la resposta
+			while($stmt->fetch()) {
+				//				echo '<table><tr><td>'.$aId.'</td><td>'.$aMail.'</td><td>'.$aFullname.'</td></tr></table>';
+				array_push($r, new Ad($aId, $aOwner, $aIsbn, $aStatus, $aSummary, $aDescription, $aAdPublishingDate, $aImage, $aGrade));
+			}
+			if (! $stmt->close()) {
+				trigger_error("Error tancant l'statement de la Base de Dades:<br/>(" .  $this->mysqliCon->errno . ") " . $this->mysqliCon->error, E_USER_WARNING);
+				return NULL;
+			}
+		}
+		else {
+			trigger_error("No s'ha pogut preparar l'acció sobre la base de dades: <br/>(" .  $this->mysqliCon->errno . ") " . $this->mysqliCon->error, E_USER_WARNING);
+			return NULL;
+		}
+		return $r;
+	}
+	
+	
 	function getAdById($id) {
 		$r=NULL;
 		$aId='';
@@ -425,7 +471,6 @@ class Dao {
 		}
 		return $r;
 	}
-
 
 
 

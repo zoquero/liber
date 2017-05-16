@@ -1,5 +1,7 @@
 <?php
 
+require_once(ROOT_PATH . "/liberlib.inc");
+
 class Ad {
 	private $id     = -1;
 	private $owner  = -1;
@@ -97,7 +99,7 @@ class Ad {
 	 * @param Grade $aGrade L'objecte curs al que està associat
 	 * @return string
 	 */	
-	public function toHtmlAnchoredRowNotOwn($aGrade) {
+	public function toHtmlAnchoredRowNotOwn($aGrade, $_user = NULL) {
 		$d_id     = '';
 		$d_owner  = '';
 		$d_status = '';
@@ -114,7 +116,7 @@ class Ad {
 					</form></td>";
 		$url= "?actionId=" . ACTION_BE_INTERESTED_IN_ADD . "&id=" . $this->getId();
 		
-		if($GLOBALS['debug']) {
+		if($GLOBALS['debug'] || ($_user != NULL && isAdmin($_user))) {
 			$d_id=Ad::toHtmlAnchoredColNotOwn($this->getId(), $url);
 			$d_owner=Ad::toHtmlAnchoredColNotOwn($this->getOwner(), $url);
 			$d_status=Ad::toHtmlAnchoredColNotOwn($this->getStatus(), $url);
@@ -281,14 +283,14 @@ class Ad {
 	 * Mostra la capçalera d'una taula d'anuncis d'altri
 	 * @return string
 	 */
-	public static function getHtmlAdsRowHeaderNotOwn() {
+	public static function getHtmlAdsRowHeaderNotOwn($_user = NULL) {
 		$d_id="";
 		$d_owner="";
 		$d_status="";
-		if($GLOBALS['debug']) {
-			$d_id="<td>id</td>";
-			$d_owner="<td>owner</td>";
-			$d_status="<td>Status</td>";
+		if($GLOBALS['debug'] || ($_user != NULL && isAdmin($_user))) {
+			$d_id="<th>id</td>";
+			$d_owner="<th>owner</td>";
+			$d_status="<th>Status</td>";
 		}
 		return "<table border=\"1\">"
 				. "<tr>"

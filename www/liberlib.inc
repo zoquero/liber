@@ -207,6 +207,17 @@ function getParamInt($paramName) {
 /**
  * Retorna sanejat un paràmetre String rebut via POST de forma segura.
  * <p>Algunes recomanacions extretes de http://phpsec.org/projects/guide/</p>
+ *
+ * Exemple d'strings enviats per formulari de creació d'anunci:
+ *
+ * abcçÀBCË.-\//{}()=`'"!$%?¿,.-;:_[]*
+ * =>
+ * abcçÀBCË.-  3934         ¿ .-  _
+ * 
+ * 1\2/3/4{5}6(7)8=9`  z10  ' z11  " z12!z13$z14%z15?z16,z17;z18:z19
+ * =>
+ * 1 2 3 4 5 6 7 8 9   z10 39 z11 34 z12 z13 z14 z15 z16 z17 z18 z19
+ *
  * @param String $paramName nom del paràmtre
  * @return String
  */
@@ -363,7 +374,7 @@ function showRegularOptionsMenu($dao) {
 	<!-- nova taula -->
 	<table>
 		<tr><th>Opcions:</th></tr>
-		<tr><td>
+		<tr><td align="center">
 		  <form action="?" method="post" accept-charset="utf-8">
 			<input type="submit" name="Envia"
 				value="Anuncia un nou llibre en donació" />
@@ -371,7 +382,7 @@ function showRegularOptionsMenu($dao) {
 				value="<?php echo ACTION_NEW_AD_FORM ?>" />
 		  </form>
         </td></tr>
-		<tr><td>
+		<tr><td align="center">
 		  <form action="?" method="post" accept-charset="utf-8">
 			<input type="submit" name="Envia"
 				value="Meus llibres anunciats" />
@@ -379,7 +390,7 @@ function showRegularOptionsMenu($dao) {
 				value="<?php echo ACTION_SHOW_MY_ADS ?>" />
 		  </form>
         </td></tr>
-		<tr><td>
+		<tr><td align="center">
 			Veure els llibres anunciats d'un curs:			
 			<form action="?" method="post" accept-charset="utf-8">
 				<input type="hidden" name="actionId"
@@ -389,7 +400,7 @@ function showRegularOptionsMenu($dao) {
 					value="Mostra els resultats" />
 			</form>
         </td></tr>
-		<tr><td>
+		<tr><td align="center">
 			Busca llibres per ISBN:		
 			<form action="?" method="post" accept-charset="utf-8">
 				<input type="hidden" name="actionId"
@@ -398,7 +409,7 @@ function showRegularOptionsMenu($dao) {
 				<input type="submit" name="Envia" value="Mostra els resultats" />
 			</form>			
         </td></tr>
-		<tr><td>
+		<tr><td align="center">
 			Busca llibres per paraules clau
 			<form action="?" method="post" accept-charset="utf-8">
 				<input type="hidden" name="actionId"
@@ -431,6 +442,8 @@ function showAdminOptionsMenu() {
 				Backup</a></li>
 			<li><a href="?actionId=<?php echo ACTION_RESTORE ?>">
 				Restore</a></li>
+			<li><a href="?actionId=<?php echo ACTION_SHOW_ALL_ADS ?>">
+				Mostra tots els anuncis</a></li>
 		</ul>
 	</td></tr></table>
 <?php
@@ -471,6 +484,9 @@ function showDummyForm($user) {
 
 function showFooter() {
 ?>
+<p>Aplicació per a la socialització de llibres<br/>
+de l'<a href="mailto:ampa.joan23@fje.edu">AMPA de Joan XXIII Jesuïtes Educació</a><br/>
+<a href="mailto:ampa.joan23@fje.edu"><img src="images/logo.png"/></a></p>
 </body>
 </html>
 <?php
@@ -540,25 +556,25 @@ else {
 		<?php if(! $doReadOnly) { ?>
 		<tr>
 			<th>ISBN:</th>
-			<td><input type="text" name="isbn" value="<?php echo $fIsbn ?>"
+			<td align="left"><input type="text" name="isbn" value="<?php echo $fIsbn ?>"
 				size="13" maxlength="20" /></td>
 		</tr>
 		<tr>
 			<th>Títol</th>
-			<td><input type="text" name="summary" value="<?php echo $fSummary ?>"
+			<td align="left"><input type="text" name="summary" value="<?php echo $fSummary ?>"
 				size="50" maxlength="199" /></td>
 		</tr>
 		<tr>
 			<th>Descripció</th>
-			<td><textarea name="description" rows="5" cols="50" maxlength="249"><?php echo $fDescription ?></textarea></td>
+			<td align="left"><textarea name="description" rows="5" cols="50" maxlength="249"><?php echo $fDescription ?></textarea></td>
 		</tr>
 		<tr>
 			<th>Curs</th>
-			<td><?php echo $gradesSelect ?></td>
+			<td align="left"><?php echo $gradesSelect ?></td>
 		</tr>
 		<tr>
 			<th>Imatge del llibre<br/>(opcional)</th>
-			<td>
+			<td align="left">
 
 <?php
 	if(! empty($fImageBasename)) {
@@ -585,25 +601,25 @@ else {
 		<?php } else { ?>
 		<tr>
 			<th>ISBN:</th>
-			<td><input type="text" name="isbn" value="<?php echo $fIsbn ?>"
+			<td align="left"><input type="text" name="isbn" value="<?php echo $fIsbn ?>"
 				size="13" maxlength="20" readonly /></td>
 		</tr>
 		<tr>
 			<th>Títol</th>
-			<td><input type="text" name="summary" value="<?php echo $fSummary ?>"
+			<td align="left"><input type="text" name="summary" value="<?php echo $fSummary ?>"
 				size="50" maxlength="199" readonly /></td>
 		</tr>
 		<tr>
 			<th>Descripció</th>
-			<td><textarea name="description" rows="5" cols="50" maxlength="249" readonly><?php echo $fDescription ?></textarea></td>
+			<td align="left"><textarea name="description" rows="5" cols="50" maxlength="249" readonly><?php echo $fDescription ?></textarea></td>
 		</tr>
 		<tr>
 			<th>Curs</th>
-			<td><?php echo $gradesSelect ?></td>
+			<td align="left"><?php echo $gradesSelect ?></td>
 		</tr>
 		<tr>
 			<th>Imatge</th>
-			<td>
+			<td align="left">
 <?php
 	if(! empty($fImageBasename)) {
 ?>
@@ -902,7 +918,7 @@ table,tr,td {
  	cellpadding: 1;
 	margin:  2px;
     padding: 2px 2px;
- 	text-align: center;
+    vertical-align:middle;
 }
 
 tr:nth-child(even) {background-color: #eaeaea}
@@ -995,6 +1011,12 @@ function showMyAdsPresentation() {
 <?php
 }
 
+function showAdsPresentation() {
+?>
+<p>TOTS els llibres anunciats:</p>
+<?php
+}
+
 function showAdsHeaderDEPRECATED() {
 	echo Ad::getHtmlAdsRowHeaderDEPRECATED() . "\n";
 }
@@ -1006,11 +1028,12 @@ function showAdsHeaderOwn() {
 	echo Ad::getHtmlAdsRowHeaderOwn() . "\n";
 }
 
-function showAdsHeaderNotOwn() {
-	echo Ad::getHtmlAdsRowHeaderNotOwn() . "\n";
+function showAdsHeaderNotOwn($user) {
+	echo Ad::getHtmlAdsRowHeaderNotOwn($user) . "\n";
 }
 
 function showAdsDEPRECATED($adsArray, $user) {
+	trigger_error("Error de programació: Mètode showAdsDEPRECATED obsolet", E_USER_ERROR);
 	foreach ($adsArray as $anAd) {
 		if($anAd->getStatus() != Ad::$STATUS_PUBLISHED) {
 			echo "<!-- deleted ad -->";
@@ -1059,6 +1082,23 @@ function showAdsNotOwn($dao, $adsArray, $user) {
 	}
 }
 
+function showAdsNotOwnAndMine($dao, $adsArray, $user) {
+	foreach ($adsArray as $anAd) {
+		if($anAd->getStatus() != Ad::$STATUS_PUBLISHED) {
+			echo "<!-- skip deleted ad -->";
+			continue;
+		}
+		/*
+		if($anAd->getOwner() == $user['mail']) {
+			echo "<!-- skip own ad -->";
+			continue;
+		}
+		*/
+		$aGrade = $dao->getGradeById($anAd->getGrade());
+		echo $anAd->toHtmlAnchoredRowNotOwn($aGrade, $user) . "\n";
+	}
+}
+
 function fillAdInterests($dao, $anAd, $user) {
 	$anAd->setInterests($dao->getInterestsByAdId($anAd->getId()));	
 }
@@ -1066,13 +1106,15 @@ function fillAdInterests($dao, $anAd, $user) {
 
 function showInterestForm($ad) {
 ?>
+<br/>
 <table border="1"><tr><td bgcolor="#F5F5F5">
 	<p>Si tens inter&egrave;s en el llibre
 		de ISBN <b><?php echo $ad->getIsbn() ?></b>
-		i de resum &quot;<i><?php echo $ad->getSummary()?></i>&quot;
+		i de resum &quot;<i><b><?php echo $ad->getSummary()?></i></b>&quot;
 		deixa aqu&iacute; les teves dades de contacte i qui l'hagi anunciat
 		les utilitzar&agrave; per posar-se en contacte amb tu.</p>
-	<p>Recorda que nom&eacute;s rebr&agrave; les dades de contacte que decideixis donar-li a continuaci&oacute;.
+	<p>Recorda que <b>nom&eacute;s</b> rebr&agrave; les dades de contacte
+	   que decideixis donar-li a continuaci&oacute;:</p>
 
 	<form action="?" method="post" accept-charset="utf-8">
 		<input type="hidden" name="actionId"
@@ -1080,7 +1122,10 @@ function showInterestForm($ad) {
 		<input type="hidden" name="id" value="<?php echo $ad->getId(); ?>" />
 	    <textarea name="description" rows="5" cols="50" maxlength="249"></textarea><br/>
 		<input type="submit" name="Envia" value="Envia" />
-	</form>		
+	</form>
+</table>
+<br/>
+
 <?php
 }
 

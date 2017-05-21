@@ -143,7 +143,7 @@ class Ad {
 	 * Mostra una taula d'anuncis propis
 	 * @return string
 	 */
-	public function toHtmlAnchoredRowOwn($aGrade) {
+	public function toHtmlAnchoredRowOwn($aGrade, $_user) {
 		$d_id='';
 		$d_owner='';
 		$d_status='';
@@ -165,7 +165,7 @@ class Ad {
 			$d_interests_html='<td>0</td>';;
 		}
 		
-		if($GLOBALS['debug']) {
+		if($GLOBALS['debug'] || ($_user != NULL && isAdmin($_user))) {
 			$d_id=Ad::toHtmlAnchoredColOwn($this->getId(), $url);
 			$d_owner=Ad::toHtmlAnchoredColOwn($this->getOwner(), $url);
 			$d_status=Ad::toHtmlAnchoredColOwn($this->getStatus(), $url);
@@ -251,15 +251,15 @@ class Ad {
 	 * Mostra la capçalera d'una taula d'anuncis propis
 	 * @return string
 	 */
-	public static function getHtmlAdsRowHeaderOwn() {
+	public static function getHtmlAdsRowHeaderOwn($_user) {
 		$d_id="";
 		$d_owner="";
 		$d_status="";
 			
-		if($GLOBALS['debug']) {
-			$d_id="<td>id</td>";
-			$d_owner="<td>owner</td>";
-			$d_status="<td>Status</td>";
+		if($GLOBALS['debug'] || ($_user != NULL && isAdmin($_user))) {
+			$d_id="<td bgcolor=\"#F09090\">id</td>";
+			$d_owner="<td bgcolor=\"#F09090\">owner</td>";
+			$d_status="<td bgcolor=\"#F09090\">Status</td>";
 		}
 		return "<table border=\"1\">"
 				. "<tr>"
@@ -288,9 +288,9 @@ class Ad {
 		$d_owner="";
 		$d_status="";
 		if($GLOBALS['debug'] || ($_user != NULL && isAdmin($_user))) {
-			$d_id="<th>id</td>";
-			$d_owner="<th>owner</td>";
-			$d_status="<th>Status</td>";
+			$d_id="<td bgcolor=\"#F09090\">id</td>";
+			$d_owner="<td bgcolor=\"#F09090\">owner</td>";
+			$d_status="<td bgcolor=\"#F09090\">Status</td>";
 		}
 		return "<table border=\"1\">"
 				. "<tr>"

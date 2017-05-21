@@ -911,14 +911,21 @@ function sendHtmlHeaders() {
 
 <style> 
 table,tr,td {
- 	border: 1;
-    border-collapse: collapse;
+	border: 1;
+	border-collapse: collapse;
 	border: 1px solid #aaaaaa;
- 	cellspacing: 1;
- 	cellpadding: 1;
+	cellspacing: 1;
+	cellpadding: 1;
 	margin:  2px;
-    padding: 2px 2px;
-    vertical-align:middle;
+	padding: 2px 2px;
+	vertical-align:middle;
+}
+form {
+     display:inline;
+}
+
+#Prova td,th {
+  background-color: #101010;
 }
 
 tr:nth-child(even) {background-color: #eaeaea}
@@ -926,7 +933,6 @@ tr:nth-child(odd)  {background-color: #f4f4f4}
 tr:hover           {background-color: #f8f8f8} 
 th                 {background-color: #e0c0d0} 
 
-}
 input[type=text],textarea {
     width: 100%;
     padding: 4px 4px;
@@ -1024,8 +1030,8 @@ function showAdsFooter() {
 	echo Ad::getHtmlAdsRowFooter() . "\n";
 }
 
-function showAdsHeaderOwn() {
-	echo Ad::getHtmlAdsRowHeaderOwn() . "\n";
+function showAdsHeaderOwn($user) {
+	echo Ad::getHtmlAdsRowHeaderOwn($user) . "\n";
 }
 
 function showAdsHeaderNotOwn($user) {
@@ -1062,7 +1068,7 @@ function showAdsOwn($dao, $adsArray, $user) {
 			return FALSE;
 		}
 		$aGrade = $dao->getGradeById($anAd->getGrade());
-		echo $anAd->toHtmlAnchoredRowOwn($aGrade) . "\n";
+		echo $anAd->toHtmlAnchoredRowOwn($aGrade, $user) . "\n";
 	}
 }
 
@@ -1078,7 +1084,7 @@ function showAdsNotOwn($dao, $adsArray, $user) {
 			continue;
 		}
 		$aGrade = $dao->getGradeById($anAd->getGrade());
-		echo $anAd->toHtmlAnchoredRowNotOwn($aGrade) . "\n";
+		echo $anAd->toHtmlAnchoredRowNotOwn($aGrade, $user) . "\n";
 	}
 }
 

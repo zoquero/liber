@@ -147,7 +147,7 @@ switch($GLOBALS["actionId"]) {
 		}
 		else {
 			showAdsFoundPresentation();
-			showAdsHeaderNotOwn();
+			showAdsHeaderNotOwn($user);
 			showAdsNotOwn($dao, $foundAds, $user);
 			showAdsFooter();
 			doLog($dao, $GLOBALS["actionId"], $user, "Cerca per curs '" . $loadedGrade->getName() . "' (id " . $fGrade . "). " . sizeof($foundAds) . " trobats");
@@ -163,7 +163,7 @@ switch($GLOBALS["actionId"]) {
         }
         else { 
         	showAdsFoundPresentation();
-			showAdsHeaderNotOwn();
+			showAdsHeaderNotOwn($user);
 			showAdsNotOwn($dao, $foundAds, $user);
 			showAdsFooter();
 			doLog($dao, $GLOBALS["actionId"], $user, "Cerca per ISBN '" . $aIsbn . "'. " . sizeof($foundAds) . " trobats");
@@ -181,8 +181,8 @@ switch($GLOBALS["actionId"]) {
 				fillAdInterests($dao, $anAd, $user);
 			}
 			// showAdsFoundPresentation();
-			showMyAdsPresentation();
-			showAdsHeaderOwn();
+			showMyAdsPresentation($user);
+			showAdsHeaderOwn($user);
 			showAdsOwn($dao, $myAds, $user);
 			showAdsFooter();
 		}
@@ -245,7 +245,7 @@ switch($GLOBALS["actionId"]) {
 		}
 		else {
 			showAdsFoundPresentation();
-			showAdsHeaderNotOwn();
+			showAdsHeaderNotOwn($user);
 			showAdsNotOwn($dao, $foundAds, $user);
 			showAdsFooter();
 			doLog($dao, $GLOBALS["actionId"], $user, "Cerca per paraules '" . $fKeywords . "'. " . sizeof($foundAds) . " trobats");
@@ -319,6 +319,7 @@ switch($GLOBALS["actionId"]) {
 	default:
 		showMessage("Escull una opció:");
 }
+echo "<br/>\n";
 showRegularOptionsMenu($dao);
 
 // Menú d'administrador
@@ -327,4 +328,7 @@ if(isAdmin($user)) {
 	showAdminOptionsMenu();
 }
 showFooter();
+/*
+ * No cal cridar  $dao->disconnect() doncs ja se la crida des del destructor del DAO
+ */
 ?>

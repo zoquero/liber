@@ -26,7 +26,9 @@ class Dao {
 
 	private function disconnect() {
 		if($this->mysqliCon != NULL && ! $this->mysqliCon) {
-			$this->mysqliCon->close();
+			if($this->mysqliCon->close()) {
+				$this->mysqliCon = null;
+			}
 		}
 	}
 

@@ -14,7 +14,7 @@ define("ACTION_SEARCH_BY_ISBN",           3);
 define("ACTION_SEARCH_BY_KEYWORDS",       4);
 define("ACTION_NEW_AD_PREVIEW",           5);
 define("ACTION_SHOW_MY_ADS",              6);
-// define("ACTION_SHOW_OTHERS_ADS",          7);
+define("ACTION_SHOW_ALL_ADS",             7);
 define("ACTION_DELETE_ADD",               8);
 define("ACTION_BE_INTERESTED_IN_ADD",     9);
 define("ACTION_BE_INTERESTED_IN_ADD_DO", 10);
@@ -103,7 +103,7 @@ $GLOBALS['SESS_FJEAPI_BASE_URL']='http://apis.net.fje.edu/api/conNETctor.php/val
 $GLOBALS['SESS_FJEAPI_COOKIE_NAME']='tokenNet';
 // 0000-0000 per Usuari de prova
 // A0CEF30D-4D35-4CEE-8B5B-F643C8C52384
-$GLOBALS['SESS_FJEAPI_MOCKING_COOKIE_VALUE']='C1712DC5-2922-4757-8CB5-ED68B33013E4';
+$GLOBALS['SESS_FJEAPI_MOCKING_COOKIE_VALUE']='BE480C0C-AF79-4BFD-AFBF-E5472BC0DE5A';
 
 /*** Timeout de connexió fent fsockopen per enviar correu via L'API de FJE */
 $GLOBALS['SOCKET_CONN_TIMEOUT']=30;

@@ -26,7 +26,9 @@ class Dao {
 
 	private function disconnect() {
 		if($this->mysqliCon != NULL && ! $this->mysqliCon) {
-			$this->mysqliCon->close();
+			if($this->mysqliCon->close()) {
+				$this->mysqliCon = null;
+			}
 		}
 	}
 
@@ -380,6 +382,52 @@ class Dao {
 		return $r;
 	}
 	
+	
+	/**
+	 * Retorna l'array de tots els objectes Ad
+	 * @return array d'objectes Ad
+	 */
+	function getAllAds() {
+		$r = array(); // Ad
+		$aId='';
+		$aOwner='';
+		$aIsbn='';
+		$aStatus='';
+		$aSummary='';
+		$aDescription='';
+		$aAdPublishingDate='';
+		$aImage='';
+		$aGrade=-1;
+		// La consulta
+		$sql = "SELECT id, owner, isbn, status, summary, description, ad_publishing_date, image, grade FROM ads";
+	
+		// utilitzem un prepared statement
+		if($stmt = $this->mysqliCon->prepare($sql)) {
+			// executem la consulta
+			if( $stmt->execute() === FALSE) {
+				trigger_error("No s'ha pogut executar la consulta a la base de dades: <br/>(" .  $this->mysqliCon->errno . ") " . $this->mysqliCon->error, E_USER_WARNING);
+				return NULL;
+			}
+			// associem resposta a variables
+			$stmt->bind_result($aId, $aOwner, $aIsbn, $aStatus, $aSummary, $aDescription, $aAdPublishingDate, $aImage, $aGrade);
+			// llegim la resposta
+			while($stmt->fetch()) {
+				//				echo '<table><tr><td>'.$aId.'</td><td>'.$aMail.'</td><td>'.$aFullname.'</td></tr></table>';
+				array_push($r, new Ad($aId, $aOwner, $aIsbn, $aStatus, $aSummary, $aDescription, $aAdPublishingDate, $aImage, $aGrade));
+			}
+			if (! $stmt->close()) {
+				trigger_error("Error tancant l'statement de la Base de Dades:<br/>(" .  $this->mysqliCon->errno . ") " . $this->mysqliCon->error, E_USER_WARNING);
+				return NULL;
+			}
+		}
+		else {
+			trigger_error("No s'ha pogut preparar l'acció sobre la base de dades: <br/>(" .  $this->mysqliCon->errno . ") " . $this->mysqliCon->error, E_USER_WARNING);
+			return NULL;
+		}
+		return $r;
+	}
+	
+	
 	function getAdById($id) {
 		$r=NULL;
 		$aId='';
@@ -428,7 +476,6 @@ class Dao {
 
 
 
-
 	function deleteAdById($rId, $rOwner) {
 		// La consulta
 		$sql = "UPDATE ads set status = ". Ad::$STATUS_SOFT_DELETED . " where id = ? and owner = ?";
@@ -437,8 +484,8 @@ class Dao {
 		// utilitzem un prepared statement
 		if($stmt = $this->mysqliCon->prepare($sql)) {
 			$scapedRId = $this->mysqliCon->real_escape_string($rId);
-			$scapedROwner = $this->mysqliCon->real_escape_string($rOwner);
-			if($stmt->bind_param("ii", $scapedRId, $scapedROwner) === FALSE) {
+			$scapedROwner = $this->mysqliCon->real_escape_string($rOwner['mail']  );
+			if($stmt->bind_param("is", $scapedRId, $scapedROwner) === FALSE) {
 				trigger_error("Errors associant variables a la consulta a la base de dades", E_USER_WARNING);
 				return FALSE;
 			}

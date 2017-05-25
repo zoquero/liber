@@ -1,5 +1,7 @@
 <?php
 
+require_once(ROOT_PATH . "/liberlib.inc");
+
 class Ad {
 	private $id     = -1;
 	private $owner  = -1;
@@ -97,7 +99,7 @@ class Ad {
 	 * @param Grade $aGrade L'objecte curs al que està associat
 	 * @return string
 	 */	
-	public function toHtmlAnchoredRowNotOwn($aGrade) {
+	public function toHtmlAnchoredRowNotOwn($aGrade, $_user = NULL) {
 		$d_id     = '';
 		$d_owner  = '';
 		$d_status = '';
@@ -106,7 +108,7 @@ class Ad {
 			trigger_error("Error de programació: no s'ha rebut el curs associat a l'anunci", E_USER_WARNING);
 		}
 		$url="";
-		$d_accio = "<td bgcolor=\"#F2F2F2\">
+		$d_accio = "<td>
 					<form action=\"?\" method=\"post\" accept-charset=\"utf-8\">
 						<input type=\"hidden\" name=\"actionId\" value=" . ACTION_BE_INTERESTED_IN_ADD . " />
 						<input type=\"hidden\" name=\"id\" value=\"" . $this->getId() . "\"/>
@@ -114,7 +116,7 @@ class Ad {
 					</form></td>";
 		$url= "?actionId=" . ACTION_BE_INTERESTED_IN_ADD . "&id=" . $this->getId();
 		
-		if($GLOBALS['debug']) {
+		if($GLOBALS['debug'] || ($_user != NULL && isAdmin($_user))) {
 			$d_id=Ad::toHtmlAnchoredColNotOwn($this->getId(), $url);
 			$d_owner=Ad::toHtmlAnchoredColNotOwn($this->getOwner(), $url);
 			$d_status=Ad::toHtmlAnchoredColNotOwn($this->getStatus(), $url);
@@ -141,13 +143,13 @@ class Ad {
 	 * Mostra una taula d'anuncis propis
 	 * @return string
 	 */
-	public function toHtmlAnchoredRowOwn($aGrade) {
+	public function toHtmlAnchoredRowOwn($aGrade, $_user) {
 		$d_id='';
 		$d_owner='';
 		$d_status='';
 				
 		$url="";
-		$d_accio = "<td bgcolor=\"#F2F2F2\">
+		$d_accio = "<td>
 					<form action=\"?\" method=\"post\" accept-charset=\"utf-8\">
 						<input type=\"hidden\" name=\"actionId\" value=" . ACTION_DELETE_ADD . " />
 						<input type=\"hidden\" name=\"id\" value=\"" . $this->getId() . "\"/>
@@ -157,13 +159,13 @@ class Ad {
 		
 		$d_interests_html='';
 		if($this->isSomeBodyInterested()) {
-			$d_interests_html='<td bgcolor="#F5E2C2"><a href="?actionId=' . ACTION_SEE_NOTIFICATIONS . '&id=' . $this->getId() . '"><b>' . count($this->interests) . '</b> notificacions</a></td>';
+			$d_interests_html='<td bgcolor=#FFEEEE><a href="?actionId=' . ACTION_SEE_NOTIFICATIONS . '&id=' . $this->getId() . '"><b>' . count($this->interests) . '</b> notificacions</a></td>';
 		}
 		else {
-			$d_interests_html='<td bgcolor="#F2F2F2">0</td>';;
+			$d_interests_html='<td>0</td>';;
 		}
 		
-		if($GLOBALS['debug']) {
+		if($GLOBALS['debug'] || ($_user != NULL && isAdmin($_user))) {
 			$d_id=Ad::toHtmlAnchoredColOwn($this->getId(), $url);
 			$d_owner=Ad::toHtmlAnchoredColOwn($this->getOwner(), $url);
 			$d_status=Ad::toHtmlAnchoredColOwn($this->getStatus(), $url);
@@ -197,23 +199,23 @@ class Ad {
 	}
 
 	private static function toHtmlAnchoredColOwn($text, $url) {
-		return "<td bgcolor=\"#F2F2F2\">" . $text . "</td>";
+		return "<td>" . $text . "</td>";
 	}
 	
 	
 	
 	private static function toHtmlAnchoredColNotOwn($text, $url) {
-		return "<td bgcolor=\"#F2F2F2\"><a href=\"" . $url . "\">" . $text . "</a></td>";
+		return "<td><a href=\"" . $url . "\">" . $text . "</a></td>";
 	}
 
 
 	private static function toHtmlAnchoredImgCol($text) {
 		if(empty($text)) {
-			return "<td bgcolor=\"#F2F2F2\">Sense imatge</td>";
+			return "<td>Sense imatge</td>";
 		}
 		else {
 			$url=$GLOBALS['uploadFolderStore'] . "/" . $text;
-			return "<td bgcolor=\"#F2F2F2\"><a target=\"_blank\" href=\"" . $url . "\"><img src=\"" . $GLOBALS['uploadFolderStore'] . "/" . $text . $GLOBALS['thumbFilenameSufix'] . "\"/></a></td>";
+			return "<td><a target=\"_blank\" href=\"" . $url . "\"><img src=\"" . $GLOBALS['uploadFolderStore'] . "/" . $text . $GLOBALS['thumbFilenameSufix'] . "\"/></a></td>";
 		}
 	}
 	
@@ -249,29 +251,29 @@ class Ad {
 	 * Mostra la capçalera d'una taula d'anuncis propis
 	 * @return string
 	 */
-	public static function getHtmlAdsRowHeaderOwn() {
+	public static function getHtmlAdsRowHeaderOwn($_user) {
 		$d_id="";
 		$d_owner="";
 		$d_status="";
 			
-		if($GLOBALS['debug']) {
-			$d_id="<td>id</td>";
-			$d_owner="<td>owner</td>";
-			$d_status="<td>Status</td>";
+		if($GLOBALS['debug'] || ($_user != NULL && isAdmin($_user))) {
+			$d_id="<td bgcolor=\"#F09090\">id</td>";
+			$d_owner="<td bgcolor=\"#F09090\">owner</td>";
+			$d_status="<td bgcolor=\"#F09090\">Status</td>";
 		}
 		return "<table border=\"1\">"
-				. "<tr bgcolor=\"#D0D0D0\">"
-				. "<td>Acci&oacute;</td>"
+				. "<tr>"
+				. "<th>Acci&oacute;</th>"
 				. $d_id
 				. $d_owner
-				. "<td>Notificacions</td>"
-				. "<td>ISBN</td>"
+				. "<th>Notificacions</th>"
+				. "<th>ISBN</th>"
 				. $d_status
-				. "<td>Resum</td>"
-				. "<td>Descripci&oacute;</td>"
-				. "<td>Data d'anunci</td>"
-				. "<td>Curs</td>"
-				. "<td>Imatge</td>"
+				. "<th>Resum</th>"
+				. "<th>Descripci&oacute;</th>"
+				. "<th>Data d'anunci</th>"
+				. "<th>Curs</th>"
+				. "<th>Imatge</th>"
 				. "</tr>";
 	}
 	
@@ -281,27 +283,27 @@ class Ad {
 	 * Mostra la capçalera d'una taula d'anuncis d'altri
 	 * @return string
 	 */
-	public static function getHtmlAdsRowHeaderNotOwn() {
+	public static function getHtmlAdsRowHeaderNotOwn($_user = NULL) {
 		$d_id="";
 		$d_owner="";
 		$d_status="";
-		if($GLOBALS['debug']) {
-			$d_id="<td>id</td>";
-			$d_owner="<td>owner</td>";
-			$d_status="<td>Status</td>";
+		if($GLOBALS['debug'] || ($_user != NULL && isAdmin($_user))) {
+			$d_id="<td bgcolor=\"#F09090\">id</td>";
+			$d_owner="<td bgcolor=\"#F09090\">owner</td>";
+			$d_status="<td bgcolor=\"#F09090\">Status</td>";
 		}
 		return "<table border=\"1\">"
-				. "<tr bgcolor=\"#D0D0D0\">"
-				. "<td>Acci&oacute;</td>"
+				. "<tr>"
+				. "<th>Acci&oacute;</th>"
 				. $d_id
 				. $d_owner
-				. "<td>ISBN</td>"
+				. "<th>ISBN</th>"
 				. $d_status
-				. "<td>Resum</td>"
-				. "<td>Descripci&oacute;</td>"
-				. "<td>Data d'anunci</td>"
-				. "<td>Curs</td>"
-				. "<td>Imatge</td>"
+				. "<th>Resum</th>"
+				. "<th>Descripci&oacute;</th>"
+				. "<th>Data d'anunci</th>"
+				. "<th>Curs</th>"
+				. "<th>Imatge</th>"
 				. "</tr>";
 	}
 	

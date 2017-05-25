@@ -22,18 +22,11 @@ if($dao->isErrConnecting()) {
 
 // Capçalera i menú principal
 showRegularBodyHeaders();
-showRegularOptionsMenu($dao);
 
 $user=getUser();
 if($GLOBALS['debug']) {
   echo "Debug: Dades de sessió recuperades:<br>\n";
   print_r($user);
-}
-
-// Menú d'administrador
-if(isAdmin($user)) {
-	echo "<br/>";
-	showAdminOptionsMenu();
 }
 
 
@@ -70,6 +63,10 @@ switch($GLOBALS["actionId"]) {
 		
 		// hidden (arrossegant-se de previ file upload)
 		$fImageBasenameH=getParamSanitizedString('imageBasenameH');
+		if($GLOBALS['debug']) {
+		  echo "DEBUG: fImageBasenameH=$fImageBasenameH<br>\n";
+		}
+		
 //		// nou file upload
 //		$fImageBasenameF=getParamSanitizedString('imageBasenameF');
 //		$fImageBasename = empty($fImageBasenameF) ? $fImageBasenameH : $fImageBasenameF;
@@ -80,10 +77,12 @@ switch($GLOBALS["actionId"]) {
 		// L'usuari ha entregat les dades i ara caldrà mostrar-se-les per a confirmar-les o corregir-les
 		
 		/*
-		echo "name=" . $_FILES['imageBasenameF']['name'] ."<br/>\n";
-		echo "size=" . $_FILES['imageBasenameF']['size'] ."<br/>\n";
-		echo "type=" . $_FILES['imageBasenameF']['type'] ."<br/>\n";
-		echo "tmp_name=" . $_FILES['imageBasenameF']['tmp_name'] ."<br/>\n";
+		if($GLOBALS['debug']) {
+			echo "DEBUG: File name="     . $_FILES['imageBasenameF']['name']     ."<br/>\n";
+			echo "DEBUG: File size="     . $_FILES['imageBasenameF']['size']     ."<br/>\n";
+			echo "DEBUG: File type="     . $_FILES['imageBasenameF']['type']     ."<br/>\n";
+			echo "DEBUG: File tmp_name=" . $_FILES['imageBasenameF']['tmp_name'] ."<br/>\n";
+		}
 		*/
 		$fIsbn=getSimplifiedIsbn(getParamSanitizedString('isbn'));
 		$fSummary=getParamSanitizedString('summary');
@@ -108,9 +107,15 @@ switch($GLOBALS["actionId"]) {
 		
 		if(isset($_FILES['imageBasenameF']) && file_exists($_FILES['imageBasenameF']['tmp_name']) && is_uploaded_file($_FILES['imageBasenameF']['tmp_name'])) {
 			$fImageBasename=compressAndSaveTmpImatge($GLOBALS['imageFilenamePrefix'] . $user['mail'] . "_");
+			if($GLOBALS['debug']) {
+				echo "DEBUG: fImageBasename (compressAndSaveTmpImatge) = $fImageBasename<br/>\n";
+			}
 		}
 		else {
 			$fImageBasename=$fImageBasenameH;
+			if($GLOBALS['debug']) {
+				echo "DEBUG: fImageBasename = $fImageBasename<br/>\n";
+			}
 		}
 
 		if($fWhat == "Envia") {
@@ -123,6 +128,7 @@ switch($GLOBALS["actionId"]) {
             doLog($dao, $GLOBALS["actionId"], $user, "Anunci creat de llibre amb ISBN $fIsbn");
 		}
 		else {
+			echo "<p>Verifica les dades i pica a \"<b>Edita</b>\" per corregir-les o a \"<b>Envia</b>\" per crear l'anunci:</p>\n";  
 			newAdFormShow($dao, $fIsbn, $fSummary, $fDescription, $fWhat, $fImageBasename, $loadedGrade);
 		}
 		break;
@@ -141,7 +147,7 @@ switch($GLOBALS["actionId"]) {
 		}
 		else {
 			showAdsFoundPresentation();
-			showAdsHeaderNotOwn();
+			showAdsHeaderNotOwn($user);
 			showAdsNotOwn($dao, $foundAds, $user);
 			showAdsFooter();
 			doLog($dao, $GLOBALS["actionId"], $user, "Cerca per curs '" . $loadedGrade->getName() . "' (id " . $fGrade . "). " . sizeof($foundAds) . " trobats");
@@ -157,7 +163,7 @@ switch($GLOBALS["actionId"]) {
         }
         else { 
         	showAdsFoundPresentation();
-			showAdsHeaderNotOwn();
+			showAdsHeaderNotOwn($user);
 			showAdsNotOwn($dao, $foundAds, $user);
 			showAdsFooter();
 			doLog($dao, $GLOBALS["actionId"], $user, "Cerca per ISBN '" . $aIsbn . "'. " . sizeof($foundAds) . " trobats");
@@ -175,12 +181,38 @@ switch($GLOBALS["actionId"]) {
 				fillAdInterests($dao, $anAd, $user);
 			}
 			// showAdsFoundPresentation();
-			showMyAdsPresentation();
-			showAdsHeaderOwn();
+			showMyAdsPresentation($user);
+			showAdsHeaderOwn($user);
 			showAdsOwn($dao, $myAds, $user);
 			showAdsFooter();
 		}
 		break;
+	
+	case ACTION_SHOW_ALL_ADS:
+		// Només per a administradors
+		if(! isAdmin($user)) {
+			@doLog($dao, $GLOBALS["actionId"], $user, "Mostra tots els anuncis SENSE AUTORITZACIÓ");
+			trigger_error("No estàs autoritzat a aquesta operació (" . $GLOBALS["actionId"] . ")", E_USER_ERROR);
+		}
+		else {
+			$myAds=$dao->getAllAds();
+			
+			if($myAds == NULL || sizeof($myAds) == 0) {
+				showNoAdsFound();
+			}
+			else {
+				foreach ($myAds as $anAd) {
+					fillAdInterests($dao, $anAd, $user);
+				}
+				showAdsPresentation();
+				showAdsHeaderNotOwn($user);
+				showAdsNotOwnAndMine($dao, $myAds, $user);
+				showAdsFooter();
+			}
+			doLog($dao, $GLOBALS["actionId"], $user, "Mostra tots els anuncis");
+		}
+		break;
+	
 	case ACTION_BE_INTERESTED_IN_ADD:
 		//
 		$fId=getParamSanitizedString('id');
@@ -193,8 +225,8 @@ switch($GLOBALS["actionId"]) {
 	case ACTION_DELETE_ADD:
 		//
 		$fId=getParamSanitizedString('id');
-		if($dao->deleteAdById($fId, $user->getId())) {
-			echo "<p>Anunci esborrat</p>\n";
+		if($dao->deleteAdById($fId, $user)) {
+			echo "<p>L'<b>anunci ha estat esborrat</b></p>\n";
 		}
 		else {
 			trigger_error("<p>No ha estat possible esborrar l'anunci</p>\n");
@@ -213,7 +245,7 @@ switch($GLOBALS["actionId"]) {
 		}
 		else {
 			showAdsFoundPresentation();
-			showAdsHeaderNotOwn();
+			showAdsHeaderNotOwn($user);
 			showAdsNotOwn($dao, $foundAds, $user);
 			showAdsFooter();
 			doLog($dao, $GLOBALS["actionId"], $user, "Cerca per paraules '" . $fKeywords . "'. " . sizeof($foundAds) . " trobats");
@@ -255,7 +287,13 @@ switch($GLOBALS["actionId"]) {
 		
 		break;
 	case ACTION_SHOW_LOGS:
-		printLogEntries($dao);
+		if($user == NULL || !isAdmin($user)) {
+			@doLog($dao, $GLOBALS["actionId"], $user, "Mostra els logs SENSE AUTORITZACIÓ");
+			trigger_error("No estàs autoritzat a fer aquesta operació (" . $GLOBALS["actionId"] . ")", E_USER_ERROR);
+		}
+		else {
+			printLogEntries($dao);
+		}
 		break;
 	case ACTION_RESTORE:
 		//
@@ -279,8 +317,18 @@ switch($GLOBALS["actionId"]) {
 		
 		break;
 	default:
-		showMessage("Escull una opció");
+		showMessage("Escull una opció:");
 }
+echo "<br/>\n";
+showRegularOptionsMenu($dao);
 
+// Menú d'administrador
+if(isAdmin($user)) {
+	echo "<br/>";
+	showAdminOptionsMenu();
+}
 showFooter();
+/*
+ * No cal cridar  $dao->disconnect() doncs ja se la crida des del destructor del DAO
+ */
 ?>

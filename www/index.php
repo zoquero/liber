@@ -316,6 +316,14 @@ switch($GLOBALS["actionId"]) {
 		}
 		
 		break;
+	case ACTION_NOTIFYME_SHOW:
+		//
+		showNotifyMeForm($dao, $user);
+		break;
+	case ACTION_NOTIFYME_DO:
+		//
+		echo "Guardant-ho ... (PENDENT!)";
+		break;
 	default:
 		showMessage("Escull una opció:");
 }

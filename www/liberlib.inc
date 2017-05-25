@@ -1,7 +1,6 @@
 <?php
 
 require_once("conf.inc");
-require_once("lib/PHPMailer/PHPMailerAutoload.php");
 
 function doLog($dao, $actionId, $user, $description) {
   $dao->insertLogEntry($actionId, $user, $description);
@@ -324,54 +323,22 @@ function getEnabledGradesSelect($dao, $fGrade) {
 	return $gradesSelect;
 }
 
+function getEnabledGradesNotifymeCheckbox($dao, $user) {
+	$grades      = $dao->getEnabledGrades();
+	$gradesChBx  = "";
+	foreach ($grades as $aGrade) {
+		$gradesChBx.="  <input type=\"checkbox\" name=\"notifymeGrades\" value=\"" . $aGrade->getId() . "\"/>" . $aGrade->getName() . "<br/>\n";
+	}
+	return $gradesChBx;
+}
+
+
 /**
  * Escriu el menú d'opcions per a l'usuari.
  */
 function showRegularOptionsMenu($dao) {
 	$gradesSelect = getEnabledGradesSelect($dao, NULL);
 ?>
-
-	<!-- ANTIGA TAULA 
-	<table border="1"><tr><td bgcolor="#F0F0F0">
-		<p>Opcions:</p>
-		<ul>
-			<li><a href="?actionId=<?php echo ACTION_NEW_AD_FORM ?>">
-				Nou llibre en donaci&oacute;</a>
-			</li>
-			<li><a href="?actionId=<?php echo ACTION_SHOW_MY_ADS ?>">
-				Meus llibres anunciats</a>
-			</li>
-			<li>
-				<form action="?" method="post" accept-charset="utf-8">
-					<input type="hidden" name="actionId"
-						value="<?php echo ACTION_SEARCH_BY_GRADE ?>" />
-					<?php echo $gradesSelect ?>
-					<input type="submit" name="Envia"
-						value="Mostra llibres de tal curs" />
-				</form>
-			</li>
-			<li>
-				<form action="?" method="post" accept-charset="utf-8">
-					<input type="hidden" name="actionId"
-						value="<?php echo ACTION_SEARCH_BY_ISBN ?>" />
-					<input type="text" name="isbn" />
-					<input type="submit" name="Envia" value="Cerca llibre per ISBN" />
-				</form>
-			</li>
-			<li>
-				<form action="?" method="post" accept-charset="utf-8">
-					<input type="hidden" name="actionId"
-						value="<?php echo ACTION_SEARCH_BY_KEYWORDS ?>" /> <input
-						type="text" name="keywords" />
-					<input type="submit" name="Envia"
-						value="Cerca llibre per paraules clau" />
-				</form>
-			</li>
-		</ul>
-	</td></tr></table>
-	 ANTIGA TAULA --> 
-	
-	<!-- nova taula -->
 	<table>
 		<tr><th>Opcions:</th></tr>
 		<tr><td align="center">
@@ -419,14 +386,44 @@ function showRegularOptionsMenu($dao) {
 					value="Mostra els resultats" />
 			</form>
         </td></tr>
+		<tr><td align="center">
+		  <form action="?" method="post" accept-charset="utf-8">
+			<input type="submit" name="Envia"
+				value="Registra't per ser notificat sobre nous llibres anunciats" />
+			<input type="hidden" name="actionId"
+				value="<?php echo ACTION_NOTIFYME_SHOW ?>" />
+		  </form>
+        </td></tr>
 	</table>
-	<!-- /nova taula -->
-	
 <?php
 }
 
-
-
+/**
+ * Escriu el menú d'opcions per a l'usuari.
+ */
+function showNotifyMeForm($dao, $user) {
+  $gradesChBxs = getEnabledGradesNotifymeCheckbox($dao, $user);
+  
+?>
+  <form action="?" method="post" accept-charset="utf-8">
+	<table>
+		<tr><th>Notificacions sobre<br/>nous llibres anunciats:</th></tr>
+		<tr><td align="center">Escull de quins cursos<br/>vols ser notificat/da per correu<br/>i dona-li a '<strong><i>Enviar</i></strong>'</td></tr>
+		<tr><td align="center">
+			<table align="center"><tr><td align="left">
+				<?php echo $gradesChBxs ?>
+			</td></tr></table>
+		</td></tr>
+		<tr><td align="center">
+			<input type="submit" name="Enviar"
+				value="Enviar" />
+			<input type="hidden" name="actionId"
+				value="<?php echo ACTION_NOTIFYME_DO ?>" />
+		</td></tr>
+	</table>
+  </form>
+<?php
+}
 
 /**
  * Escriu el menú d'opcions per a l'usuari.

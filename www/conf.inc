@@ -2,7 +2,7 @@
 
 $GLOBALS['debug']          = FALSE;  // Mostrar info pel troubleshooting
 $GLOBALS['mockToken']      = FALSE;  // Fixar el token per codi, no cookie 
-$GLOBALS['mockSess']       = FALSE;  // Recuperar sessió de fitxer
+$GLOBALS['mockSess']       = TRUE;  // Recuperar sessió de fitxer
 $GLOBALS['mockInjectSess'] = FALSE;  // Injectar cookie de sessió
                                      // Estableix-la llavors a
                                      // $GLOBALS['SESS_FJEAPI_MOCKING_COOKIE_VALUE']
@@ -23,6 +23,8 @@ define("ACTION_RESTORE",                 12);
 define("ACTION_SEE_NOTIFICATIONS",       13);
 define("ACTION_SEARCH_BY_GRADE",         14);
 define("ACTION_SHOW_LOGS",               15);
+define("ACTION_NOTIFYME_SHOW",           16);
+define("ACTION_NOTIFYME_DO",             17);
 
 define("AD_STATUS_PUBLISHED", 1);
 define("AD_STATUS_GRANTED",   2);
@@ -80,18 +82,9 @@ $GLOBALS['htmlHeadTitle'] = "Liber: Socialització de llibres impulsada per l'AM
 $GLOBALS['htmlBodyTitle'] = "Liber: Socialització de llibres";
 
 
-/*** FJEAPI | PHPMailer */
+/*** FJEAPI */
 $GLOBALS['MAIL_LIB'] = "FJEAPI";
-$GLOBALS['MAIL_FJEAPI_URL']='http://srv.fje.edu/api/conNETctor.php/enviaInformacio';
-
-//
-// Fins 2017:   $GLOBALS['MAIL_FJEAPI_URL']='http://srv.fje.edu/api/conNETctor.php/enviaInformacio';
-// Des de 2017: $GLOBALS['MAIL_FJEAPI_URL']='http://apis.net.fje.edu/api/conNETctor.php/enviaInformacio';
-//
-// 20170420: 
-// GET http://apis.net.fje.edu/api/conNETctor.php/validatokenCookie/0000-0000
-// POST http://apis.net.fje.edu/api/conNETctor.php/enviaInformacio
-//
+// $GLOBALS['MAIL_FJEAPI_URL']='http://srv.fje.edu/api/conNETctor.php/enviaInformacio';
 $GLOBALS['MAIL_FJEAPI_HTTP_HOST']='apis.net.fje.edu';
 $GLOBALS['MAIL_FJEAPI_HTTP_PORT']='80';
 $GLOBALS['MAIL_FJEAPI_HTTP_PATH']='/api/conNETctor.php/enviaInformacio';

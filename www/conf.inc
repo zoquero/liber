@@ -94,8 +94,8 @@ $GLOBALS['MAIL_FJEAPI_OKRESPONSE_SIMPLIFIED']='{Resultat:Ok}';
 
 $GLOBALS['SESS_FJEAPI_BASE_URL']='http://apis.net.fje.edu/api/conNETctor.php/validatokenCookie';
 $GLOBALS['SESS_FJEAPI_COOKIE_NAME']='tokenNet';
-// 0000-0000 per Usuari de prova
-// A0CEF30D-4D35-4CEE-8B5B-F643C8C52384
+// Path with mocking user data, relative to ROOT_PATH
+$GLOBALS['SESS_FJEAPI_MOCKING_DATA_FILE']="../priv/sess_sample/fje_validatokenCookie.DUMMY.json";
 $GLOBALS['SESS_FJEAPI_MOCKING_COOKIE_VALUE']='BE480C0C-AF79-4BFD-AFBF-E5472BC0DE5A';
 
 /*** Timeout de connexió fent fsockopen per enviar correu via L'API de FJE */

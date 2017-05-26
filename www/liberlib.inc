@@ -73,7 +73,7 @@ function echoErr() {
   Retorna el hash de valors trobats al JSON emmagatzemat el fitxer o NULL si no pot llegir o decodificar
   */
 function getUserDo_FileMock() {
-  $testFile = ROOT_PATH . "/../docs/exemple_sess/jfe_validatokenCookie.DUMMY.json";
+  $testFile = ROOT_PATH . "/" . $GLOBALS['SESS_FJEAPI_MOCKING_DATA_FILE'];
   if($GLOBALS['debug']) {
      echo "Obrirem testFile = $testFile<br>\n"; 
   }

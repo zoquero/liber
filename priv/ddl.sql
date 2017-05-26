@@ -32,14 +32,16 @@ CREATE TABLE `ads` (
   `ad_publishing_date` datetime NOT NULL,
   `image` varchar(255) NOT NULL,
   `grade` tinyint(4) NOT NULL,
+  `notified` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `owner` (`owner`),
   KEY `isbn` (`isbn`),
   KEY `status` (`status`),
   KEY `grade` (`grade`),
+  KEY `idx_notified` (`notified`),
   FULLTEXT KEY `ftsearch` (`summary`,`description`) COMMENT 'full text search de textos',
   CONSTRAINT `gradefk` FOREIGN KEY (`grade`) REFERENCES `grades` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8 COMMENT='Taula amb els anuncis de llibres a socialitzar';
+) ENGINE=InnoDB AUTO_INCREMENT=40 DEFAULT CHARSET=utf8 COMMENT='Taula amb els anuncis de llibres a socialitzar';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -54,7 +56,7 @@ CREATE TABLE `grades` (
   `name` varchar(120) NOT NULL,
   `enabled` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COMMENT='Cursos, com 1er d Infantil, ...';
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8 COMMENT='Cursos, com 1er d Infantil, ...';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -74,7 +76,7 @@ CREATE TABLE `interests` (
   KEY `ad` (`ad`),
   KEY `interested` (`interested`),
   CONSTRAINT `fkAd` FOREIGN KEY (`ad`) REFERENCES `ads` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=60 DEFAULT CHARSET=utf8 COMMENT='Interessos en llibres anunciats';
+) ENGINE=InnoDB AUTO_INCREMENT=74 DEFAULT CHARSET=utf8 COMMENT='Interessos en llibres anunciats';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -101,4 +103,4 @@ CREATE TABLE `logs` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-05-07 22:43:48
+-- Dump completed on 2017-05-26  7:59:11

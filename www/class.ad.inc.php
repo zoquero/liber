@@ -12,6 +12,7 @@ class Ad {
 	private $adPublishingDate = NULL;
 	private $image = '';
 	private $grade = -1;
+	private $notified = FALSE;
 	
 	/**
 	 * Array d'objectes Interest
@@ -26,7 +27,7 @@ class Ad {
 	public static $STATUS_PUBLISHED = 1;
 	public static $STATUS_SOFT_DELETED = 2;
 	
-	public function __construct($aId, $aOwner, $aIsbn, $aStatus, $aSummary, $aDescription, $aAdPublishingDate, $aImage, $aGrade) {
+	public function __construct($aId, $aOwner, $aIsbn, $aStatus, $aSummary, $aDescription, $aAdPublishingDate, $aImage, $aGrade, $aNotified) {
 		$this->id    = $aId;
 		$this->owner = $aOwner;
 		$this->isbn  = $aIsbn;
@@ -36,6 +37,7 @@ class Ad {
 		$this->adPublishingDate = $aAdPublishingDate;
 		$this->image = $aImage;
 		$this->grade = $aGrade;
+		$this->notified = $aNotified;
 	}
 
 	public function __destruct() {
@@ -339,6 +341,9 @@ class Ad {
 	}
 	public function getGrade() {
 		return $this->grade;
+	}	
+	public function getNotified() {
+		return $this->notified;
 	}	
 	public function setInterests($sInterests) {
 		if(! is_array($sInterests)) {

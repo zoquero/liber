@@ -192,7 +192,7 @@ class Dao {
 
 */
 
-	public function createAd($user, $fIsbn, $fSummary, $fDescription, $fImage, $grade) {
+	public function createAd($user, $fIsbn, $fSummary, $fDescription, $fImage, $grade, $notified = FALSE) {
 		if($user == NULL){
 			trigger_error("Error de programació: Rebut usuari NULL o buit creant un anunci", E_USER_WARNING);
 			return FALSE;
@@ -206,7 +206,7 @@ class Dao {
 			return FALSE;
 		}
 		// La consulta
-		$sql = "INSERT INTO ads (id, owner, isbn, status, summary, description, ad_publishing_date, image, grade) VALUES (NULL, ?, ?, ?, ?, ?, NOW(), ?, ?);";
+		$sql = "INSERT INTO ads (id, owner, isbn, status, summary, description, ad_publishing_date, image, grade, notified) VALUES (NULL, ?, ?, ?, ?, ?, NOW(), ?, ?, ?);";
 //echo "dao.createAd: Anem a executar sql= " . $sql . "<br>\n";
 		
 		// utilitzem un prepared statement
@@ -218,7 +218,8 @@ class Dao {
 			$scapedFDescription    = $this->mysqliCon->real_escape_string($fDescription);
 			$scapedImage           = $this->mysqliCon->real_escape_string($fImage);
 			$scapedGradeId         = $this->mysqliCon->real_escape_string($grade->getId());
-			if($stmt->bind_param("siisssi", $scapedMail, $scapedFIsbn, $scapedStatusPublished, $scapedSummary, $scapedFDescription, $scapedImage, $scapedGradeId) === FALSE) {
+			$scapedNotified        = boolval($notified);
+			if($stmt->bind_param("siisssii", $scapedMail, $scapedFIsbn, $scapedStatusPublished, $scapedSummary, $scapedFDescription, $scapedImage, $scapedGradeId, $scapedNotified) === FALSE) {
 				trigger_error("Errors associant variables a la consulta a la base de dades: <br/>(" .  $this->mysqliCon->errno . ") " . $this->mysqliCon->error, E_USER_WARNING);
 				return FALSE;
 			}
@@ -266,8 +267,9 @@ class Dao {
 		$aAdPublishingDate='';
 		$aImage='';
 		$aGrade=-1;
+		$aNotified=FALSE;
 		// La consulta
-		$sql = "SELECT id, owner, isbn, status, summary, description, ad_publishing_date, image, grade FROM ads where owner = ?";
+		$sql = "SELECT id, owner, isbn, status, summary, description, ad_publishing_date, image, grade, notified FROM ads where owner = ?";
 
 		/*
 		 * Comentari legacy, de quan hi havia una taula d'usuaris:
@@ -296,11 +298,11 @@ class Dao {
 				return NULL;
 			}
 			// associem resposta a variables
-			$stmt->bind_result($aId, $aOwner, $aIsbn, $aStatus, $aSummary, $aDescription, $aAdPublishingDate, $aImage, $aGrade);
+			$stmt->bind_result($aId, $aOwner, $aIsbn, $aStatus, $aSummary, $aDescription, $aAdPublishingDate, $aImage, $aGrade, $aNotified);
 			// llegim la resposta
 			while($stmt->fetch()) {
 				//				echo '<table><tr><td>'.$aId.'</td><td>'.$aMail.'</td><td>'.$aFullname.'</td></tr></table>';
-				array_push($r, new Ad($aId, $aOwner, $aIsbn, $aStatus, $aSummary, $aDescription, $aAdPublishingDate, $aImage, $aGrade));
+				array_push($r, new Ad($aId, $aOwner, $aIsbn, $aStatus, $aSummary, $aDescription, $aAdPublishingDate, $aImage, $aGrade, $aNotified));
 			}
 			if (! $stmt->close()) {
 				trigger_error("Error tancant l'statement de la Base de Dades:<br/>(" .  $this->mysqliCon->errno . ") " . $this->mysqliCon->error, E_USER_WARNING);
@@ -334,8 +336,9 @@ class Dao {
 		$aAdPublishingDate='';
 		$aImage='';
 		$aGrade=-1;
+		$aNotified=FALSE;
 		// La consulta
-		$sql = "SELECT id, owner, isbn, status, summary, description, ad_publishing_date, image, grade FROM ads where grade = ?";
+		$sql = "SELECT id, owner, isbn, status, summary, description, ad_publishing_date, image, grade, notified FROM ads where grade = ?";
 	
 		/*
 		 * Comentari legacy, de quan hi havia una taula d'usuaris:
@@ -364,11 +367,11 @@ class Dao {
 				return NULL;
 			}
 			// associem resposta a variables
-			$stmt->bind_result($aId, $aOwner, $aIsbn, $aStatus, $aSummary, $aDescription, $aAdPublishingDate, $aImage, $aGrade);
+			$stmt->bind_result($aId, $aOwner, $aIsbn, $aStatus, $aSummary, $aDescription, $aAdPublishingDate, $aImage, $aGrade, $aNotified);
 			// llegim la resposta
 			while($stmt->fetch()) {
 				//				echo '<table><tr><td>'.$aId.'</td><td>'.$aMail.'</td><td>'.$aFullname.'</td></tr></table>';
-				array_push($r, new Ad($aId, $aOwner, $aIsbn, $aStatus, $aSummary, $aDescription, $aAdPublishingDate, $aImage, $aGrade));
+				array_push($r, new Ad($aId, $aOwner, $aIsbn, $aStatus, $aSummary, $aDescription, $aAdPublishingDate, $aImage, $aGrade, $aNotified));
 			}
 			if (! $stmt->close()) {
 				trigger_error("Error tancant l'statement de la Base de Dades:<br/>(" .  $this->mysqliCon->errno . ") " . $this->mysqliCon->error, E_USER_WARNING);
@@ -398,8 +401,9 @@ class Dao {
 		$aAdPublishingDate='';
 		$aImage='';
 		$aGrade=-1;
+		$aNotified=FALSE;
 		// La consulta
-		$sql = "SELECT id, owner, isbn, status, summary, description, ad_publishing_date, image, grade FROM ads";
+		$sql = "SELECT id, owner, isbn, status, summary, description, ad_publishing_date, image, grade, notified FROM ads";
 	
 		// utilitzem un prepared statement
 		if($stmt = $this->mysqliCon->prepare($sql)) {
@@ -409,11 +413,11 @@ class Dao {
 				return NULL;
 			}
 			// associem resposta a variables
-			$stmt->bind_result($aId, $aOwner, $aIsbn, $aStatus, $aSummary, $aDescription, $aAdPublishingDate, $aImage, $aGrade);
+			$stmt->bind_result($aId, $aOwner, $aIsbn, $aStatus, $aSummary, $aDescription, $aAdPublishingDate, $aImage, $aGrade, $aNotified);
 			// llegim la resposta
 			while($stmt->fetch()) {
 				//				echo '<table><tr><td>'.$aId.'</td><td>'.$aMail.'</td><td>'.$aFullname.'</td></tr></table>';
-				array_push($r, new Ad($aId, $aOwner, $aIsbn, $aStatus, $aSummary, $aDescription, $aAdPublishingDate, $aImage, $aGrade));
+				array_push($r, new Ad($aId, $aOwner, $aIsbn, $aStatus, $aSummary, $aDescription, $aAdPublishingDate, $aImage, $aGrade, $aNotified));
 			}
 			if (! $stmt->close()) {
 				trigger_error("Error tancant l'statement de la Base de Dades:<br/>(" .  $this->mysqliCon->errno . ") " . $this->mysqliCon->error, E_USER_WARNING);
@@ -439,8 +443,9 @@ class Dao {
 		$aAdPublishingDate='';
 		$aImage='';
 		$aGrade=-1;
+		$aNotified=FALSE;
 		// La consulta
-		$sql = "SELECT id, owner, isbn, status, summary, description, ad_publishing_date, image, grade FROM ads where id = ?";
+		$sql = "SELECT id, owner, isbn, status, summary, description, ad_publishing_date, image, grade, notified FROM ads where id = ?";
 
 		// utilitzem un prepared statement
 		if($stmt = $this->mysqliCon->prepare($sql)) {
@@ -456,11 +461,11 @@ class Dao {
 				return NULL;
 			}
 			// associem resposta a variables
-			$stmt->bind_result($aId, $aOwner, $aIsbn, $aStatus, $aSummary, $aDescription, $aAdPublishingDate, $aImage, $aGrade);
+			$stmt->bind_result($aId, $aOwner, $aIsbn, $aStatus, $aSummary, $aDescription, $aAdPublishingDate, $aImage, $aGrade, $aNotified);
 			// llegim la resposta
 			if($stmt->fetch()) {
 				//				echo '<table><tr><td>'.$aId.'</td><td>'.$aMail.'</td><td>'.$aFullname.'</td></tr></table>';
-				$r = new Ad($aId, $aOwner, $aIsbn, $aStatus, $aSummary, $aDescription, $aAdPublishingDate, $aImage, $aGrade);
+				$r = new Ad($aId, $aOwner, $aIsbn, $aStatus, $aSummary, $aDescription, $aAdPublishingDate, $aImage, $aGrade, $aNotified);
 			}
 			if (! $stmt->close()) {
 				trigger_error("Error tancant l'statement de la Base de Dades<br/>(" .  $this->mysqliCon->errno . ") " . $this->mysqliCon->error, E_USER_WARNING);
@@ -525,8 +530,9 @@ class Dao {
 		$aAdPublishingDate='';
 		$aImage='';
 		$aGrade=-1;
+		$aNotified=FALSE;
 		// La consulta
-		$sql = "SELECT id, owner, isbn, status, summary, description, ad_publishing_date, image, grade FROM ads where isbn = ?";
+		$sql = "SELECT id, owner, isbn, status, summary, description, ad_publishing_date, image, grade, notified FROM ads where isbn = ?";
 
 		/*
 		 * Comentari legacy, de quan hi havia una taula d'usuaris:
@@ -555,11 +561,11 @@ class Dao {
 				return NULL;
 			}
 			// associem resposta a variables
-			$stmt->bind_result($aId, $aOwner, $aIsbn, $aStatus, $aSummary, $aDescription, $aAdPublishingDate, $aImage, $aGrade);
+			$stmt->bind_result($aId, $aOwner, $aIsbn, $aStatus, $aSummary, $aDescription, $aAdPublishingDate, $aImage, $aGrade, $aNotified);
 			// llegim la resposta
 			while($stmt->fetch()) {
 				//				echo '<table><tr><td>'.$aId.'</td><td>'.$aMail.'</td><td>'.$aFullname.'</td></tr></table>';
-				array_push($r, new Ad($aId, $aOwner, $aIsbn, $aStatus, $aSummary, $aDescription, $aAdPublishingDate, $aImage, $aGrade));
+				array_push($r, new Ad($aId, $aOwner, $aIsbn, $aStatus, $aSummary, $aDescription, $aAdPublishingDate, $aImage, $aGrade, $aNotified));
 			}
 			if (! $stmt->close()) {
 				trigger_error("Error tancant l'statement de la Base de Dades<br/>(" .  $this->mysqliCon->errno . ") " . $this->mysqliCon->error, E_USER_WARNING);
@@ -710,6 +716,7 @@ class Dao {
 		$aAdPublishingDate=NULL;
 		$aImage='';
 		$aGrade=-1;
+		$aNotified=FALSE;
 		
 		// La consulta
 		/*
@@ -717,7 +724,7 @@ class Dao {
 		select * from ads where MATCH (`summary`, `description`) AGAINST ('Mate')
 		 */
 		
-		$sql = "SELECT id, owner, isbn, status, summary, description, ad_publishing_date, image, grade FROM ads where MATCH (`summary`, `description`) AGAINST ( ? )";
+		$sql = "SELECT id, owner, isbn, status, summary, description, ad_publishing_date, image, grade, notified FROM ads where MATCH (`summary`, `description`) AGAINST ( ? )";
 		if(count($m) > 1) {
 			for($i = 1; $i < count($m); $i++) {
 				$sql .= " OR MATCH (`summary`, `description`) AGAINST ( ? )";
@@ -781,10 +788,10 @@ class Dao {
 				return NULL;
 			}
 			// associem resposta a variables
-			$stmt->bind_result($aId, $aOwner, $aIsbn, $aStatus, $aSummary, $aDescription, $aAdPublishingDate, $aImage, $aGrade);
+			$stmt->bind_result($aId, $aOwner, $aIsbn, $aStatus, $aSummary, $aDescription, $aAdPublishingDate, $aImage, $aGrade, $aNotified);
 			// llegim la resposta
 			while($stmt->fetch()) {
-				$anAdRead=new Ad($aId, $aOwner, $aIsbn, $aStatus, $aSummary, $aDescription, $aAdPublishingDate, $aImage, $aGrade);
+				$anAdRead=new Ad($aId, $aOwner, $aIsbn, $aStatus, $aSummary, $aDescription, $aAdPublishingDate, $aImage, $aGrade, $aNotified);
 				array_push($r, $anAdRead);
 			}
 

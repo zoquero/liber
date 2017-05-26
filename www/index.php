@@ -322,7 +322,24 @@ switch($GLOBALS["actionId"]) {
 		break;
 	case ACTION_NOTIFYME_DO:
 		//
-		echo "Guardant-ho ... (PENDENT!)";
+		$checkedNotifyMeGrades = array();
+		if(! empty($_POST['notifymeGrades'])) {
+		    if(is_array($_POST['notifymeGrades'])) {
+//				echo "És array<br/>\n";
+				$checkedNotifyMeGrades = $_POST['notifymeGrades'];
+		    }
+		    else {
+//				echo " NO És array<br/>\n";
+				$checkedNotifyMeGrades = array($_POST['notifymeGrades']);
+		    }
+		    foreach($checkedNotifyMeGrades as $notifymeGrade) {
+//		    	echo "Has marcat $notifymeGrade<br/>\n";
+				if(!$dao->createNotifyme($user, $notifymeGrade)) {
+					trigger_error("Error: No s'ha pogut enregistrar a la base de dades el seu interès en ser notificat", E_USER_ERROR);
+				}
+		    }
+		}
+		echo "<b>Hem enregistrat</b> els seus interès en <b>ser notificat/da</b>.<br/>\n";
 		break;
 	default:
 		showMessage("Escull una opció:");

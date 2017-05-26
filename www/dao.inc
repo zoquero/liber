@@ -978,7 +978,52 @@ class Dao {
 		return $r;
 	}
 	
-	
+
+
+	public function createNotifyme($user, $gradeId) {
+		if($user == NULL){
+			trigger_error("Error de programació: Rebut usuari NULL o buit creant un Notifyme", E_USER_WARNING);
+			return FALSE;
+		}
+		if($gradeId == NULL){
+			trigger_error("Error de programació: Rebut curs NULL o buit creant un Notifyme", E_USER_WARNING);
+			return FALSE;
+		}
+		// La consulta
+		$sql = "INSERT INTO notifyme (owner, grade) VALUES (?, ?);";
+//echo "dao.createNotifyme: Anem a executar sql= " . $sql . "<br>\n";
+		
+		// utilitzem un prepared statement
+		if($stmt = $this->mysqliCon->prepare($sql)) {
+			$scapedMail            = $this->mysqliCon->real_escape_string($user['mail']);
+			$scapedGradeId         = intval($gradeId);
+			if($stmt->bind_param("si", $scapedMail, $scapedGradeId) === FALSE) {
+				trigger_error("Errors associant variables a la consulta a la base de dades: <br/>(" .  $this->mysqliCon->errno . ") " . $this->mysqliCon->error, E_USER_WARNING);
+				return FALSE;
+			}
+				
+			// executem la consulta
+			if( $stmt->execute() === FALSE) {
+				trigger_error("No s'ha pogut executar la inserció a la base de dades: <br/>(" .  $this->mysqliCon->errno . ") " . $this->mysqliCon->error, E_USER_WARNING);
+				return FALSE;
+			}
+			if ($this->mysqliCon->affected_rows != 1) {
+				trigger_error("No s'ha pogut inserir el notifyme a la Base de Dades", E_USER_WARNING);
+				return FALSE;
+			}
+			if (! $stmt->close()) {
+				trigger_error("Error tancant l'statement de la Base de Dades: <br/>(" .  $this->mysqliCon->errno . ") " . $this->mysqliCon->error, E_USER_WARNING);
+				return FALSE;
+			}
+			// echo "dao.createAd: Fet<br>\n";
+			return TRUE;
+		}
+		else {
+			trigger_error("No s'ha pogut preparar l'acció sobre la base de dades: <br/>(" .  $this->mysqliCon->errno . ") " . $this->mysqliCon->error, E_USER_WARNING);
+			return FALSE;
+		}
+		return FALSE;
+	}
 	
 }
 

@@ -324,10 +324,18 @@ function getEnabledGradesSelect($dao, $fGrade) {
 }
 
 function getEnabledGradesNotifymeCheckbox($dao, $user) {
-	$grades      = $dao->getEnabledGrades();
+	$grades        = $dao->getEnabledGrades();
+	$notifyMeArray = $dao->getNotifymesByOwner($user);
 	$gradesChBx  = "";
 	foreach ($grades as $aGrade) {
-		$gradesChBx.="  <input type=\"checkbox\" name=\"notifymeGrades\" value=\"" . $aGrade->getId() . "\"/>" . $aGrade->getName() . "<br/>\n";
+		$selectedNotifyMe = "";
+		foreach($notifyMeArray as $aCheckedNotifyMe) {
+			if($aCheckedNotifyMe->getGrade() == $aGrade->getId()) {
+				$selectedNotifyMe = " checked";
+				break;
+			}
+		}
+		$gradesChBx.="  <input type=\"checkbox\" name=\"notifymeGrades[]\" value=\"" . $aGrade->getId() . "\" $selectedNotifyMe/>" . $aGrade->getName() . "<br/>\n";
 	}
 	return $gradesChBx;
 }

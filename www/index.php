@@ -321,7 +321,9 @@ switch($GLOBALS["actionId"]) {
 		showNotifyMeForm($dao, $user);
 		break;
 	case ACTION_NOTIFYME_DO:
-		//
+		if(! $dao->clearNotifymes($user)) {
+			trigger_error("Error: No s'ha pogut esborrar de la base de dades els seus interessos en ser notificat abans d'establir els nous", E_USER_ERROR);
+		}
 		$checkedNotifyMeGrades = array();
 		if(! empty($_POST['notifymeGrades'])) {
 		    if(is_array($_POST['notifymeGrades'])) {

@@ -6,6 +6,7 @@ require_once("class.grade.inc.php");
 // require_once("class.user.inc.php"); // no user table
 require_once("class.interest.inc.php");
 require_once("class.logentry.inc.php");
+require_once("class.notifyme.inc.php");
 require_once("liberlib.inc");
 
 
@@ -979,6 +980,42 @@ class Dao {
 	}
 	
 
+	public function clearNotifymes($user) {
+		if($user == NULL){
+			trigger_error("Error de programació: Rebut usuari NULL o buit creant un Notifyme", E_USER_WARNING);
+			return FALSE;
+		}
+		// La consulta
+		$sql = "DELETE FROM notifymes WHERE owner = ?;";
+//echo "dao.clearNotifymes: Anem a executar sql= " . $sql . "<br>\n";
+		
+		// utilitzem un prepared statement
+		if($stmt = $this->mysqliCon->prepare($sql)) {
+			$scapedMail            = $this->mysqliCon->real_escape_string($user['mail']);
+			if($stmt->bind_param("s", $scapedMail) === FALSE) {
+				trigger_error("Errors associant variables a la consulta a la base de dades: <br/>(" .  $this->mysqliCon->errno . ") " . $this->mysqliCon->error, E_USER_WARNING);
+				return FALSE;
+			}
+				
+			// executem la consulta
+			if( $stmt->execute() === FALSE) {
+				trigger_error("No s'ha pogut executar l'esborrat de notifymes a la base de dades: <br/>(" .  $this->mysqliCon->errno . ") " . $this->mysqliCon->error, E_USER_WARNING);
+				return FALSE;
+			}
+			if (! $stmt->close()) {
+				trigger_error("Error tancant l'statement de la Base de Dades: <br/>(" .  $this->mysqliCon->errno . ") " . $this->mysqliCon->error, E_USER_WARNING);
+				return FALSE;
+			}
+			// echo "dao.createAd: Fet<br>\n";
+			return TRUE;
+		}
+		else {
+			trigger_error("No s'ha pogut preparar l'acció sobre la base de dades: <br/>(" .  $this->mysqliCon->errno . ") " . $this->mysqliCon->error, E_USER_WARNING);
+			return FALSE;
+		}
+		return FALSE;
+	}
+	
 
 	public function createNotifyme($user, $gradeId) {
 		if($user == NULL){
@@ -990,7 +1027,7 @@ class Dao {
 			return FALSE;
 		}
 		// La consulta
-		$sql = "INSERT INTO notifyme (owner, grade) VALUES (?, ?);";
+		$sql = "INSERT INTO notifymes (owner, grade) VALUES (?, ?);";
 //echo "dao.createNotifyme: Anem a executar sql= " . $sql . "<br>\n";
 		
 		// utilitzem un prepared statement
@@ -1023,6 +1060,56 @@ class Dao {
 			return FALSE;
 		}
 		return FALSE;
+	}
+	
+	/**
+	 * Retorna l'array d'objectes Notifyme de l'usuari representat per l'objecte rebut user
+	 * @param unknown $user objecte user rebut representant a l'usuari
+	 * @return array d'objectes Notifyme de l'usuari representat per l'objecte rebut user
+	 */
+	function getNotifymesByOwner($user) {
+		if($user == NULL){
+			trigger_error("Error de programació: Rebut usuari NULL fent getNotifymesByOwner", E_USER_WARNING);
+			return NULL;
+		}
+		$r = array(); // NotifyMe
+		$aId='';
+		$aOwner='';
+		$aGrade=-1;
+		// La consulta
+		$sql = "SELECT id, owner, grade FROM notifymes where owner = ?";
+
+		// utilitzem un prepared statement
+		if($stmt = $this->mysqliCon->prepare($sql)) {
+		
+			$scaped = $this->mysqliCon->real_escape_string($user['mail']);
+			if($stmt->bind_param("s", $scaped) === FALSE) {
+				trigger_error("Errors associant variables a la consulta a la base de dades", E_USER_WARNING);
+				return NULL;
+			}
+				
+			// executem la consulta
+			if( $stmt->execute() === FALSE) {
+				trigger_error("No s'ha pogut executar la consulta a la base de dades: <br/>(" .  $this->mysqliCon->errno . ") " . $this->mysqliCon->error, E_USER_WARNING);
+				return NULL;
+			}
+			// associem resposta a variables
+			$stmt->bind_result($aId, $aOwner, $aGrade);
+			// llegim la resposta
+			while($stmt->fetch()) {
+				//				echo '<table><tr><td>'.$aId.'</td><td>'.$aMail.'</td><td>'.$aFullname.'</td></tr></table>';
+				array_push($r, new NotifyMe($aId, $aOwner, $aGrade));
+			}
+			if (! $stmt->close()) {
+				trigger_error("Error tancant l'statement de la Base de Dades:<br/>(" .  $this->mysqliCon->errno . ") " . $this->mysqliCon->error, E_USER_WARNING);
+				return NULL;
+			}
+		}
+		else {
+			trigger_error("No s'ha pogut preparar l'acció sobre la base de dades: <br/>(" .  $this->mysqliCon->errno . ") " . $this->mysqliCon->error, E_USER_WARNING);
+			return NULL;
+		}
+		return $r;
 	}
 	
 }

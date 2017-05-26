@@ -41,7 +41,7 @@ CREATE TABLE `ads` (
   KEY `idx_notified` (`notified`),
   FULLTEXT KEY `ftsearch` (`summary`,`description`) COMMENT 'full text search de textos',
   CONSTRAINT `gradefk` FOREIGN KEY (`grade`) REFERENCES `grades` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=40 DEFAULT CHARSET=utf8 COMMENT='Taula amb els anuncis de llibres a socialitzar';
+) ENGINE=InnoDB AUTO_INCREMENT=43 DEFAULT CHARSET=utf8 COMMENT='Taula amb els anuncis de llibres a socialitzar';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -93,6 +93,22 @@ CREATE TABLE `logs` (
   `description` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `notifymes`
+--
+
+DROP TABLE IF EXISTS `notifymes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `notifymes` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `owner` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `grade` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_notifyme` (`owner`,`grade`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -103,4 +119,4 @@ CREATE TABLE `logs` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-05-26  7:59:11
+-- Dump completed on 2017-05-26 18:46:47

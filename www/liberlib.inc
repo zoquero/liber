@@ -14,6 +14,7 @@ function printLogEntries($dao) {
   showLogEntryFooter();
 }
 
+
 function myErrorHandler($errno, $errstr, $errfile, $errline) {
 	if (!(error_reporting() & $errno)) {
 		// Codi no inclòs a l'error_reporting
@@ -57,8 +58,34 @@ function myErrorHandler($errno, $errstr, $errfile, $errline) {
         	exit(1);
    		break;
     }
-			
-			
+}
+
+
+function myCliErrorHandler($errno, $errstr, $errfile, $errline) {
+	if (!(error_reporting() & $errno)) {
+		// Codi no inclòs a l'error_reporting
+		return;
+	}
+
+    switch ($errno) {
+    case E_USER_ERROR:
+        echo "Error: [$errno] $errstr a línia $errline de $errfile (abortem l'execució)\n";
+        exit(1);
+//        break;
+    case E_USER_WARNING:
+        echo "Avís: [$errno] $errstr a línia $errline de $errfile\n";
+        break;
+    case E_USER_NOTICE:
+        echo "Nota: [$errno] $errstr a línia $errline de $errfile\n";
+        break;
+    case E_NOTICE:
+       echo "Nota: [$errno] $errstr a línia $errline de $errfile\n";
+        break;
+    default:
+        echo "Error: [$errno] $errstr a línia $errline de $errfile (abortem l'execució)\n";
+        exit(1);
+//   		break;
+    }
 }
 
 function echoErr() {
@@ -1185,6 +1212,30 @@ EOJSON;
 	return $msg;
 }
 
+/***
+ * Retorna un string amb el Json que espera l'API de FJE per enviar mails.
+ */
+function getFjeApiJsonHtmlMsgNotifyMe($theAd, $theAdUserMail, $grade) {
+	$isbn=$theAd->getIsbn();
+	$summary=$theAd->getSummary();
+	$gradeName = $grade->getName();
+	$body = <<<EOBODY
+<html><body><H1>Socialització de llibres</H1><p>Benvolgut/da:</p><p>Alg&uacute; ha publicat un anunci d'un llibre del curs $gradeName en el que estaves interessat/da. Pots accedir a l'<a href="http://liber.net.fje.edu/" target="_blank">aplicaci&oacute; 'Liber'</a> per mirar els anuncis i actualitzar la teva subscripci&oacute; a notificacions de nous llibres anunciats</p><p>Moltes gr&agrave;cies per utilitzar aquest servei de socialitzaci&oacute;.</p><p>AMPA de Joan XXIII</p></body></html>
+EOBODY;
+	
+	$to=$theAdUserMail;
+	$fromName=$GLOBALS['MAIL_FROM_NAME'];
+
+	$subject = scapeBody($GLOBALS['MAIL_SUBJECT']);
+	$body    = scapeBody($body);
+	
+	$msg = <<<EOJSON
+{"to":"$to","nomBustia":"$fromName","subject":"$subject","cos":"$body"}
+EOJSON;
+
+	return $msg;
+}
+
 function scapeBody($msg) {
 	$msg = str_replace('\\',   '',       $msg);
 	$msg = str_replace('"',    '&quot;', $msg);
@@ -1390,5 +1441,136 @@ Content-Type: text/html
 
 	return FALSE;
 }
+
+
+/**
+ * Envia un mail a algú notificant-li que hi ha un nou llibre d'un curs del que busca llibres 
+ * @param Ad $theAd L'anunci
+ * @param AD $theAdUserMail L'anunciant
+ * @param String $grade grade Object
+ * @return boolean True si OK, False si errors.
+ */
+function sendMailWithNotifyMe($theAd, $theAdUserMail, $grade) {
+		/**
+		 * Utilitzant sockets, permetem posar 'allow_url_fopen' a 'false' al php.ini
+		 */
+
+		$result = TRUE;
+		$resultText="Errors using mail API";
+
+		// $GLOBALS['MAIL_FJEAPI_HTTP_HOST']='srv.fje.edu';
+		// $GLOBALS['MAIL_FJEAPI_HTTP_PORT']='80';
+		// $GLOBALS['MAIL_FJEAPI_HTTP_PATH']='/api/conNETctor.php/enviaInformacio';
+		
+		$jsonMsg=getFjeApiJsonHtmlMsgNotifyMe($theAd, $theAdUserMail, $grade);
+	
+		$apiResponse='';
+		$apiResponseHeaders='';
+		$apiResponseBody='';
+		// $host  $port  $fullpath
+		$host=$GLOBALS['MAIL_FJEAPI_HTTP_HOST'];
+		$port=$GLOBALS['MAIL_FJEAPI_HTTP_PORT'];
+		$path=$GLOBALS['MAIL_FJEAPI_HTTP_PATH'];
+// print "DEBUG: MAIL: host=$host port=$port path=$path<br/>\n";
+		
+		$fp = fsockopen($host, $port, $errno, $errstr, $GLOBALS['SOCKET_CONN_TIMEOUT']);
+		if(function_exists('stream_set_timeout'))
+			stream_set_timeout($fp, $GLOBALS['SOCKET_RW_TIMEOUT']);
+		if(! $fp) {
+			$result = FALSE;
+			$resultText="Can't connect to mail API";
+		}
+		else {
+			$out  = "POST $path HTTP/1.1\r\n";
+			$out .= "Host: $host:$port\r\n";
+			$out .= "Content-Type: application/json; charset=utf-8\r\n";
+			$out .= "Content-Length: " . strlen($jsonMsg) . "\r\n";
+			$out .= "Connection: Close\r\n\r\n";
+			$out .= "$jsonMsg\r\n";
+			
+			if($GLOBALS['debug']) {
+				print "DEBUG: MAIL: Anem a escriure això:<br/>\n<pre><code>$out</code></pre><br/>\n";
+			}
+			
+			fwrite($fp, $out);
+			while (!feof($fp)) {
+				// fgets($fp, 128);
+				$apiResponse .= fread($fp, $GLOBALS['MAIL_FJEAPI_MAX_BUFF']);
+				if (strlen($apiResponse) > $GLOBALS['MAIL_FJEAPI_MAX_RESPONSE_SIZE']) {
+					$result = FALSE;
+					$resultText="Mail API response exceeds max size (" . $GLOBALS['MAIL_FJEAPI_MAX_RESPONSE_SIZE'] . " bytes" ;
+					break;
+				}
+			}
+			fclose($fp);
+			
+			if($GLOBALS['debug']) {
+				print "DEBUG: API response complet:<br/>\n<pre><code>$apiResponse</code></pre><br/>\n";
+			}
+
+
+/*
+ * Exemple de resposta davant d'error:
+ HTTP/1.1 500 Internal Server Error
+Date: Mon, 01 May 2017 20:20:40 GMT
+Server: Apache/2.4.7 (Ubuntu)
+X-Powered-By: PHP/5.5.9-1ubuntu4.21
+Content-Length: 1466
+Connection: close
+Content-Type: text/html
+
+ 
+
+ 
+<html><head><title>Slim Application Error</title>...
+ */
+
+/*
+ * Exemple de resposta exitosa:
+HTTP/1.1 200 OK
+Date: Mon, 01 May 2017 20:24:29 GMT
+Server: Apache/2.4.7 (Ubuntu)
+X-Powered-By: PHP/5.5.9-1ubuntu4.21
+Content-Length: 7
+Connection: close
+Content-Type: text/html
+
+ {  "Resultat"  : "Ok"} 
+
+
+
+ */
+ 
+			list($apiResponseHeaders, $apiResponseBody) = explode("\r\n\r\n", $apiResponse, 2);
+
+			$simplifiedApiResponseBody = preg_replace('/[\s"]+/S', "", $apiResponseBody);
+
+			if($GLOBALS['debug']) {
+				print "DEBUG: API response body: [$apiResponseBody]<br/>\n";
+				print "DEBUG: API response body sesgat: [$simplifiedApiResponseBody]<br/>\n";
+				print "DEBUG: Referència = [" . $GLOBALS['MAIL_FJEAPI_OKRESPONSE_SIMPLIFIED'] . "]<br/>\n";
+			}
+
+			$sarbLower = strtolower($simplifiedApiResponseBody);
+			$refLower  = strtolower($GLOBALS['MAIL_FJEAPI_OKRESPONSE_SIMPLIFIED']);
+			
+			if (strcmp($sarbLower, $refLower) != 0) {
+				trigger_error("L'API per enviar correus sembla retornar errors ($apiResponseBody). Probablement el correu no s'enviï, et recomanem esperar i reintentar fins que funcioni." , E_USER_WARNING);
+				return FALSE;
+			}
+			else {
+				print "<b>Correu enviat amb èxit</b></br>\n";
+				return TRUE;
+			}
+
+		}
+		
+		if ($result === FALSE) {
+			trigger_error("Errors enviant el correu: $resultText" , E_USER_WARNING);
+			return FALSE;
+		}
+	return FALSE;
+}
+
 
 ?>

@@ -8,7 +8,13 @@ class User {
 	private $admin  = FALSE;
 		
 
+	/**
+	  * @deprecated Finally there's no user table
+	  */
 	public function __construct($aId, $aMail, $aName, $aFullname) {
+	
+		die "Obsolete object. There's no user table";
+		
 		$this->id       = $aId;
 		$this->mail     = $aMail;
 		$this->name     = $aname;

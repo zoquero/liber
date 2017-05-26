@@ -25,6 +25,7 @@ define("ACTION_SEARCH_BY_GRADE",         14);
 define("ACTION_SHOW_LOGS",               15);
 define("ACTION_NOTIFYME_SHOW",           16);
 define("ACTION_NOTIFYME_DO",             17);
+define("ACTION_NOTIFYME_MAIL",           18);
 
 define("AD_STATUS_PUBLISHED", 1);
 define("AD_STATUS_GRANTED",   2);
@@ -73,7 +74,7 @@ define("IMAGE_LANDSCAPE_TO_RESIZE",	4);
 
 
 /*** Llista separada per espais dels administradors de l'aplicació. */
-$GLOBALS['appAdmins'] = array("zoquero@gmail.com", "ampa.joan23@fje.edu");
+$GLOBALS['appAdmins'] = array("zoquero2@gmail.com", "ampa.joan23@fje.edu");
 
 
 /*** Títol head de les pàgines */

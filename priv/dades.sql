@@ -1,1 +1,14 @@
-INSERT INTO `grades` VALUES (1,'1er de primària',1),(2,'2on de primària',1),(3,'3er de primària',1),(4,'4t de primària',1),(5,'5è de primària',1),(6,'6è de primària',1),(7,'1er de ESO',1),(8,'2on de ESO',1),(9,'3er de ESO',1),(10,'4t de ESO',1),(11,'1er de batxillerat',1),(12,'2on de batxillerat',1);
+INSERT INTO `grades` VALUES (1,'1er de primària',1),
+                            (2,'2on de primària',1),
+                            (3,'3er de primària',1),
+                            (4,'4t de primària',1),
+                            (5,'5è de primària',1),
+                            (6,'6è de primària',1),
+                            (7,'1er de ESO',1),
+                            (8,'2on de ESO',1),
+                            (9,'3er de ESO',1),
+                            (10,'4t de ESO',1),
+                            (11,'1er de batxillerat',1),
+                            (12,'2on de batxillerat',1),
+                            (13,'FP grau mig',1),
+                            (14,'FP grau superior',1);

@@ -627,6 +627,46 @@ class Dao {
 		return $r;
 	}
 
+	public function updateAdSetNotified($adId) {
+		if($adId == NULL || $adId < 0){
+			trigger_error("Error de programació: Rebut adId NULL o erroni a updateAdSetNotified", E_USER_WARNING);
+			return FALSE;
+		}
+		// La consulta
+		$sql = "UPDATE ads set notified = TRUE where id = ?;";
+//echo "dao.updateAdSetNotified: Anem a executar sql= " . $sql . "<br>\n";
+		
+		// utilitzem un prepared statement
+		if($stmt = $this->mysqliCon->prepare($sql)) {
+			$scapedId = intval($adId);
+			if($stmt->bind_param("i", $scapedId) === FALSE) {
+				trigger_error("Errors associant variables a la consulta a la base de dades: <br/>(" .  $this->mysqliCon->errno . ") " . $this->mysqliCon->error, E_USER_WARNING);
+				return FALSE;
+			}
+				
+			// executem la consulta
+			if( $stmt->execute() === FALSE) {
+				trigger_error("No s'ha pogut executar la inserció a la base de dades: <br/>(" .  $this->mysqliCon->errno . ") " . $this->mysqliCon->error, E_USER_WARNING);
+				return FALSE;
+			}
+			if ($this->mysqliCon->affected_rows != 1) {
+				trigger_error("No s'ha pogut actualitzar l'anunci a la Base de Dades", E_USER_WARNING);
+				return FALSE;
+			}
+			if (! $stmt->close()) {
+				trigger_error("Error tancant l'statement de la Base de Dades: <br/>(" .  $this->mysqliCon->errno . ") " . $this->mysqliCon->error, E_USER_WARNING);
+				return FALSE;
+			}
+			// echo "dao.updateAdSetNotified: Fet<br>\n";
+			return TRUE;
+		}
+		else {
+			trigger_error("No s'ha pogut preparar l'acció sobre la base de dades: <br/>(" .  $this->mysqliCon->errno . ") " . $this->mysqliCon->error, E_USER_WARNING);
+			return FALSE;
+		}
+		return FALSE;
+	}
+
 
 	/**
 	 * Creació d'un interès sobre un anunci

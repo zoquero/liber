@@ -341,7 +341,8 @@ switch($GLOBALS["actionId"]) {
 				}
 		    }
 		}
-		echo "<b>Hem enregistrat</b> els seus interès en <b>ser notificat/da</b>.<br/>\n";
+		echo "<p><b>Hem enregistrat</b> els teus interessos en <b>ser notificat/da</b>.
+		         <br/>Sàpigues que les notificacions s'envien només <b>un cop al dia</b></p>\n";
 		break;
 	default:
 		showMessage("Escull una opció:");

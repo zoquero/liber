@@ -45,7 +45,7 @@ class Ad {
 	}
 
 	public function __toString() {
-		return "Ad del usuari". $this->id . ", amb isbn " . $this->isbn . ", summary " . $this->summary . ", imatge " . $this->image . " del curs " . $this->grade;
+		return "Ad del usuari ". $this->id . ", amb isbn " . $this->isbn . ", summary " . $this->summary . ", imatge " . $this->image . " del curs " . $this->grade;
 	}
 	
 	/**

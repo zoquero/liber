@@ -2,34 +2,15 @@
 
 $GLOBALS['debug']          = FALSE;  // Mostrar info pel troubleshooting
 $GLOBALS['mockToken']      = FALSE;  // Fixar el token per codi, no cookie 
-$GLOBALS['mockSess']       = TRUE;  // Recuperar sessió de fitxer
+$GLOBALS['mockSess']       = FALSE;  // Recuperar sessió de fitxer
 $GLOBALS['mockInjectSess'] = FALSE;  // Injectar cookie de sessió
                                      // Estableix-la llavors a
                                      // $GLOBALS['SESS_FJEAPI_MOCKING_COOKIE_VALUE']
 
-define("ACTION_NONE",                     0);
-define("ACTION_SET_DUMMY_USERNAME",       1);
-define("ACTION_NEW_AD_FORM",              2);
-define("ACTION_SEARCH_BY_ISBN",           3);
-define("ACTION_SEARCH_BY_KEYWORDS",       4);
-define("ACTION_NEW_AD_PREVIEW",           5);
-define("ACTION_SHOW_MY_ADS",              6);
-define("ACTION_SHOW_ALL_ADS",             7);
-define("ACTION_DELETE_ADD",               8);
-define("ACTION_BE_INTERESTED_IN_ADD",     9);
-define("ACTION_BE_INTERESTED_IN_ADD_DO", 10);
-// define("ACTION_BACKUP",                  11);
-define("ACTION_RESTORE",                 12);
-define("ACTION_SEE_NOTIFICATIONS",       13);
-define("ACTION_SEARCH_BY_GRADE",         14);
-define("ACTION_SHOW_LOGS",               15);
-define("ACTION_NOTIFYME_SHOW",           16);
-define("ACTION_NOTIFYME_DO",             17);
-define("ACTION_NOTIFYME_MAIL",           18);
-
-define("AD_STATUS_PUBLISHED", 1);
-define("AD_STATUS_GRANTED",   2);
-
+/* Segons a dormir el batch després d'enviar
+ * cada correu amb notificacions sobre anuncis.
+ */
+$GLOBALS['SLEEP_SEC_BETWEEN_NOTIFICATIONS'] = 5;
 
 /*** mysql hostname ***/
 $GLOBALS['dbHostname'] 	= 'localhost';
@@ -126,14 +107,39 @@ $GLOBALS['MAIL_SMTPAUTH'] 		= true;
   * "Hemos detectado actividad inusual en la cuenta a la que estás intentando acceder.
   * Para continuar, sigue las instrucciones siguientes."
   */
-$GLOBALS['MAIL_USERNAME'] 		= 'zoquero.noreply@gmail.com';
-$GLOBALS['MAIL_PASSWORD'] 		= 'Pa$$word0';
+$GLOBALS['MAIL_USERNAME'] 		  = 'none@gmail.com';
+$GLOBALS['MAIL_PASSWORD'] 		  = 'password';
 /** 'tls' per SMTPS de Gmail */
-$GLOBALS['MAIL_SMTPSECURE'] 	= 'tls';
-$GLOBALS['MAIL_FROM'] 			= 'zoquero.noreply@gmail.com';
-$GLOBALS['MAIL_FROM_NAME']		= 'AMPA Joan XXIII (no responguis, sisplau)';
-$GLOBALS['MAIL_REPLYTO'] 		= 'zoquero.noreply@gmail.com';
-$GLOBALS['MAIL_REPLYTO_NAME']	= 'AMPA Joan XXIII (no responguis, sisplau)';
-$GLOBALS['MAIL_SUBJECT']		= 'Algú està interessat en un llibre que has anunciat';
+$GLOBALS['MAIL_SMTPSECURE'] 	  = 'tls';
+$GLOBALS['MAIL_FROM'] 			  = 'none@gmail.com';
+$GLOBALS['MAIL_FROM_NAME']		  = 'AMPA Joan XXIII (no responguis)';
+$GLOBALS['MAIL_REPLYTO'] 		  = 'none@gmail.com';
+$GLOBALS['MAIL_REPLYTO_NAME']	  = 'AMPA Joan XXIII (no responguis)';
+$GLOBALS['MAIL_SUBJECT']		  = 'Algú està interessat en un llibre que has anunciat';
+$GLOBALS['MAIL_SUBJECT_NOTIFYME'] = "S'ha publicat un anunci de llibre que potser t'interessi";
+$GLOBALS['LIBER_URL']             = 'http://liber.net.fje.edu/';
+
+define("ACTION_NONE",                     0);
+define("ACTION_SET_DUMMY_USERNAME",       1);
+define("ACTION_NEW_AD_FORM",              2);
+define("ACTION_SEARCH_BY_ISBN",           3);
+define("ACTION_SEARCH_BY_KEYWORDS",       4);
+define("ACTION_NEW_AD_PREVIEW",           5);
+define("ACTION_SHOW_MY_ADS",              6);
+define("ACTION_SHOW_ALL_ADS",             7);
+define("ACTION_DELETE_ADD",               8);
+define("ACTION_BE_INTERESTED_IN_ADD",     9);
+define("ACTION_BE_INTERESTED_IN_ADD_DO", 10);
+// define("ACTION_BACKUP",                  11);
+define("ACTION_RESTORE",                 12);
+define("ACTION_SEE_NOTIFICATIONS",       13);
+define("ACTION_SEARCH_BY_GRADE",         14);
+define("ACTION_SHOW_LOGS",               15);
+define("ACTION_NOTIFYME_SHOW",           16);
+define("ACTION_NOTIFYME_DO",             17);
+define("ACTION_NOTIFYME_MAIL",           18);
+
+define("AD_STATUS_PUBLISHED", 1);
+define("AD_STATUS_GRANTED",   2);
 
 ?>

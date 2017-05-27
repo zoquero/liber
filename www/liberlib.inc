@@ -445,7 +445,7 @@ function showNotifyMeForm($dao, $user) {
 		<tr><th>Notificacions sobre<br/>nous llibres anunciats:</th></tr>
 		<tr><td align="center">Escull de quins cursos<br/>vols ser notificat/da per correu<br/>i dona-li a '<strong><i>Enviar</i></strong>'</td></tr>
 		<tr><td align="center">
-			<table align="center"><tr><td align="left">
+			<table align="center"><tr><td align="left" bgcolor="#e2e2f0">
 				<?php echo $gradesChBxs ?>
 			</td></tr></table>
 		</td></tr>
@@ -623,6 +623,7 @@ else {
 ?>
 
 			  <input type="file" name="imageBasenameF" id="imageBasenameF" accept="image/*" />
+			  <p>Avís: Sabem que la selecció de fitxers<br/>no funciona amb alguns mòbils</p>
 			</td>
 		</tr>
 		<tr>
@@ -1219,14 +1220,28 @@ function getFjeApiJsonHtmlMsgNotifyMe($theAd, $theAdUserMail, $grade) {
 	$isbn=$theAd->getIsbn();
 	$summary=$theAd->getSummary();
 	$gradeName = $grade->getName();
+	$url = $GLOBALS['LIBER_URL'];
 	$body = <<<EOBODY
-<html><body><H1>Socialització de llibres</H1><p>Benvolgut/da:</p><p>Alg&uacute; ha publicat un anunci d'un llibre del curs $gradeName en el que estaves interessat/da. Pots accedir a l'<a href="http://liber.net.fje.edu/" target="_blank">aplicaci&oacute; 'Liber'</a> per mirar els anuncis i actualitzar la teva subscripci&oacute; a notificacions de nous llibres anunciats</p><p>Moltes gr&agrave;cies per utilitzar aquest servei de socialitzaci&oacute;.</p><p>AMPA de Joan XXIII</p></body></html>
+<html>
+  <body>
+  <H1>Socialització de llibres</H1>
+  <p>Benvolgut/da:</p>
+  <p>Alg&uacute; ha publicat un anunci d'un llibre
+     del curs <strong>$gradeName</strong> i vas subscriure't
+     a rebre notificacions quan es publiquen llibres de tal curs.</p>
+  <p>Pots accedir a l'aplicaci&oacute; <a href='$url' target="_blank">'Liber' $url</a>
+    per mirar els anuncis i actualitzar la teva subscripci&oacute;
+    a rebre notificacions de nous llibres anunciats</p>
+  <p>Moltes gr&agrave;cies per utilitzar aquest
+     servei de socialitzaci&oacute;.</p>
+  <p>AMPA de Joan XXIII</p>
+  </body></html>
 EOBODY;
 	
 	$to=$theAdUserMail;
 	$fromName=$GLOBALS['MAIL_FROM_NAME'];
 
-	$subject = scapeBody($GLOBALS['MAIL_SUBJECT']);
+	$subject = scapeBody($GLOBALS['MAIL_SUBJECT_NOTIFYME']);
 	$body    = scapeBody($body);
 	
 	$msg = <<<EOJSON

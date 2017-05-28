@@ -71,7 +71,6 @@ function myCliErrorHandler($errno, $errstr, $errfile, $errline) {
     case E_USER_ERROR:
         echo "Error: [$errno] $errstr a línia $errline de $errfile (abortem l'execució)\n";
         exit(1);
-//        break;
     case E_USER_WARNING:
         echo "Avís: [$errno] $errstr a línia $errline de $errfile\n";
         break;
@@ -84,7 +83,6 @@ function myCliErrorHandler($errno, $errstr, $errfile, $errline) {
     default:
         echo "Error: [$errno] $errstr a línia $errline de $errfile (abortem l'execució)\n";
         exit(1);
-//   		break;
     }
 }
 
@@ -176,13 +174,17 @@ function getUser() {
 		$user = getUserDo($token);
 	}
 	if($user == NULL) {
-		trigger_error(
-		  "No hem pogut recuperar les seves dades de sessió.<br/>
-		  Torni a accedir a <em>la Net</em>
-		  i provi altre cop a aquesta aplicació.<br/>
-		  Si el problema persisteix
-		  podeu <a href= \"mailto:ampa.joan23@fje.edu\" >contactar amb l'AMPA</a>
-		   per depurar-ho.", E_USER_ERROR);
+	  $urlWebAmpa=$GLOBALS['WEB_AMPA'];
+	  $msg = <<<HTMLSTR
+Oh, no hem pogut recuperar les teves dades de sessió.<br/>
+Si us plau, torna a accedir a
+<a href="http://www.fje.edu"><strong><em>La Net</em></strong></a>
+i prova d'accedir altre cop a aquesta aplicació.<br/>
+Si el problema persisteix pots
+<a href="$urlWebAmpa" >contactar amb l'AMPA</a> per depurar-ho.
+HTMLSTR;
+
+		trigger_error($msg, E_USER_ERROR);
 	}
 	return $user;
 }
@@ -429,7 +431,29 @@ function showRegularOptionsMenu($dao) {
 				value="<?php echo ACTION_NOTIFYME_SHOW ?>" />
 		  </form>
         </td></tr>
+		<tr><td align="center">
+		  <form action="?" method="post" accept-charset="utf-8">
+			<input type="submit" name="Envia"
+				value="Sobre Liber" />
+			<input type="hidden" name="actionId"
+				value="<?php echo ACTION_ABOUT ?>" />
+		  </form>
+        </td></tr>
 	</table>
+<?php
+}
+
+/**
+ * Mostra info sobre l'aplicació
+ */
+function showAbout() {
+?>
+<p> L'aplicació <strong>Liber</strong> té com a finalitat la <strong>socialització de llibres</strong>.
+Permet que pares i mares cedeixin els seus llibres en desús a d'altre pares i mares que els necessitin.
+És una iniciativa en la línia del <a href="https://ca.wikipedia.org/w/index.php?title=Consum_col%C2%B7laboratiu&oldid=18443245" target="_blank">consum col·laboratiu</a> i
+els impulsors del projecte demanem que no es demanin diners a canvi dels llibres.</p>
+<p>L'aplicació <strong>ha estat desenvolupada per l'AMPA del Centre d'Estudis Joan XXIII</strong> (Fundació Jesuïtes Educació Bellvitge), amb la col·laboració de <strong>Joan Gallifa</strong>, Director dels Sistemes d'Informació i Comunicació de la <a href="http://www.fje.edu" target="_blank">Fundació Jesuïtes Educació</a>.</p>
+
 <?php
 }
 
@@ -443,7 +467,10 @@ function showNotifyMeForm($dao, $user) {
   <form action="?" method="post" accept-charset="utf-8">
 	<table>
 		<tr><th>Notificacions sobre<br/>nous llibres anunciats:</th></tr>
-		<tr><td align="center">Escull de quins cursos<br/>vols ser notificat/da per correu<br/>i dona-li a '<strong><i>Enviar</i></strong>'</td></tr>
+		<tr><td align="center">Escull de quins cursos<br/>
+								vols ser notificat/da per correu<br/>
+								i dona-li a '<strong><i>Enviar</i></strong>'
+		</td></tr>
 		<tr><td align="center">
 			<table align="center"><tr><td align="left" bgcolor="#e2e2f0">
 				<?php echo $gradesChBxs ?>
@@ -482,9 +509,6 @@ function showAdminOptionsMenu() {
 }
 
 
-//
-// obsolet vers $GLOBALS['mockToken'], $GLOBALS['mockSess'] i $GLOBALS['mockInjectSess']
-//
 /**
  * Mostra el form que permet establir l'username al desenvolupador.
  *
@@ -517,23 +541,18 @@ function showDummyForm($user) {
 function showFooter() {
 ?>
 <p>Aplicació per a la socialització de llibres<br/>
-de l'<a href="mailto:ampa.joan23@fje.edu">AMPA de Joan XXIII Jesuïtes Educació</a><br/>
-<a href="mailto:ampa.joan23@fje.edu"><img src="images/logo.png"/></a></p>
+de l'<a href="<?php echo $GLOBALS['WEB_AMPA'] ?>">AMPA
+del Centre d'Estudis Joan XXIII</a><br/>
+(Fundació Jesuïtes Educació Bellvitge)<br/>
+<a href="<?php echo $GLOBALS['WEB_AMPA'] ?>">
+<img src="images/logo.png"/></a></p>
 </body>
 </html>
 <?php
 }
 
 function newAdFormShow($dao, $fIsbn, $fSummary, $fDescription, $fWhat, $fImageBasename, $fGrade) {
-/*
- echo "fWhat        = " . $fWhat . "<br>\n";
-echo "fIsbn        = " . $fIsbn . "<br>\n";
-echo "fSummary     = " . $fSummary . "<br>\n";
-echo "fDescription = " . $fDescription . "<br>\n";
-*/
 
-// ACTION_NEW_AD_FORM => ACTION_NEW_AD_PREVIEW => ACTION_NEW_AD_CONFIRM
-//	if($GLOBALS["actionId"] == ACTION_NEW_AD_PREVIEW && $fWhat != "Envia")
 if($GLOBALS["actionId"] == ACTION_NEW_AD_PREVIEW) {
 	if($fWhat != "Edita") {
 			$doReadOnly = TRUE;
@@ -766,12 +785,6 @@ function compressImatge($origFilename, $destFilename, $dim1, $dim2) {
 	}
 	else {
 		// portrait
-//		$newHeight=$dim2;
-//		$newWidth=$newHeight*$width/$height;
-
-//		$newWidth=$dim2;
-//		$newHeight=$height*$newWidth/$width;
-
 		$newWidth=$dim2;
 		$newHeight=$height*$newWidth/$width;
 		
@@ -1196,8 +1209,21 @@ function showLogEntries($logEntries) {
 function getFjeApiJsonHtmlMsg($user, $theAd, $theAdUserMail, $fDescription) {
 	$isbn=$theAd->getIsbn();
 	$summary=$theAd->getSummary();
+	$url = $GLOBALS['LIBER_URL'];
 	$body = <<<EOBODY
-<html><body><H1>Socialització de llibres</H1><p>Benvolgut/da:</p><p>Alg&uacute; est&agrave; interessat en el llibre que vas anunciar amb ISBN <b>$isbn</b> i de t&iacute;tol <b><i>$summary</i></b> i t'ha enviat aquest missatge:</p><hr/><p><b>$fDescription</b><hr/></p><p>Pots posar-te en contacte amb ell/ella. Tan de bo que pugui aprofitar el teu llibre</p><p>Moltes gr&agrave;cies per utilitzar aquest servei de socialitzaci&oacute;.</p><p>AMPA de Joan XXIII</p></body></html>
+<html>
+  <body>
+    <H1>Socialització de llibres</H1>
+    <p>Benvolgut/da:</p>
+    <p>Alg&uacute; est&agrave; interessat en el llibre que vas anunciar amb ISBN <b>$isbn</b>
+      i de t&iacute;tol <b><i>$summary</i></b>
+      i t'ha enviat aquest missatge:</p><hr/><p><b>$fDescription</b><hr/></p>
+    <p>Pots posar-te en contacte amb ell/ella. Tan de bo que pugui aprofitar el teu llibre</p>
+    <p>Un cop hagis cedit el llibre pots accedir a l'aplicaci&oacute;
+      <a href='$url' target="_blank">'Liber' $url</a> per esborrar l'anunci.</p>
+    <p>Moltes gr&agrave;cies per utilitzar aquest servei de socialitzaci&oacute;.</p>
+    <p>AMPA de Joan XXIII</p>
+    </body></html>
 EOBODY;
 	
 	$to=$theAdUserMail;

@@ -49,7 +49,6 @@ switch($GLOBALS["actionId"]) {
 		$fDescription=getParamSanitizedString('description');
 		$fWhat=getParamSanitizedString('what');
 		$fGrade=getParamInt('grade');
-//print("fGrade=$fGrade\n");
 		
 		if($fGrade != NULL) {
 			$loadedGrade = $dao->getGradeById($fGrade);
@@ -66,10 +65,6 @@ switch($GLOBALS["actionId"]) {
 		if($GLOBALS['debug']) {
 		  echo "DEBUG: fImageBasenameH=$fImageBasenameH<br>\n";
 		}
-		
-//		// nou file upload
-//		$fImageBasenameF=getParamSanitizedString('imageBasenameF');
-//		$fImageBasename = empty($fImageBasenameF) ? $fImageBasenameH : $fImageBasenameF;
 		
 		newAdFormShow($dao, $fIsbn, $fSummary, $fDescription, $fWhat, $fImageBasenameH, $loadedGrade);
 		break;
@@ -96,16 +91,15 @@ switch($GLOBALS["actionId"]) {
 		
 		// hidden (arrossegant-se de previ file upload)
 		$fImageBasenameH=getParamSanitizedString('imageBasenameH');
-//		// nou file upload
-//		$fImageBasenameF=getParamSanitizedString('imageBasenameF');
-//		$fImageBasename = empty($fImageBasenameF) ? $fImageBasenameH : $fImageBasenameF;
 
 		$loadedGrade = $dao->getGradeById($fGrade);
 		if($loadedGrade == NULL) {
 			trigger_error("No s'ha trobat tal curs a la Base de Dades", E_USER_ERROR);
 		}
 		
-		if(isset($_FILES['imageBasenameF']) && file_exists($_FILES['imageBasenameF']['tmp_name']) && is_uploaded_file($_FILES['imageBasenameF']['tmp_name'])) {
+		if(isset($_FILES['imageBasenameF'])
+		   && file_exists($_FILES['imageBasenameF']['tmp_name'])
+		   && is_uploaded_file($_FILES['imageBasenameF']['tmp_name'])) {
 			$fImageBasename=compressAndSaveTmpImatge($GLOBALS['imageFilenamePrefix'] . $user['mail'] . "_");
 			if($GLOBALS['debug']) {
 				echo "DEBUG: fImageBasename (compressAndSaveTmpImatge) = $fImageBasename<br/>\n";
@@ -121,8 +115,10 @@ switch($GLOBALS["actionId"]) {
 		if($fWhat == "Envia") {
 			$createdAd = createAd($dao, $user, $fIsbn, $fSummary, $fDescription, $fImageBasename, $loadedGrade);
 			if($fImageBasename != NULL & $fImageBasename != "") {
-				rename($GLOBALS['uploadFolderTmp'] . "/" . $fImageBasename, $GLOBALS['uploadFolderStore'] . "/" . $fImageBasename);
-				rename($GLOBALS['uploadFolderTmp'] . "/" . $fImageBasename . $GLOBALS['thumbFilenameSufix'], $GLOBALS['uploadFolderStore'] . "/" . $fImageBasename . $GLOBALS['thumbFilenameSufix']);
+				rename($GLOBALS['uploadFolderTmp'].    "/" . $fImageBasename,
+					   $GLOBALS['uploadFolderStore'] . "/" . $fImageBasename);
+				rename($GLOBALS['uploadFolderTmp']   . "/" . $fImageBasename . $GLOBALS['thumbFilenameSufix'],
+				       $GLOBALS['uploadFolderStore'] . "/" . $fImageBasename . $GLOBALS['thumbFilenameSufix']);
 			}
 			showMessage("S'ha donat d'alta l'anunci del llibre amb ISBN <b><i>$fIsbn</i></b>, del curs <b><i>$loadedGrade</i></b> i sumari <b><i>$fSummary</i></b>");
             doLog($dao, $GLOBALS["actionId"], $user, "Anunci creat de llibre amb ISBN $fIsbn");
@@ -262,14 +258,11 @@ switch($GLOBALS["actionId"]) {
 		}
 		// $theAdUserMail=$dao->getUserById($theAd->getOwner()); ja no tabla d'usuaris
 		$theAdUserMail=$theAd->getOwner();
-		// ja no cal validar-ho
-		// if($theAdUserMail == NULL) {
-		// 	trigger_error("No s'ha trobat l'usuari propietari de l'anunci a la Base de Dades", E_USER_ERROR);
-		//}
-// echo "Usuari id " . $user->getId() . " té interès en anunci (id $fId) [$theAd], descripció = [$fDescription]<br/>";
+
+		if($GLOBALS['debug']) {
+			echo "Usuari id " . $user->getId() . " té interès en anunci (id $fId) [$theAd], descripció = [$fDescription]<br/>";
+		}
 		if(createInterest($dao, $user, $theAd, $fDescription)) {
-//		if(createInterest($dao, $user, $theAd, $theAdUserMail, $fDescription))
-			// function createInterest($dao, $user, $theAd, $fDescription) 
 			showMessage("Hem enregistrat el teu inter&egrave;s");
 			doLog($dao, $GLOBALS["actionId"], $user, "Interès enregistrat sobre anunci amb id '" . $fId . "' descr = " . $fDescription . " ...");
 		}
@@ -327,15 +320,12 @@ switch($GLOBALS["actionId"]) {
 		$checkedNotifyMeGrades = array();
 		if(! empty($_POST['notifymeGrades'])) {
 		    if(is_array($_POST['notifymeGrades'])) {
-//				echo "És array<br/>\n";
 				$checkedNotifyMeGrades = $_POST['notifymeGrades'];
 		    }
 		    else {
-//				echo " NO És array<br/>\n";
 				$checkedNotifyMeGrades = array($_POST['notifymeGrades']);
 		    }
 		    foreach($checkedNotifyMeGrades as $notifymeGrade) {
-//		    	echo "Has marcat $notifymeGrade<br/>\n";
 				if(!$dao->createNotifyme($user, $notifymeGrade)) {
 					trigger_error("Error: No s'ha pogut enregistrar a la base de dades el seu interès en ser notificat", E_USER_ERROR);
 				}
@@ -343,6 +333,10 @@ switch($GLOBALS["actionId"]) {
 		}
 		echo "<p><b>Hem enregistrat</b> els teus interessos en <b>ser notificat/da</b>.
 		         <br/>Sàpigues que les notificacions s'envien només <b>un cop al dia</b></p>\n";
+		break;
+	case ACTION_ABOUT:
+		//
+		showAbout();
 		break;
 	default:
 		showMessage("Escull una opció:");

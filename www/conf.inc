@@ -2,7 +2,7 @@
 
 $GLOBALS['debug']          = FALSE;  // Mostrar info pel troubleshooting
 $GLOBALS['mockToken']      = FALSE;  // Fixar el token per codi, no cookie 
-$GLOBALS['mockSess']       = FALSE;  // Recuperar sessió de fitxer
+$GLOBALS['mockSess']       = TRUE;  // Recuperar sessió de fitxer
 $GLOBALS['mockInjectSess'] = FALSE;  // Injectar cookie de sessió
                                      // Estableix-la llavors a
                                      // $GLOBALS['SESS_FJEAPI_MOCKING_COOKIE_VALUE']
@@ -57,6 +57,7 @@ define("IMAGE_LANDSCAPE_TO_RESIZE",	4);
 /*** Llista separada per espais dels administradors de l'aplicació. */
 $GLOBALS['appAdmins'] = array("zoquero2@gmail.com", "ampa.joan23@fje.edu");
 
+$GLOBALS['WEB_AMPA'] = "http://bit.ly/ampajoan23";
 
 /*** Títol head de les pàgines */
 $GLOBALS['htmlHeadTitle'] = "Liber: Socialització de llibres impulsada per l'AMPA de Joan XXIII";
@@ -138,6 +139,7 @@ define("ACTION_SHOW_LOGS",               15);
 define("ACTION_NOTIFYME_SHOW",           16);
 define("ACTION_NOTIFYME_DO",             17);
 define("ACTION_NOTIFYME_MAIL",           18);
+define("ACTION_ABOUT",                   19);
 
 define("AD_STATUS_PUBLISHED", 1);
 define("AD_STATUS_GRANTED",   2);

@@ -1202,6 +1202,35 @@ function showLogEntries($logEntries) {
 	}
 }
 
+/**
+  * Verifica si l'string, a més d'altres coses, té quelcom que sembli una adreça de correu electrònic
+  * Em conformo amb validar si té algun caracter diferent a punt i a espai abans i després de l'arroba, després un punt i algun caracter diferent a . i a espai.
+  */
+function containsEmail($str) {
+	$regex = '/[^\\s\.]*@[^\\s\.]+\.[^\\s\.]/';
+	if (preg_match($regex, $str)) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+/**
+  * Verifica si l'string, a més d'altres coses, té quelcom que sembli un telefon
+  * Em conformo amb validar si un cop empobrit, té 9 dígits consecutius
+  */
+function containsTelefonNumber($str) {
+	$toRemove = array(" ", "-", ".", "/", "+");
+	$simplifiedString = str_replace($toRemove, "", $str);
+	if (preg_match("/\d{9,}/", $simplifiedString)) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
 
 /***
  * Retorna un string amb el Json que espera l'API de FJE per enviar mails.

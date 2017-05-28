@@ -252,6 +252,13 @@ switch($GLOBALS["actionId"]) {
 		//
 		$fId=getParamSanitizedString('id');
 		$fDescription=getParamSanitizedString('description');
+		if(! containsEmail($fDescription) && ! containsTelefonNumber($fDescription)) {
+			trigger_error("No s'ha trobat cap número de telefon<br/>
+							ni adreça de correu electrònic al teu text.<br/>
+							L'anunciant no rebrà cap altre dada<br/>
+							sobre tu a part d'aquest text,<br/>
+							aprofita per donar-li el teu contacte.", E_USER_ERROR);
+		}
 		$theAd=$dao->getAdById($fId);
 		if($theAd == NULL) {
 			trigger_error("No s'ha trobat tal anunci a la Base de Dades", E_USER_ERROR);

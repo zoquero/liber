@@ -202,10 +202,14 @@ class Dao {
 			trigger_error("Error de programació: Rebut curs NULL o buit creant un anunci", E_USER_WARNING);
 			return FALSE;
 		}
-		if($fIsbn == NULL || $fIsbn == '' || $fSummary == NULL || $fSummary == ''){
-			trigger_error("Error de programació: Rebuts ISBN o Resum null o buit creant un anunci", E_USER_WARNING);
-			return FALSE;
-		}
+		// Finalment no exigim el ISBN
+		/*
+		 *  if($fIsbn == NULL || $fIsbn == '' || $fSummary == NULL || $fSummary == ''){
+		 *	 trigger_error("Error de programació: Rebuts ISBN o Resum null o buit creant un anunci", E_USER_WARNING);
+		 *	 return FALSE;
+		 *  }
+		 */
+		 
 		// La consulta
 		$sql = "INSERT INTO ads (id, owner, isbn, status, summary, description, ad_publishing_date, image, grade, notified) VALUES (NULL, ?, ?, ?, ?, ?, NOW(), ?, ?, ?);";
 //echo "dao.createAd: Anem a executar sql= " . $sql . "<br>\n";

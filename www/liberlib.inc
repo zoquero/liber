@@ -186,6 +186,27 @@ HTMLSTR;
 
 		trigger_error($msg, E_USER_ERROR);
 	}
+	if(! array_key_exists("mail", $user) || $user['mail'] == "") {
+	  $urlWebAmpa=$GLOBALS['WEB_AMPA'];
+	  $msg = <<<HTMLSTR
+Oh, no hem trobat la teva adreça de correu electrònic<br/>
+a les teves dades de sessió d'usuari FJE.<br/>
+Si el problema persisteix 
+<a href="$urlWebAmpa" >contacta amb l'AMPA</a> per depurar-ho.
+HTMLSTR;
+
+		trigger_error($msg, E_USER_ERROR);
+	}
+	if(in_array($user['mail'], $GLOBALS['bannedUsers'])) {
+	  $urlWebAmpa=$GLOBALS['WEB_AMPA'];
+	  $msg = <<<HTMLSTR
+El seu usuari té blocat l'accés a aquesta aplicació.<br/>
+Pot <a href="$urlWebAmpa" >contactar amb l'AMPA</a> per corregir-ho.
+HTMLSTR;
+
+		trigger_error($msg, E_USER_ERROR);
+	}
+	
 	return $user;
 }
 
@@ -452,7 +473,9 @@ function showAbout() {
 Permet que pares i mares cedeixin els seus llibres en desús a d'altre pares i mares que els necessitin.
 És una iniciativa en la línia del <a href="https://ca.wikipedia.org/w/index.php?title=Consum_col%C2%B7laboratiu&oldid=18443245" target="_blank">consum col·laboratiu</a> i
 els impulsors del projecte demanem que no es demanin diners a canvi dels llibres.</p>
-<p>L'aplicació <strong>ha estat desenvolupada per l'AMPA del Centre d'Estudis Joan XXIII</strong> (Fundació Jesuïtes Educació Bellvitge), amb la col·laboració de <strong>Joan Gallifa</strong>, Director dels Sistemes d'Informació i Comunicació de la <a href="http://www.fje.edu" target="_blank">Fundació Jesuïtes Educació</a>.</p>
+<p>L'aplicació <strong>ha estat desenvolupada per l'<a href="<?php echo $GLOBALS['WEB_AMPA'] ?>" target="_blank">AMPA del Centre d'Estudis Joan XXIII</a></strong> (Fundació Jesuïtes Educació Bellvitge),
+  amb la col·laboració dels Sistemes d'Informació i Comunicació de la <a href="<?php echo $GLOBALS['WEB_FJE'] ?>" target="_blank">Fundació Jesuïtes Educació</a>.</p>
+<p>Tens suggerients? <a href="<?php echo $GLOBALS['WEB_AMPA'] ?>" target="_blank">Fes-nos-los arribar</a>, sisplau!</p>
 
 <?php
 }
@@ -647,7 +670,7 @@ else {
 		</tr>
 		<tr>
 			<td colspan="2">&nbsp;<input type="submit" name="what"
-				value="Preview" />
+				value="Previsualitza l' anunci" />
 			</td>
 		</tr>
 		<?php } else { ?>
@@ -689,11 +712,20 @@ else {
 		</tr>
 
 		<tr>
+			<td colspan="2">
+			  &nbsp;<strong>Verifica</strong> les dades<br/>
+			  &nbsp;i torna a editar-ho<br/>
+			  &nbsp;o publica-ho finalment
+			</td>
+		</tr>
+		<tr>
 			<td colspan="2">&nbsp;<input type="submit" name="what" value="Edita" />
+			  <strong>Torna a editar</strong> l'anunci
 			</td>
 		</tr>
 		<tr>
 			<td colspan="2">&nbsp;<input type="submit" name="what" value="Envia" />
+			  <strong>Publica definitivament</strong> l'anunci
 			</td>
 		</tr>
 		<?php } ?>
@@ -894,6 +926,15 @@ $fCorrectOrSend=getParamSanitizedString('CorrectOrSend');
 }
 */
 
+function removeMyAds($user, $ads) {
+  $r = array();
+  foreach($ads as $anAd) {
+    if($user['mail'] != $anAd->getOwner()) {
+      array_push($r, $anAd);
+    }
+  }
+  return $r;
+}
 
 function createAd($dao, $user, $fIsbn, $fSummary, $fDescription, $fImageBasename, $grade) {
 	return $dao->createAd($user, $fIsbn, $fSummary, $fDescription, $fImageBasename, $grade);

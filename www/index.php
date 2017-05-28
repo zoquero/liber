@@ -113,14 +113,17 @@ switch($GLOBALS["actionId"]) {
 		}
 
 		if($fWhat == "Envia") {
-			$createdAd = createAd($dao, $user, $fIsbn, $fSummary, $fDescription, $fImageBasename, $loadedGrade);
+			if(!createAd($dao, $user, $fIsbn, $fSummary, $fDescription, $fImageBasename, $loadedGrade)) {
+				trigger_error("No s'ha pogut crear l'anunci", E_USER_ERROR);
+			}
 			if($fImageBasename != NULL & $fImageBasename != "") {
 				rename($GLOBALS['uploadFolderTmp'].    "/" . $fImageBasename,
 					   $GLOBALS['uploadFolderStore'] . "/" . $fImageBasename);
 				rename($GLOBALS['uploadFolderTmp']   . "/" . $fImageBasename . $GLOBALS['thumbFilenameSufix'],
 				       $GLOBALS['uploadFolderStore'] . "/" . $fImageBasename . $GLOBALS['thumbFilenameSufix']);
 			}
-			showMessage("S'ha donat d'alta l'anunci del llibre amb ISBN <b><i>$fIsbn</i></b>, del curs <b><i>$loadedGrade</i></b> i sumari <b><i>$fSummary</i></b>");
+			showMessage("S'ha donat d'alta l'anunci del llibre titolat <b><i>$fSummary</i></b>, del curs <b><i>"
+						. $loadedGrade->getName(). "</i></b>, amb ISBN <b><i>$fIsbn</i></b>");
             doLog($dao, $GLOBALS["actionId"], $user, "Anunci creat de llibre amb ISBN $fIsbn");
 		}
 		else {
@@ -137,6 +140,7 @@ switch($GLOBALS["actionId"]) {
 		}
 	
 		$foundAds=$dao->getAdsByGrade($loadedGrade);
+		$foundAds = removeMyAds($user, $foundAds);
 		if($foundAds == NULL || sizeof($foundAds) == 0) {
 			showNoAdsFound();
 			doLog($dao, $GLOBALS["actionId"], $user, "Cerca per curs '" . $loadedGrade->getName() . "' (id " . $fGrade . "). 0 trobats");
@@ -153,6 +157,7 @@ switch($GLOBALS["actionId"]) {
 		//
 		$aIsbn=getParamSanitizedString('isbn');
 		$foundAds=$dao->getAdsByIsbn($aIsbn);
+		$foundAds = removeMyAds($user, $foundAds);
 		if($foundAds == NULL || sizeof($foundAds) == 0) {
 			showNoAdsFound();
 			doLog($dao, $GLOBALS["actionId"], $user, "Cerca per ISBN '" . $aIsbn . "'. 0 trobats");
@@ -235,6 +240,7 @@ switch($GLOBALS["actionId"]) {
 		$aFKeywords=explode(" ", $fKeywords);
 		
 		$foundAds=$dao->searchAdsByKeywords($aFKeywords);
+		$foundAds = removeMyAds($user, $foundAds);
 		if($foundAds == NULL || sizeof($foundAds) == 0) {
 			showNoAdsFound();
 			doLog($dao, $GLOBALS["actionId"], $user, "Cerca per paraules '" . $fKeywords . "'. 0 trobats");
@@ -346,7 +352,19 @@ switch($GLOBALS["actionId"]) {
 		showAbout();
 		break;
 	default:
-		showMessage("Escull una opció:");
+		/* Saludem a l'usuari agafant el nom
+		 * per la clau "Nom" o "nom" del hash de dades d'usuari.
+		 */
+		if($user != NULL && array_key_exists("Nom", $user) && $user['Nom'] != "") {
+			$msg = "Hola, " . $user['Nom'] . "! Escull una opció:" ;
+		}
+		else if($user != NULL && array_key_exists("nom", $user) && $user['nom'] != "") {
+			$msg = "<strong>Hola, " . $user['nom'] . "!</strong><br/>Escull una opció:" ;
+		}
+		else {
+			$msg = "Escull una opció:"; 
+		}
+		showMessage($msg);
 }
 echo "<br/>\n";
 showRegularOptionsMenu($dao);

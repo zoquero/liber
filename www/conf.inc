@@ -54,10 +54,16 @@ define("IMAGE_LANDSCAPE_OK", 		3);
 define("IMAGE_LANDSCAPE_TO_RESIZE",	4);
 
 
-/*** Llista separada per espais dels administradors de l'aplicació. */
+/*** Llista dels administradors de l'aplicació. */
 $GLOBALS['appAdmins'] = array("zoquero2@gmail.com", "ampa.joan23@fje.edu");
 
-$GLOBALS['WEB_AMPA'] = "http://bit.ly/ampajoan23";
+$GLOBALS['WEB_AMPA']  = "http://bit.ly/ampajoan23";
+$GLOBALS['WEB_FJE']   = "http://www.fje.edu";
+$GLOBALS['LIBER_URL'] = 'http://liber.net.fje.edu/';
+
+
+/*** Llista dels usuaris bannejats als que se'ls impedeix utilitzar l'aplicació. */
+$GLOBALS['bannedUsers'] = array("zoquero2@gmail.com", "zoquero3@gmail.com");
 
 /*** Títol head de les pàgines */
 $GLOBALS['htmlHeadTitle'] = "Liber: Socialització de llibres impulsada per l'AMPA de Joan XXIII";
@@ -118,7 +124,6 @@ $GLOBALS['MAIL_REPLYTO'] 		  = 'none@gmail.com';
 $GLOBALS['MAIL_REPLYTO_NAME']	  = 'AMPA Joan XXIII (no responguis)';
 $GLOBALS['MAIL_SUBJECT']		  = 'Algú està interessat en un llibre que has anunciat';
 $GLOBALS['MAIL_SUBJECT_NOTIFYME'] = "S'ha publicat un anunci de llibre que potser t'interessi";
-$GLOBALS['LIBER_URL']             = 'http://liber.net.fje.edu/';
 
 define("ACTION_NONE",                     0);
 define("ACTION_SET_DUMMY_USERNAME",       1);

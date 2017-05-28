@@ -1,7 +1,6 @@
 <?php
 
 require_once("conf.inc");
-require_once("lib/PHPMailer/PHPMailerAutoload.php");
 
 function doLog($dao, $actionId, $user, $description) {
   $dao->insertLogEntry($actionId, $user, $description);
@@ -14,6 +13,7 @@ function printLogEntries($dao) {
   showLogEntries($entries);
   showLogEntryFooter();
 }
+
 
 function myErrorHandler($errno, $errstr, $errfile, $errline) {
 	if (!(error_reporting() & $errno)) {
@@ -58,8 +58,32 @@ function myErrorHandler($errno, $errstr, $errfile, $errline) {
         	exit(1);
    		break;
     }
-			
-			
+}
+
+
+function myCliErrorHandler($errno, $errstr, $errfile, $errline) {
+	if (!(error_reporting() & $errno)) {
+		// Codi no inclòs a l'error_reporting
+		return;
+	}
+
+    switch ($errno) {
+    case E_USER_ERROR:
+        echo "Error: [$errno] $errstr a línia $errline de $errfile (abortem l'execució)\n";
+        exit(1);
+    case E_USER_WARNING:
+        echo "Avís: [$errno] $errstr a línia $errline de $errfile\n";
+        break;
+    case E_USER_NOTICE:
+        echo "Nota: [$errno] $errstr a línia $errline de $errfile\n";
+        break;
+    case E_NOTICE:
+       echo "Nota: [$errno] $errstr a línia $errline de $errfile\n";
+        break;
+    default:
+        echo "Error: [$errno] $errstr a línia $errline de $errfile (abortem l'execució)\n";
+        exit(1);
+    }
 }
 
 function echoErr() {
@@ -74,7 +98,7 @@ function echoErr() {
   Retorna el hash de valors trobats al JSON emmagatzemat el fitxer o NULL si no pot llegir o decodificar
   */
 function getUserDo_FileMock() {
-  $testFile = ROOT_PATH . "/../docs/exemple_sess/jfe_validatokenCookie.DUMMY.json";
+  $testFile = ROOT_PATH . "/" . $GLOBALS['SESS_FJEAPI_MOCKING_DATA_FILE'];
   if($GLOBALS['debug']) {
      echo "Obrirem testFile = $testFile<br>\n"; 
   }
@@ -150,14 +174,39 @@ function getUser() {
 		$user = getUserDo($token);
 	}
 	if($user == NULL) {
-		trigger_error(
-		  "No hem pogut recuperar les seves dades de sessió.<br/>
-		  Torni a accedir a <em>la Net</em>
-		  i provi altre cop a aquesta aplicació.<br/>
-		  Si el problema persisteix
-		  podeu <a href= \"mailto:ampa.joan23@fje.edu\" >contactar amb l'AMPA</a>
-		   per depurar-ho.", E_USER_ERROR);
+	  $urlWebAmpa=$GLOBALS['WEB_AMPA'];
+	  $msg = <<<HTMLSTR
+Oh, no hem pogut recuperar les teves dades de sessió.<br/>
+Si us plau, torna a accedir a
+<a href="http://www.fje.edu"><strong><em>La Net</em></strong></a>
+i prova d'accedir altre cop a aquesta aplicació.<br/>
+Si el problema persisteix pots
+<a href="$urlWebAmpa" >contactar amb l'AMPA</a> per depurar-ho.
+HTMLSTR;
+
+		trigger_error($msg, E_USER_ERROR);
 	}
+	if(! array_key_exists("mail", $user) || $user['mail'] == "") {
+	  $urlWebAmpa=$GLOBALS['WEB_AMPA'];
+	  $msg = <<<HTMLSTR
+Oh, no hem trobat la teva adreça de correu electrònic<br/>
+a les teves dades de sessió d'usuari FJE.<br/>
+Si el problema persisteix 
+<a href="$urlWebAmpa" >contacta amb l'AMPA</a> per depurar-ho.
+HTMLSTR;
+
+		trigger_error($msg, E_USER_ERROR);
+	}
+	if(in_array($user['mail'], $GLOBALS['bannedUsers'])) {
+	  $urlWebAmpa=$GLOBALS['WEB_AMPA'];
+	  $msg = <<<HTMLSTR
+El seu usuari té blocat l'accés a aquesta aplicació.<br/>
+Pot <a href="$urlWebAmpa" >contactar amb l'AMPA</a> per corregir-ho.
+HTMLSTR;
+
+		trigger_error($msg, E_USER_ERROR);
+	}
+	
 	return $user;
 }
 
@@ -324,54 +373,30 @@ function getEnabledGradesSelect($dao, $fGrade) {
 	return $gradesSelect;
 }
 
+function getEnabledGradesNotifymeCheckbox($dao, $user) {
+	$grades        = $dao->getEnabledGrades();
+	$notifyMeArray = $dao->getNotifymesByOwner($user);
+	$gradesChBx  = "";
+	foreach ($grades as $aGrade) {
+		$selectedNotifyMe = "";
+		foreach($notifyMeArray as $aCheckedNotifyMe) {
+			if($aCheckedNotifyMe->getGrade() == $aGrade->getId()) {
+				$selectedNotifyMe = " checked";
+				break;
+			}
+		}
+		$gradesChBx.="  <input type=\"checkbox\" name=\"notifymeGrades[]\" value=\"" . $aGrade->getId() . "\" $selectedNotifyMe/>" . $aGrade->getName() . "<br/>\n";
+	}
+	return $gradesChBx;
+}
+
+
 /**
  * Escriu el menú d'opcions per a l'usuari.
  */
 function showRegularOptionsMenu($dao) {
 	$gradesSelect = getEnabledGradesSelect($dao, NULL);
 ?>
-
-	<!-- ANTIGA TAULA 
-	<table border="1"><tr><td bgcolor="#F0F0F0">
-		<p>Opcions:</p>
-		<ul>
-			<li><a href="?actionId=<?php echo ACTION_NEW_AD_FORM ?>">
-				Nou llibre en donaci&oacute;</a>
-			</li>
-			<li><a href="?actionId=<?php echo ACTION_SHOW_MY_ADS ?>">
-				Meus llibres anunciats</a>
-			</li>
-			<li>
-				<form action="?" method="post" accept-charset="utf-8">
-					<input type="hidden" name="actionId"
-						value="<?php echo ACTION_SEARCH_BY_GRADE ?>" />
-					<?php echo $gradesSelect ?>
-					<input type="submit" name="Envia"
-						value="Mostra llibres de tal curs" />
-				</form>
-			</li>
-			<li>
-				<form action="?" method="post" accept-charset="utf-8">
-					<input type="hidden" name="actionId"
-						value="<?php echo ACTION_SEARCH_BY_ISBN ?>" />
-					<input type="text" name="isbn" />
-					<input type="submit" name="Envia" value="Cerca llibre per ISBN" />
-				</form>
-			</li>
-			<li>
-				<form action="?" method="post" accept-charset="utf-8">
-					<input type="hidden" name="actionId"
-						value="<?php echo ACTION_SEARCH_BY_KEYWORDS ?>" /> <input
-						type="text" name="keywords" />
-					<input type="submit" name="Envia"
-						value="Cerca llibre per paraules clau" />
-				</form>
-			</li>
-		</ul>
-	</td></tr></table>
-	 ANTIGA TAULA --> 
-	
-	<!-- nova taula -->
 	<table>
 		<tr><th>Opcions:</th></tr>
 		<tr><td align="center">
@@ -391,7 +416,7 @@ function showRegularOptionsMenu($dao) {
 		  </form>
         </td></tr>
 		<tr><td align="center">
-			Veure els llibres anunciats d'un curs:			
+			Veure els llibres anunciats d'un curs:<br/>			
 			<form action="?" method="post" accept-charset="utf-8">
 				<input type="hidden" name="actionId"
 					value="<?php echo ACTION_SEARCH_BY_GRADE ?>" />
@@ -419,14 +444,71 @@ function showRegularOptionsMenu($dao) {
 					value="Mostra els resultats" />
 			</form>
         </td></tr>
+		<tr><td align="center">
+		  <form action="?" method="post" accept-charset="utf-8">
+			<input type="submit" name="Envia"
+				value="Registra't per ser notificat sobre nous llibres anunciats" />
+			<input type="hidden" name="actionId"
+				value="<?php echo ACTION_NOTIFYME_SHOW ?>" />
+		  </form>
+        </td></tr>
+		<tr><td align="center">
+		  <form action="?" method="post" accept-charset="utf-8">
+			<input type="submit" name="Envia"
+				value="Sobre Liber" />
+			<input type="hidden" name="actionId"
+				value="<?php echo ACTION_ABOUT ?>" />
+		  </form>
+        </td></tr>
 	</table>
-	<!-- /nova taula -->
-	
 <?php
 }
 
+/**
+ * Mostra info sobre l'aplicació
+ */
+function showAbout() {
+?>
+<p> L'aplicació <strong>Liber</strong> té com a finalitat la <strong>socialització de llibres</strong>.
+Permet que pares i mares cedeixin els seus llibres en desús a d'altre pares i mares que els necessitin.
+És una iniciativa en la línia del <a href="https://ca.wikipedia.org/w/index.php?title=Consum_col%C2%B7laboratiu&oldid=18443245" target="_blank">consum col·laboratiu</a> i
+els impulsors del projecte demanem que no es demanin diners a canvi dels llibres.</p>
+<p>L'aplicació <strong>ha estat desenvolupada per l'<a href="<?php echo $GLOBALS['WEB_AMPA'] ?>" target="_blank">AMPA del Centre d'Estudis Joan XXIII</a></strong> (Fundació Jesuïtes Educació Bellvitge),
+  amb la col·laboració dels Sistemes d'Informació i Comunicació de la <a href="<?php echo $GLOBALS['WEB_FJE'] ?>" target="_blank">Fundació Jesuïtes Educació</a>.</p>
+<p>Tens suggerients? <a href="<?php echo $GLOBALS['WEB_AMPA'] ?>" target="_blank">Fes-nos-los arribar</a>, sisplau!</p>
 
+<?php
+}
 
+/**
+ * Escriu el menú d'opcions per a l'usuari.
+ */
+function showNotifyMeForm($dao, $user) {
+  $gradesChBxs = getEnabledGradesNotifymeCheckbox($dao, $user);
+  
+?>
+  <form action="?" method="post" accept-charset="utf-8">
+	<table>
+		<tr><th>Notificacions sobre<br/>nous llibres anunciats:</th></tr>
+		<tr><td align="center">Escull de quins cursos<br/>
+								vols ser notificat/da per correu<br/>
+								i dona-li a '<strong><i>Enviar</i></strong>'
+		</td></tr>
+		<tr><td align="center">
+			<table align="center"><tr><td align="left" bgcolor="#e2e2f0">
+				<?php echo $gradesChBxs ?>
+			</td></tr></table>
+		</td></tr>
+		<tr><td align="center">
+			<input type="submit" name="Enviar"
+				value="Enviar" />
+			<input type="hidden" name="actionId"
+				value="<?php echo ACTION_NOTIFYME_DO ?>" />
+		</td></tr>
+	</table>
+  </form>
+<?php
+}
 
 /**
  * Escriu el menú d'opcions per a l'usuari.
@@ -450,9 +532,6 @@ function showAdminOptionsMenu() {
 }
 
 
-//
-// obsolet vers $GLOBALS['mockToken'], $GLOBALS['mockSess'] i $GLOBALS['mockInjectSess']
-//
 /**
  * Mostra el form que permet establir l'username al desenvolupador.
  *
@@ -485,23 +564,18 @@ function showDummyForm($user) {
 function showFooter() {
 ?>
 <p>Aplicació per a la socialització de llibres<br/>
-de l'<a href="mailto:ampa.joan23@fje.edu">AMPA de Joan XXIII Jesuïtes Educació</a><br/>
-<a href="mailto:ampa.joan23@fje.edu"><img src="images/logo.png"/></a></p>
+de l'<a href="<?php echo $GLOBALS['WEB_AMPA'] ?>">AMPA
+del Centre d'Estudis Joan XXIII</a><br/>
+(Fundació Jesuïtes Educació Bellvitge)<br/>
+<a href="<?php echo $GLOBALS['WEB_AMPA'] ?>">
+<img src="images/logo.png"/></a></p>
 </body>
 </html>
 <?php
 }
 
 function newAdFormShow($dao, $fIsbn, $fSummary, $fDescription, $fWhat, $fImageBasename, $fGrade) {
-/*
- echo "fWhat        = " . $fWhat . "<br>\n";
-echo "fIsbn        = " . $fIsbn . "<br>\n";
-echo "fSummary     = " . $fSummary . "<br>\n";
-echo "fDescription = " . $fDescription . "<br>\n";
-*/
 
-// ACTION_NEW_AD_FORM => ACTION_NEW_AD_PREVIEW => ACTION_NEW_AD_CONFIRM
-//	if($GLOBALS["actionId"] == ACTION_NEW_AD_PREVIEW && $fWhat != "Envia")
 if($GLOBALS["actionId"] == ACTION_NEW_AD_PREVIEW) {
 	if($fWhat != "Edita") {
 			$doReadOnly = TRUE;
@@ -591,11 +665,12 @@ else {
 ?>
 
 			  <input type="file" name="imageBasenameF" id="imageBasenameF" accept="image/*" />
+			  <p>Avís: Sabem que la selecció de fitxers<br/>no funciona amb alguns mòbils</p>
 			</td>
 		</tr>
 		<tr>
 			<td colspan="2">&nbsp;<input type="submit" name="what"
-				value="Preview" />
+				value="Previsualitza l' anunci" />
 			</td>
 		</tr>
 		<?php } else { ?>
@@ -637,11 +712,20 @@ else {
 		</tr>
 
 		<tr>
+			<td colspan="2">
+			  &nbsp;<strong>Verifica</strong> les dades<br/>
+			  &nbsp;i torna a editar-ho<br/>
+			  &nbsp;o publica-ho finalment
+			</td>
+		</tr>
+		<tr>
 			<td colspan="2">&nbsp;<input type="submit" name="what" value="Edita" />
+			  <strong>Torna a editar</strong> l'anunci
 			</td>
 		</tr>
 		<tr>
 			<td colspan="2">&nbsp;<input type="submit" name="what" value="Envia" />
+			  <strong>Publica definitivament</strong> l'anunci
 			</td>
 		</tr>
 		<?php } ?>
@@ -733,12 +817,6 @@ function compressImatge($origFilename, $destFilename, $dim1, $dim2) {
 	}
 	else {
 		// portrait
-//		$newHeight=$dim2;
-//		$newWidth=$newHeight*$width/$height;
-
-//		$newWidth=$dim2;
-//		$newHeight=$height*$newWidth/$width;
-
 		$newWidth=$dim2;
 		$newHeight=$height*$newWidth/$width;
 		
@@ -848,6 +926,15 @@ $fCorrectOrSend=getParamSanitizedString('CorrectOrSend');
 }
 */
 
+function removeMyAds($user, $ads) {
+  $r = array();
+  foreach($ads as $anAd) {
+    if($user['mail'] != $anAd->getOwner()) {
+      array_push($r, $anAd);
+    }
+  }
+  return $r;
+}
 
 function createAd($dao, $user, $fIsbn, $fSummary, $fDescription, $fImageBasename, $grade) {
 	return $dao->createAd($user, $fIsbn, $fSummary, $fDescription, $fImageBasename, $grade);
@@ -1156,6 +1243,35 @@ function showLogEntries($logEntries) {
 	}
 }
 
+/**
+  * Verifica si l'string, a més d'altres coses, té quelcom que sembli una adreça de correu electrònic
+  * Em conformo amb validar si té algun caracter diferent a punt i a espai abans i després de l'arroba, després un punt i algun caracter diferent a . i a espai.
+  */
+function containsEmail($str) {
+	$regex = '/[^\\s\.]*@[^\\s\.]+\.[^\\s\.]/';
+	if (preg_match($regex, $str)) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+/**
+  * Verifica si l'string, a més d'altres coses, té quelcom que sembli un telefon
+  * Em conformo amb validar si un cop empobrit, té 9 dígits consecutius
+  */
+function containsTelefonNumber($str) {
+	$toRemove = array(" ", "-", ".", "/", "+");
+	$simplifiedString = str_replace($toRemove, "", $str);
+	if (preg_match("/\d{9,}/", $simplifiedString)) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
 
 /***
  * Retorna un string amb el Json que espera l'API de FJE per enviar mails.
@@ -1163,14 +1279,65 @@ function showLogEntries($logEntries) {
 function getFjeApiJsonHtmlMsg($user, $theAd, $theAdUserMail, $fDescription) {
 	$isbn=$theAd->getIsbn();
 	$summary=$theAd->getSummary();
+	$url = $GLOBALS['LIBER_URL'];
 	$body = <<<EOBODY
-<html><body><H1>Socialització de llibres</H1><p>Benvolgut/da:</p><p>Alg&uacute; est&agrave; interessat en el llibre que vas anunciar amb ISBN <b>$isbn</b> i de t&iacute;tol <b><i>$summary</i></b> i t'ha enviat aquest missatge:</p><hr/><p><b>$fDescription</b><hr/></p><p>Pots posar-te en contacte amb ell/ella. Tan de bo que pugui aprofitar el teu llibre</p><p>Moltes gr&agrave;cies per utilitzar aquest servei de socialitzaci&oacute;.</p><p>AMPA de Joan XXIII</p></body></html>
+<html>
+  <body>
+    <H1>Socialització de llibres</H1>
+    <p>Benvolgut/da:</p>
+    <p>Alg&uacute; est&agrave; interessat en el llibre que vas anunciar amb ISBN <b>$isbn</b>
+      i de t&iacute;tol <b><i>$summary</i></b>
+      i t'ha enviat aquest missatge:</p><hr/><p><b>$fDescription</b><hr/></p>
+    <p>Pots posar-te en contacte amb ell/ella. Tan de bo que pugui aprofitar el teu llibre</p>
+    <p>Un cop hagis cedit el llibre pots accedir a l'aplicaci&oacute;
+      <a href='$url' target="_blank">'Liber' $url</a> per esborrar l'anunci.</p>
+    <p>Moltes gr&agrave;cies per utilitzar aquest servei de socialitzaci&oacute;.</p>
+    <p>AMPA de Joan XXIII</p>
+    </body></html>
 EOBODY;
 	
 	$to=$theAdUserMail;
 	$fromName=$GLOBALS['MAIL_FROM_NAME'];
 
 	$subject = scapeBody($GLOBALS['MAIL_SUBJECT']);
+	$body    = scapeBody($body);
+	
+	$msg = <<<EOJSON
+{"to":"$to","nomBustia":"$fromName","subject":"$subject","cos":"$body"}
+EOJSON;
+
+	return $msg;
+}
+
+/***
+ * Retorna un string amb el Json que espera l'API de FJE per enviar mails.
+ */
+function getFjeApiJsonHtmlMsgNotifyMe($theAd, $theAdUserMail, $grade) {
+	$isbn=$theAd->getIsbn();
+	$summary=$theAd->getSummary();
+	$gradeName = $grade->getName();
+	$url = $GLOBALS['LIBER_URL'];
+	$body = <<<EOBODY
+<html>
+  <body>
+  <H1>Socialització de llibres</H1>
+  <p>Benvolgut/da:</p>
+  <p>Alg&uacute; ha publicat un anunci d'un llibre
+     del curs <strong>$gradeName</strong> i vas subscriure't
+     a rebre notificacions quan es publiquen llibres de tal curs.</p>
+  <p>Pots accedir a l'aplicaci&oacute; <a href='$url' target="_blank">'Liber' $url</a>
+    per mirar els anuncis i actualitzar la teva subscripci&oacute;
+    a rebre notificacions de nous llibres anunciats</p>
+  <p>Moltes gr&agrave;cies per utilitzar aquest
+     servei de socialitzaci&oacute;.</p>
+  <p>AMPA de Joan XXIII</p>
+  </body></html>
+EOBODY;
+	
+	$to=$theAdUserMail;
+	$fromName=$GLOBALS['MAIL_FROM_NAME'];
+
+	$subject = scapeBody($GLOBALS['MAIL_SUBJECT_NOTIFYME']);
 	$body    = scapeBody($body);
 	
 	$msg = <<<EOJSON
@@ -1385,5 +1552,136 @@ Content-Type: text/html
 
 	return FALSE;
 }
+
+
+/**
+ * Envia un mail a algú notificant-li que hi ha un nou llibre d'un curs del que busca llibres 
+ * @param Ad $theAd L'anunci
+ * @param AD $theAdUserMail L'anunciant
+ * @param String $grade grade Object
+ * @return boolean True si OK, False si errors.
+ */
+function sendMailWithNotifyMe($theAd, $theAdUserMail, $grade) {
+		/**
+		 * Utilitzant sockets, permetem posar 'allow_url_fopen' a 'false' al php.ini
+		 */
+
+		$result = TRUE;
+		$resultText="Errors using mail API";
+
+		// $GLOBALS['MAIL_FJEAPI_HTTP_HOST']='srv.fje.edu';
+		// $GLOBALS['MAIL_FJEAPI_HTTP_PORT']='80';
+		// $GLOBALS['MAIL_FJEAPI_HTTP_PATH']='/api/conNETctor.php/enviaInformacio';
+		
+		$jsonMsg=getFjeApiJsonHtmlMsgNotifyMe($theAd, $theAdUserMail, $grade);
+	
+		$apiResponse='';
+		$apiResponseHeaders='';
+		$apiResponseBody='';
+		// $host  $port  $fullpath
+		$host=$GLOBALS['MAIL_FJEAPI_HTTP_HOST'];
+		$port=$GLOBALS['MAIL_FJEAPI_HTTP_PORT'];
+		$path=$GLOBALS['MAIL_FJEAPI_HTTP_PATH'];
+// print "DEBUG: MAIL: host=$host port=$port path=$path<br/>\n";
+		
+		$fp = fsockopen($host, $port, $errno, $errstr, $GLOBALS['SOCKET_CONN_TIMEOUT']);
+		if(function_exists('stream_set_timeout'))
+			stream_set_timeout($fp, $GLOBALS['SOCKET_RW_TIMEOUT']);
+		if(! $fp) {
+			$result = FALSE;
+			$resultText="Can't connect to mail API";
+		}
+		else {
+			$out  = "POST $path HTTP/1.1\r\n";
+			$out .= "Host: $host:$port\r\n";
+			$out .= "Content-Type: application/json; charset=utf-8\r\n";
+			$out .= "Content-Length: " . strlen($jsonMsg) . "\r\n";
+			$out .= "Connection: Close\r\n\r\n";
+			$out .= "$jsonMsg\r\n";
+			
+			if($GLOBALS['debug']) {
+				print "DEBUG: MAIL: Anem a escriure això:<br/>\n<pre><code>$out</code></pre><br/>\n";
+			}
+			
+			fwrite($fp, $out);
+			while (!feof($fp)) {
+				// fgets($fp, 128);
+				$apiResponse .= fread($fp, $GLOBALS['MAIL_FJEAPI_MAX_BUFF']);
+				if (strlen($apiResponse) > $GLOBALS['MAIL_FJEAPI_MAX_RESPONSE_SIZE']) {
+					$result = FALSE;
+					$resultText="Mail API response exceeds max size (" . $GLOBALS['MAIL_FJEAPI_MAX_RESPONSE_SIZE'] . " bytes" ;
+					break;
+				}
+			}
+			fclose($fp);
+			
+			if($GLOBALS['debug']) {
+				print "DEBUG: API response complet:<br/>\n<pre><code>$apiResponse</code></pre><br/>\n";
+			}
+
+
+/*
+ * Exemple de resposta davant d'error:
+ HTTP/1.1 500 Internal Server Error
+Date: Mon, 01 May 2017 20:20:40 GMT
+Server: Apache/2.4.7 (Ubuntu)
+X-Powered-By: PHP/5.5.9-1ubuntu4.21
+Content-Length: 1466
+Connection: close
+Content-Type: text/html
+
+ 
+
+ 
+<html><head><title>Slim Application Error</title>...
+ */
+
+/*
+ * Exemple de resposta exitosa:
+HTTP/1.1 200 OK
+Date: Mon, 01 May 2017 20:24:29 GMT
+Server: Apache/2.4.7 (Ubuntu)
+X-Powered-By: PHP/5.5.9-1ubuntu4.21
+Content-Length: 7
+Connection: close
+Content-Type: text/html
+
+ {  "Resultat"  : "Ok"} 
+
+
+
+ */
+ 
+			list($apiResponseHeaders, $apiResponseBody) = explode("\r\n\r\n", $apiResponse, 2);
+
+			$simplifiedApiResponseBody = preg_replace('/[\s"]+/S', "", $apiResponseBody);
+
+			if($GLOBALS['debug']) {
+				print "DEBUG: API response body: [$apiResponseBody]<br/>\n";
+				print "DEBUG: API response body sesgat: [$simplifiedApiResponseBody]<br/>\n";
+				print "DEBUG: Referència = [" . $GLOBALS['MAIL_FJEAPI_OKRESPONSE_SIMPLIFIED'] . "]<br/>\n";
+			}
+
+			$sarbLower = strtolower($simplifiedApiResponseBody);
+			$refLower  = strtolower($GLOBALS['MAIL_FJEAPI_OKRESPONSE_SIMPLIFIED']);
+			
+			if (strcmp($sarbLower, $refLower) != 0) {
+				trigger_error("L'API per enviar correus sembla retornar errors ($apiResponseBody). Probablement el correu no s'enviï, et recomanem esperar i reintentar fins que funcioni." , E_USER_WARNING);
+				return FALSE;
+			}
+			else {
+				print "<b>Correu enviat amb èxit</b></br>\n";
+				return TRUE;
+			}
+
+		}
+		
+		if ($result === FALSE) {
+			trigger_error("Errors enviant el correu: $resultText" , E_USER_WARNING);
+			return FALSE;
+		}
+	return FALSE;
+}
+
 
 ?>

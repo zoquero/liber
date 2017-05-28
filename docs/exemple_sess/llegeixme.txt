@@ -1,5 +1,0 @@
-Fitxers on he volcat el contingut JSON de la consulta de dades dades de sessió, útil per devel.
-Valors:
-* docs/exemple_sess/jfe_validatokenCookie.0000-0000.json : Usuari de prova a FJE
-* docs/exemple_sess/jfe_validatokenCookie.ampa.joan23.json : Dades de darrera sessió d'AMPA
-* docs/exemple_sess/jfe_validatokenCookie.DUMMY.json       : Dades inventades

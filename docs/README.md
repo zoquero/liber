@@ -12,6 +12,7 @@ Maig de 2017
 * Permet publicar-hi anuncis de llibres
 * Permet buscar anuncis de llibres publicats
 * Permet mostrar interès en llibres publicats
+* Permet registrar-se per ser notificat sobre nous llibres
 
 # Instal·lació
 
@@ -78,7 +79,27 @@ $ mysql -u liberdbuser -ppassword liberdb < priv/ddl.sql
 $ mysql -u liberdbuser -ppassword liberdb < priv/dades.sql
 ```
 
+## Cron
+Cal aconseguir que un cop al dia s'executi l'script **`bin/send_notifs.php`** per a enviar correus sobre els nous llibres anunciats. Aquests correus només s'envien als usuaris que s'han registrat per ser notificat sobre nous llibres de tal curs.
+
+Pot fer-se afegint una entrada com aquesta al cron. Pot fer-se amb qualsevol usuari que tingui permís de lectura sobre els fitxers de l'aplicació:
+
+```
+0 19 * * * /www/liber/bin/send_notifs.php \\
+           >> /www/liber/bin/send_notifs.out 2>&1
+```
+
 ## Test
 
 Es provar l'aplicació accedint-hi amb un navegador. És autoexplicativa. Per exemple pot pujar-s'hi un anunci de prova i després esborrar-lo.
 
+# Desinstal·lació
+Recorda que la configuració és a **`www/conf.inc`**
+
+* Esborra les carpetes
+    * **`uploadstore/`**
+    * **`uploadtmp/`**
+* Esborra la carpeta del site del sistema de fitxers
+* Esborra la configuració del site al servidor web
+* Esborra l'entrada al cron
+* Esborra la base de dades

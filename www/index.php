@@ -49,7 +49,6 @@ switch($GLOBALS["actionId"]) {
 		$fDescription=getParamSanitizedString('description');
 		$fWhat=getParamSanitizedString('what');
 		$fGrade=getParamInt('grade');
-//print("fGrade=$fGrade\n");
 		
 		if($fGrade != NULL) {
 			$loadedGrade = $dao->getGradeById($fGrade);
@@ -66,10 +65,6 @@ switch($GLOBALS["actionId"]) {
 		if($GLOBALS['debug']) {
 		  echo "DEBUG: fImageBasenameH=$fImageBasenameH<br>\n";
 		}
-		
-//		// nou file upload
-//		$fImageBasenameF=getParamSanitizedString('imageBasenameF');
-//		$fImageBasename = empty($fImageBasenameF) ? $fImageBasenameH : $fImageBasenameF;
 		
 		newAdFormShow($dao, $fIsbn, $fSummary, $fDescription, $fWhat, $fImageBasenameH, $loadedGrade);
 		break;
@@ -96,16 +91,15 @@ switch($GLOBALS["actionId"]) {
 		
 		// hidden (arrossegant-se de previ file upload)
 		$fImageBasenameH=getParamSanitizedString('imageBasenameH');
-//		// nou file upload
-//		$fImageBasenameF=getParamSanitizedString('imageBasenameF');
-//		$fImageBasename = empty($fImageBasenameF) ? $fImageBasenameH : $fImageBasenameF;
 
 		$loadedGrade = $dao->getGradeById($fGrade);
 		if($loadedGrade == NULL) {
 			trigger_error("No s'ha trobat tal curs a la Base de Dades", E_USER_ERROR);
 		}
 		
-		if(isset($_FILES['imageBasenameF']) && file_exists($_FILES['imageBasenameF']['tmp_name']) && is_uploaded_file($_FILES['imageBasenameF']['tmp_name'])) {
+		if(isset($_FILES['imageBasenameF'])
+		   && file_exists($_FILES['imageBasenameF']['tmp_name'])
+		   && is_uploaded_file($_FILES['imageBasenameF']['tmp_name'])) {
 			$fImageBasename=compressAndSaveTmpImatge($GLOBALS['imageFilenamePrefix'] . $user['mail'] . "_");
 			if($GLOBALS['debug']) {
 				echo "DEBUG: fImageBasename (compressAndSaveTmpImatge) = $fImageBasename<br/>\n";
@@ -119,12 +113,17 @@ switch($GLOBALS["actionId"]) {
 		}
 
 		if($fWhat == "Envia") {
-			$createdAd = createAd($dao, $user, $fIsbn, $fSummary, $fDescription, $fImageBasename, $loadedGrade);
-			if($fImageBasename != NULL & $fImageBasename != "") {
-				rename($GLOBALS['uploadFolderTmp'] . "/" . $fImageBasename, $GLOBALS['uploadFolderStore'] . "/" . $fImageBasename);
-				rename($GLOBALS['uploadFolderTmp'] . "/" . $fImageBasename . $GLOBALS['thumbFilenameSufix'], $GLOBALS['uploadFolderStore'] . "/" . $fImageBasename . $GLOBALS['thumbFilenameSufix']);
+			if(!createAd($dao, $user, $fIsbn, $fSummary, $fDescription, $fImageBasename, $loadedGrade)) {
+				trigger_error("No s'ha pogut crear l'anunci", E_USER_ERROR);
 			}
-			showMessage("S'ha donat d'alta l'anunci del llibre amb ISBN <b><i>$fIsbn</i></b>, del curs <b><i>$loadedGrade</i></b> i sumari <b><i>$fSummary</i></b>");
+			if($fImageBasename != NULL & $fImageBasename != "") {
+				rename($GLOBALS['uploadFolderTmp'].    "/" . $fImageBasename,
+					   $GLOBALS['uploadFolderStore'] . "/" . $fImageBasename);
+				rename($GLOBALS['uploadFolderTmp']   . "/" . $fImageBasename . $GLOBALS['thumbFilenameSufix'],
+				       $GLOBALS['uploadFolderStore'] . "/" . $fImageBasename . $GLOBALS['thumbFilenameSufix']);
+			}
+			showMessage("S'ha donat d'alta l'anunci del llibre titolat <b><i>$fSummary</i></b>, del curs <b><i>"
+						. $loadedGrade->getName(). "</i></b>, amb ISBN <b><i>$fIsbn</i></b>");
             doLog($dao, $GLOBALS["actionId"], $user, "Anunci creat de llibre amb ISBN $fIsbn");
 		}
 		else {
@@ -141,6 +140,7 @@ switch($GLOBALS["actionId"]) {
 		}
 	
 		$foundAds=$dao->getAdsByGrade($loadedGrade);
+		$foundAds = removeMyAds($user, $foundAds);
 		if($foundAds == NULL || sizeof($foundAds) == 0) {
 			showNoAdsFound();
 			doLog($dao, $GLOBALS["actionId"], $user, "Cerca per curs '" . $loadedGrade->getName() . "' (id " . $fGrade . "). 0 trobats");
@@ -157,6 +157,7 @@ switch($GLOBALS["actionId"]) {
 		//
 		$aIsbn=getParamSanitizedString('isbn');
 		$foundAds=$dao->getAdsByIsbn($aIsbn);
+		$foundAds = removeMyAds($user, $foundAds);
 		if($foundAds == NULL || sizeof($foundAds) == 0) {
 			showNoAdsFound();
 			doLog($dao, $GLOBALS["actionId"], $user, "Cerca per ISBN '" . $aIsbn . "'. 0 trobats");
@@ -239,6 +240,7 @@ switch($GLOBALS["actionId"]) {
 		$aFKeywords=explode(" ", $fKeywords);
 		
 		$foundAds=$dao->searchAdsByKeywords($aFKeywords);
+		$foundAds = removeMyAds($user, $foundAds);
 		if($foundAds == NULL || sizeof($foundAds) == 0) {
 			showNoAdsFound();
 			doLog($dao, $GLOBALS["actionId"], $user, "Cerca per paraules '" . $fKeywords . "'. 0 trobats");
@@ -256,20 +258,24 @@ switch($GLOBALS["actionId"]) {
 		//
 		$fId=getParamSanitizedString('id');
 		$fDescription=getParamSanitizedString('description');
+		if(! containsEmail($fDescription) && ! containsTelefonNumber($fDescription)) {
+			trigger_error("No s'ha trobat cap número de telefon<br/>
+							ni adreça de correu electrònic al teu text.<br/>
+							L'anunciant no rebrà cap altre dada<br/>
+							sobre tu a part d'aquest text,<br/>
+							aprofita per donar-li el teu contacte.", E_USER_ERROR);
+		}
 		$theAd=$dao->getAdById($fId);
 		if($theAd == NULL) {
 			trigger_error("No s'ha trobat tal anunci a la Base de Dades", E_USER_ERROR);
 		}
 		// $theAdUserMail=$dao->getUserById($theAd->getOwner()); ja no tabla d'usuaris
 		$theAdUserMail=$theAd->getOwner();
-		// ja no cal validar-ho
-		// if($theAdUserMail == NULL) {
-		// 	trigger_error("No s'ha trobat l'usuari propietari de l'anunci a la Base de Dades", E_USER_ERROR);
-		//}
-// echo "Usuari id " . $user->getId() . " té interès en anunci (id $fId) [$theAd], descripció = [$fDescription]<br/>";
+
+		if($GLOBALS['debug']) {
+			echo "Usuari id " . $user->getId() . " té interès en anunci (id $fId) [$theAd], descripció = [$fDescription]<br/>";
+		}
 		if(createInterest($dao, $user, $theAd, $fDescription)) {
-//		if(createInterest($dao, $user, $theAd, $theAdUserMail, $fDescription))
-			// function createInterest($dao, $user, $theAd, $fDescription) 
 			showMessage("Hem enregistrat el teu inter&egrave;s");
 			doLog($dao, $GLOBALS["actionId"], $user, "Interès enregistrat sobre anunci amb id '" . $fId . "' descr = " . $fDescription . " ...");
 		}
@@ -316,8 +322,49 @@ switch($GLOBALS["actionId"]) {
 		}
 		
 		break;
+	case ACTION_NOTIFYME_SHOW:
+		//
+		showNotifyMeForm($dao, $user);
+		break;
+	case ACTION_NOTIFYME_DO:
+		if(! $dao->clearNotifymes($user)) {
+			trigger_error("Error: No s'ha pogut esborrar de la base de dades els seus interessos en ser notificat abans d'establir els nous", E_USER_ERROR);
+		}
+		$checkedNotifyMeGrades = array();
+		if(! empty($_POST['notifymeGrades'])) {
+		    if(is_array($_POST['notifymeGrades'])) {
+				$checkedNotifyMeGrades = $_POST['notifymeGrades'];
+		    }
+		    else {
+				$checkedNotifyMeGrades = array($_POST['notifymeGrades']);
+		    }
+		    foreach($checkedNotifyMeGrades as $notifymeGrade) {
+				if(!$dao->createNotifyme($user, $notifymeGrade)) {
+					trigger_error("Error: No s'ha pogut enregistrar a la base de dades el seu interès en ser notificat", E_USER_ERROR);
+				}
+		    }
+		}
+		echo "<p><b>Hem enregistrat</b> els teus interessos en <b>ser notificat/da</b>.
+		         <br/>Sàpigues que les notificacions s'envien només <b>un cop al dia</b></p>\n";
+		break;
+	case ACTION_ABOUT:
+		//
+		showAbout();
+		break;
 	default:
-		showMessage("Escull una opció:");
+		/* Saludem a l'usuari agafant el nom
+		 * per la clau "Nom" o "nom" del hash de dades d'usuari.
+		 */
+		if($user != NULL && array_key_exists("Nom", $user) && $user['Nom'] != "") {
+			$msg = "Hola, " . $user['Nom'] . "! Escull una opció:" ;
+		}
+		else if($user != NULL && array_key_exists("nom", $user) && $user['nom'] != "") {
+			$msg = "<strong>Hola, " . $user['nom'] . "!</strong><br/>Escull una opció:" ;
+		}
+		else {
+			$msg = "Escull una opció:"; 
+		}
+		showMessage($msg);
 }
 echo "<br/>\n";
 showRegularOptionsMenu($dao);

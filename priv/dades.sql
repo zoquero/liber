@@ -11,4 +11,5 @@ INSERT INTO `grades` VALUES (1,'1er de primària',1),
                             (11,'1er de batxillerat',1),
                             (12,'2on de batxillerat',1),
                             (13,'FP grau mig',1),
-                            (14,'FP grau superior',1);
+                            (14,'FP grau superior',1),
+                            (99,'Altres (de lectura, diccionaris, ...)',1);

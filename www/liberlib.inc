@@ -416,7 +416,7 @@ function showRegularOptionsMenu($dao) {
 		  </form>
         </td></tr>
 		<tr><td align="center">
-			Veure els llibres anunciats d'un curs:			
+			Veure els llibres anunciats d'un curs:<br/>			
 			<form action="?" method="post" accept-charset="utf-8">
 				<input type="hidden" name="actionId"
 					value="<?php echo ACTION_SEARCH_BY_GRADE ?>" />

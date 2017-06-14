@@ -1,6 +1,6 @@
 # Sumary
 
-Aplicació web per a la socialització de llibres
+Aplicació web per a la reutilització de llibres
 
 Angel Galindo Muñoz, zoquero@gmail.com
 

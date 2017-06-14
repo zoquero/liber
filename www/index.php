@@ -11,7 +11,7 @@ require_once(ROOT_PATH . "/class.logentry.inc.php");
 
 set_error_handler("myErrorHandler");
 
-safeSessionStart();
+// safeSessionStart(); // No gestionava bé la sessió i impossibilitava fer "back"
 sendHttpHeaders();
 sendHtmlHeaders();
 
@@ -38,10 +38,6 @@ if($GLOBALS['debug']) {
 doLog($dao, $GLOBALS["actionId"], $user, "Action");
 
 switch($GLOBALS["actionId"]) {
-	case ACTION_SET_DUMMY_USERNAME:
-		// Establir dummyUsername
-		setDummyUsername();
-		break;
 	case ACTION_NEW_AD_FORM:
 		// Cal mostrar a l'usuari el formulari per a que descrigui el seu llibre 
 		$fIsbn=getSimplifiedIsbn(getParamSanitizedString('isbn'));
@@ -112,7 +108,7 @@ switch($GLOBALS["actionId"]) {
 			}
 		}
 
-		if($fWhat == "Envia") {
+		if($fWhat == "Envia definitivament") {
 			if(!createAd($dao, $user, $fIsbn, $fSummary, $fDescription, $fImageBasename, $loadedGrade)) {
 				trigger_error("No s'ha pogut crear l'anunci", E_USER_ERROR);
 			}
@@ -124,10 +120,17 @@ switch($GLOBALS["actionId"]) {
 			}
 			showMessage("S'ha donat d'alta l'anunci del llibre titolat <b><i>$fSummary</i></b>, del curs <b><i>"
 						. $loadedGrade->getName(). "</i></b>, amb ISBN <b><i>$fIsbn</i></b>");
+
+			if(sendMailConfirmNewAd($fSummary, $user['mail'])) {
+				showMessage("T'hem enviat un missatge de confirmació");
+			}
+			else {
+				trigger_error("No ha estat possible enviar-te un missatge de confirmació.", E_USER_ERROR);
+			}
+			
             doLog($dao, $GLOBALS["actionId"], $user, "Anunci creat de llibre amb ISBN $fIsbn");
 		}
 		else {
-			echo "<p>Verifica les dades i pica a \"<b>Edita</b>\" per corregir-les o a \"<b>Envia</b>\" per crear l'anunci:</p>\n";  
 			newAdFormShow($dao, $fIsbn, $fSummary, $fDescription, $fWhat, $fImageBasename, $loadedGrade);
 		}
 		break;
@@ -273,14 +276,14 @@ switch($GLOBALS["actionId"]) {
 		$theAdUserMail=$theAd->getOwner();
 
 		if($GLOBALS['debug']) {
-			echo "Usuari id " . $user->getId() . " té interès en anunci (id $fId) [$theAd], descripció = [$fDescription]<br/>";
+			echo "Usuari id " . $user->getId() . " està interessat en anunci (id $fId) [$theAd], descripció = [$fDescription]<br/>";
 		}
 		if(createInterest($dao, $user, $theAd, $fDescription)) {
-			showMessage("Hem enregistrat el teu inter&egrave;s");
+			showMessage("Hem enregistrat que hi estàs interessat");
 			doLog($dao, $GLOBALS["actionId"], $user, "Interès enregistrat sobre anunci amb id '" . $fId . "' descr = " . $fDescription . " ...");
 		}
 		else {
-			trigger_error("Hi ha hagut algun problema enregistrant el teu inter&egrave;s", E_USER_ERROR);
+			trigger_error("Hi ha hagut algun problema enregistrant que hi estàs interessat", E_USER_ERROR);
 		}
 		
 		if(sendMailAboutInterest($user, $theAd, $theAdUserMail, $fDescription)) {

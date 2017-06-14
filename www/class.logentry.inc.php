@@ -67,7 +67,6 @@ class LogEntry {
 		return "
 <table border=1>
 <tr><td>0</td><td>ACTION_NONE</td></tr>
-<tr><td>1</td><td>ACTION_SET_DUMMY_USERNAME</td></tr>
 <tr><td>2</td><td>ACTION_NEW_AD_FORM</td></tr>
 <tr><td>3</td><td>ACTION_SEARCH_BY_ISBN</td></tr>
 <tr><td>4</td><td>ACTION_SEARCH_BY_KEYWORDS</td></tr>

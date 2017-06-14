@@ -174,34 +174,34 @@ function getUser() {
 		$user = getUserDo($token);
 	}
 	if($user == NULL) {
-	  $urlWebAmpa=$GLOBALS['WEB_AMPA'];
+	  $contacteAmpa=$GLOBALS['CONTACTE'];
 	  $msg = <<<HTMLSTR
 Oh, no hem pogut recuperar les teves dades de sessió.<br/>
 Si us plau, torna a accedir a
 <a href="http://www.fje.edu"><strong><em>La Net</em></strong></a>
 i prova d'accedir altre cop a aquesta aplicació.<br/>
-Si el problema persisteix pots
-<a href="$urlWebAmpa" >contactar amb l'AMPA</a> per depurar-ho.
+Si el problema persisteix pots contactar amb<br/>
+l'$contacteAmpa per depurar-ho.
 HTMLSTR;
 
 		trigger_error($msg, E_USER_ERROR);
 	}
 	if(! array_key_exists("mail", $user) || $user['mail'] == "") {
-	  $urlWebAmpa=$GLOBALS['WEB_AMPA'];
+	  $contacteAmpa=$GLOBALS['CONTACTE'];
 	  $msg = <<<HTMLSTR
 Oh, no hem trobat la teva adreça de correu electrònic<br/>
 a les teves dades de sessió d'usuari FJE.<br/>
-Si el problema persisteix 
-<a href="$urlWebAmpa" >contacta amb l'AMPA</a> per depurar-ho.
+Si el problema persisteix pots contactar amb<br/>
+l'$contacteAmpa per depurar-ho.
 HTMLSTR;
 
 		trigger_error($msg, E_USER_ERROR);
 	}
 	if(in_array($user['mail'], $GLOBALS['bannedUsers'])) {
-	  $urlWebAmpa=$GLOBALS['WEB_AMPA'];
+	  $contacteAmpa=$GLOBALS['CONTACTE'];
 	  $msg = <<<HTMLSTR
-El seu usuari té blocat l'accés a aquesta aplicació.<br/>
-Pot <a href="$urlWebAmpa" >contactar amb l'AMPA</a> per corregir-ho.
+El teu usuari té blocat l'accés a aquesta aplicació.<br/>
+Pots contactar amb l'$contacteAmpa per corregir-ho.
 HTMLSTR;
 
 		trigger_error($msg, E_USER_ERROR);
@@ -333,16 +333,6 @@ function getParamSanitizedString($paramName) {
 }
 
 
-
-/**
- * Estableix el nom d'usuari a la sessió a partir de paràmetre POST, només pel desenvolupament.
- */
-function setDummyUsername() {
-	$_SESSION["dummyUsername"] = getParamSanitizedString('dummyUsername');
-	echo "<p>Ara has esdevingut l'usuari " . $_SESSION["dummyUsername"] . "</p>";
-}
-
-
 /**
  * Escriu les capçaleres del cos, amb el menú d'opcions per a l'usuari.
  */
@@ -469,13 +459,13 @@ function showRegularOptionsMenu($dao) {
  */
 function showAbout() {
 ?>
-<p> L'aplicació <strong>Liber</strong> té com a finalitat la <strong>socialització de llibres</strong>.
+<p> L'aplicació <strong>Liber</strong> té com a finalitat la <strong>reutilització de llibres</strong>.
 Permet que pares i mares cedeixin els seus llibres en desús a d'altre pares i mares que els necessitin.
 És una iniciativa en la línia del <a href="https://ca.wikipedia.org/w/index.php?title=Consum_col%C2%B7laboratiu&oldid=18443245" target="_blank">consum col·laboratiu</a> i
 els impulsors del projecte demanem que no es demanin diners a canvi dels llibres.</p>
 <p>L'aplicació <strong>ha estat desenvolupada per l'<a href="<?php echo $GLOBALS['WEB_AMPA'] ?>" target="_blank">AMPA del Centre d'Estudis Joan XXIII</a></strong> (Fundació Jesuïtes Educació Bellvitge),
   amb la col·laboració dels Sistemes d'Informació i Comunicació de la <a href="<?php echo $GLOBALS['WEB_FJE'] ?>" target="_blank">Fundació Jesuïtes Educació</a>.</p>
-<p>Tens suggerients? <a href="<?php echo $GLOBALS['WEB_AMPA'] ?>" target="_blank">Fes-nos-los arribar</a>, sisplau!</p>
+<p>Tens suggerients? Fes-nos-los arribar a l'<?php echo $GLOBALS['CONTACTE'] ?> , sisplau!</p>
 
 <?php
 }
@@ -532,38 +522,9 @@ function showAdminOptionsMenu() {
 }
 
 
-/**
- * Mostra el form que permet establir l'username al desenvolupador.
- *
- * <p>Mostra el form que permet establir l'username al desenvolupador,
- * quan no es disposa de servei de sessió.</p>
- */
-function showDummyForm($user) {
-  die ("obsolet vers GLOBALS[mockToken], GLOBALS[mockSess] i GLOBALS[mockInjectSess]");
-?>
-<table border="1"><tr><td bgcolor="#FFF0F0">
-	<b>Sessi&oacute; <i>dummy</i></b> per a administradors:<br/>
-	Ara actues com a [<b><?php echo htmlentities($user, ENT_QUOTES, "UTF-8"); ?></b>]<br/>
-
-	<form action="?" method="post" accept-charset="utf-8">
-		<input type="hidden" name="actionId" value="<?php echo ACTION_SET_DUMMY_USERNAME ?>" />
-						
-		<table border="0"><tr>
-			<td>Accedeix com a aquest usuari:</td>
-			<td>
-				<input type="text" name="dummyUsername"
-					value="<?php echo empty($_SESSION["dummyUsername"]) ? "" : $_SESSION["dummyUsername"] ?>" /></td>
-			<td><input type="submit" name="Envia" value="Envia" /></td>
-		</tr></table>
-	
-	</form>
-</td></tr></table>
-<?php
-}
-
 function showFooter() {
 ?>
-<p>Aplicació per a la socialització de llibres<br/>
+<p>Aplicació per a la reutilització de llibres<br/>
 de l'<a href="<?php echo $GLOBALS['WEB_AMPA'] ?>">AMPA
 del Centre d'Estudis Joan XXIII</a><br/>
 (Fundació Jesuïtes Educació Bellvitge)<br/>
@@ -577,7 +538,7 @@ del Centre d'Estudis Joan XXIII</a><br/>
 function newAdFormShow($dao, $fIsbn, $fSummary, $fDescription, $fWhat, $fImageBasename, $fGrade) {
 
 if($GLOBALS["actionId"] == ACTION_NEW_AD_PREVIEW) {
-	if($fWhat != "Edita") {
+	if($fWhat != "Torna a editar") {
 			$doReadOnly = TRUE;
 	}
 	else {
@@ -629,6 +590,9 @@ else {
 	<table>
 		<?php if(! $doReadOnly) { ?>
 		<tr>
+			<td colspan="2" align="center"><b>Pas 1 de 2: Entra les dades</b></td>
+		</tr>
+		<tr>
 			<th>ISBN:</th>
 			<td align="left"><input type="text" name="isbn" value="<?php echo $fIsbn ?>"
 				size="13" maxlength="20" /></td>
@@ -647,7 +611,7 @@ else {
 			<td align="left"><?php echo $gradesSelect ?></td>
 		</tr>
 		<tr>
-			<th>Imatge del llibre<br/>(opcional)</th>
+			<th>Imatge<br/>(opcional)</th>
 			<td align="left">
 
 <?php
@@ -670,10 +634,13 @@ else {
 		</tr>
 		<tr>
 			<td colspan="2">&nbsp;<input type="submit" name="what"
-				value="Previsualitza l' anunci" />
+				value="&gt;&gt;&gt; Pas 2" />
 			</td>
 		</tr>
 		<?php } else { ?>
+		<tr>
+			<td colspan="2" align="center"><b>Pas 2 de 2: Verifica les dades</b></td>
+		</tr>
 		<tr>
 			<th>ISBN:</th>
 			<td align="left"><input type="text" name="isbn" value="<?php echo $fIsbn ?>"
@@ -719,13 +686,13 @@ else {
 			</td>
 		</tr>
 		<tr>
-			<td colspan="2">&nbsp;<input type="submit" name="what" value="Edita" />
-			  <strong>Torna a editar</strong> l'anunci
+			<td colspan="2">&nbsp;<input type="submit" name="what" value="Torna a editar" />
+			  Torna al pas 1
 			</td>
 		</tr>
 		<tr>
-			<td colspan="2">&nbsp;<input type="submit" name="what" value="Envia" />
-			  <strong>Publica definitivament</strong> l'anunci
+			<td colspan="2">&nbsp;<input type="submit" name="what" value="Envia definitivament" />
+			  Publica definitivament l'anunci
 			</td>
 		</tr>
 		<?php } ?>
@@ -962,6 +929,8 @@ function showMessage($msg) {
 /**
  * Inicia sesió aplicant algun mecanisme per evitar session hijacking.
  * <p>Algunes recomanacions extretes de http://phpsec.org/projects/guide/</p>
+ * @deprecated a 13 de juny de 2017 vaig deshabilitar la sessió
+ *   doncs no la utilitzava i per algun error del codi impedia fer "back". 
  */
 function safeSessionStart() {
 	session_start();
@@ -981,6 +950,11 @@ function safeSessionStart() {
  */
 function sendHttpHeaders() {
 	header('Content-Type: text/html; charset=utf-8');
+	/*
+	header("Pragma", "no-cache");
+	header("Cache-Control", "private, no-store, no-cache, must-revalidate");
+	header("Expires", "0");
+	*/
 }
 
 /**
@@ -991,6 +965,11 @@ function sendHtmlHeaders() {
 ?>
 <html>
 <head>
+
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<META HTTP-EQUIV="Cache-Control" CONTENT="private, no-store, no-cache, must-revalidate">
+<META HTTP-EQUIV="Expires" CONTENT="0">
+
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title><?php echo htmlentities($GLOBALS['htmlHeadTitle'], ENT_QUOTES, "UTF-8") ?>
@@ -1071,7 +1050,7 @@ function showInterestsHeader() {
 
 function showInterestsFoundPresentation() {
 ?>
-<p>Respostes d'altres usuaris interessats en el seu llibre:</p>
+<p>Respostes d'altres usuaris interessats en el teu llibre:</p>
 <?php
 }
 
@@ -1094,7 +1073,9 @@ function showNoAdsFound() {
 
 function showAdsFoundPresentation() {
 ?>
-<p>Llibres trobats:</p>
+<p>Anuncis de libres trobats<br/>
+(NO s'hi inclouen els teus, els trobaràs a l'opció
+"<em><a href="?actionId=<?php echo ACTION_SHOW_MY_ADS ?>">Meus Llibres anunciats</a></em>"):</p>
 <?php
 }
 
@@ -1201,13 +1182,13 @@ function showInterestForm($ad) {
 ?>
 <br/>
 <table border="1"><tr><td bgcolor="#F5F5F5">
-	<p>Si tens inter&egrave;s en el llibre
-		de ISBN <b><?php echo $ad->getIsbn() ?></b>
-		i de resum &quot;<i><b><?php echo $ad->getSummary()?></i></b>&quot;
-		deixa aqu&iacute; les teves dades de contacte i qui l'hagi anunciat
-		les utilitzar&agrave; per posar-se en contacte amb tu.</p>
-	<p>Recorda que <b>nom&eacute;s</b> rebr&agrave; les dades de contacte
-	   que decideixis donar-li a continuaci&oacute;:</p>
+	<p>Si estàs interessat en el llibre
+		de ISBN <b><?php echo $ad->getIsbn() ?></b><br/>
+		i de t&iacute;tol &quot;<i><b><?php echo $ad->getSummary()?></i></b>&quot;<br/>
+		deixa aqu&iacute; les teves <b>dades de contacte</b><br/>
+		i qui l'hagi anunciat les utilitzar&agrave; per posar-se en contacte amb tu.</p>
+	<p>Recorda que <b>NO</b> li enviarem cap dada teva<br/>
+	    a part de les que escriguis a continuaci&oacute;:</p>
 
 	<form action="?" method="post" accept-charset="utf-8">
 		<input type="hidden" name="actionId"
@@ -1283,7 +1264,7 @@ function getFjeApiJsonHtmlMsg($user, $theAd, $theAdUserMail, $fDescription) {
 	$body = <<<EOBODY
 <html>
   <body>
-    <H1>Socialització de llibres</H1>
+    <H1>Reutilització de llibres</H1>
     <p>Benvolgut/da:</p>
     <p>Alg&uacute; est&agrave; interessat en el llibre que vas anunciar amb ISBN <b>$isbn</b>
       i de t&iacute;tol <b><i>$summary</i></b>
@@ -1291,7 +1272,7 @@ function getFjeApiJsonHtmlMsg($user, $theAd, $theAdUserMail, $fDescription) {
     <p>Pots posar-te en contacte amb ell/ella. Tan de bo que pugui aprofitar el teu llibre</p>
     <p>Un cop hagis cedit el llibre pots accedir a l'aplicaci&oacute;
       <a href='$url' target="_blank">'Liber' $url</a> per esborrar l'anunci.</p>
-    <p>Moltes gr&agrave;cies per utilitzar aquest servei de socialitzaci&oacute;.</p>
+    <p>Moltes gr&agrave;cies per utilitzar aquest servei de reutilitzaci&oacute;.</p>
     <p>AMPA de Joan XXIII</p>
     </body></html>
 EOBODY;
@@ -1320,7 +1301,7 @@ function getFjeApiJsonHtmlMsgNotifyMe($theAd, $theAdUserMail, $grade) {
 	$body = <<<EOBODY
 <html>
   <body>
-  <H1>Socialització de llibres</H1>
+  <H1>Reutilització de llibres</H1>
   <p>Benvolgut/da:</p>
   <p>Alg&uacute; ha publicat un anunci d'un llibre
      del curs <strong>$gradeName</strong> i vas subscriure't
@@ -1329,7 +1310,7 @@ function getFjeApiJsonHtmlMsgNotifyMe($theAd, $theAdUserMail, $grade) {
     per mirar els anuncis i actualitzar la teva subscripci&oacute;
     a rebre notificacions de nous llibres anunciats</p>
   <p>Moltes gr&agrave;cies per utilitzar aquest
-     servei de socialitzaci&oacute;.</p>
+     servei de reutilitzaci&oacute;.</p>
   <p>AMPA de Joan XXIII</p>
   </body></html>
 EOBODY;
@@ -1346,6 +1327,38 @@ EOJSON;
 
 	return $msg;
 }
+
+
+/***
+ * Retorna un string amb el Json que espera l'API de FJE per enviar mail de confirmació.
+ */
+function getFjeApiJsonHtmlMsgConfirmNewAd($theAdTitle, $theAdUserMail) {
+	$url = $GLOBALS['LIBER_URL'];
+	$body = <<<EOBODY
+<html>
+  <body>
+  <H1>Reutilització de llibres</H1>
+  <p>Benvolgut/da:</p>
+  <p>Hem guardat el teu anunci de llibre "<em>$theAdTitle</em>". Et notificarem per correu si algú el necessita.</p>
+  <p>Un cop el donis, podràs utilitzar l'aplicació per indicar que ja ho has fet.</p>
+  <p>Moltes gr&agrave;cies per utilitzar aquest servei.</p>
+  <p>AMPA de Joan XXIII</p>
+  </body></html>
+EOBODY;
+	
+	$to=$theAdUserMail;
+	$fromName=$GLOBALS['MAIL_FROM_NAME'];
+
+	$subject = scapeBody($GLOBALS['MAIL_SUBJECT_CONFIRM']);
+	$body    = scapeBody($body);
+	
+	$msg = <<<EOJSON
+{"to":"$to","nomBustia":"$fromName","subject":"$subject","cos":"$body"}
+EOJSON;
+
+	return $msg;
+}
+
 
 function scapeBody($msg) {
 	$msg = str_replace('\\',   '',       $msg);
@@ -1408,7 +1421,7 @@ function sendMailAboutInterest($user, $theAd, $theAdUserMail, $fDescription) {
 				. " i t'ha enviat aquest missatge:</p>"
 				. "<p><b>" . $fDescription . "</b></p>"
 				. "<p>Pots posar-te en contacte amb ell/ella, tan de bo que pugui aprofitar el teu llibre</p>"
-				. "<p>Moltes gr&agrave;cies per utilitzar aquest servei de socialització.</p>"
+				. "<p>Moltes gr&agrave;cies per utilitzar aquest servei de reutilització.</p>"
 				. "<p>AMPA de Joan XXIII</p>";
 		
 		$mail->Subject = $GLOBALS['MAIL_SUBJECT'];
@@ -1671,6 +1684,96 @@ Content-Type: text/html
 			}
 			else {
 				print "<b>Correu enviat amb èxit</b></br>\n";
+				return TRUE;
+			}
+
+		}
+		
+		if ($result === FALSE) {
+			trigger_error("Errors enviant el correu: $resultText" , E_USER_WARNING);
+			return FALSE;
+		}
+	return FALSE;
+}
+
+
+/**
+ * Envia un mail a algú notificant-li que s'ha guardat el seu nou anunci. 
+ * @param Ad $theAd L'anunci
+ * @param AD $theAdUserMail L'anunciant
+ * @param String $grade grade Object
+ * @return boolean True si OK, False si errors.
+ */
+function sendMailConfirmNewAd($theAdTitle, $theAdUserMail) {
+		$result = TRUE;
+		$resultText="Errors using mail API";
+
+		$jsonMsg=getFjeApiJsonHtmlMsgConfirmNewAd($theAdTitle, $theAdUserMail);
+	
+		$apiResponse='';
+		$apiResponseHeaders='';
+		$apiResponseBody='';
+		// $host  $port  $fullpath
+		$host=$GLOBALS['MAIL_FJEAPI_HTTP_HOST'];
+		$port=$GLOBALS['MAIL_FJEAPI_HTTP_PORT'];
+		$path=$GLOBALS['MAIL_FJEAPI_HTTP_PATH'];
+// print "DEBUG: MAIL: host=$host port=$port path=$path<br/>\n";
+		
+		$fp = fsockopen($host, $port, $errno, $errstr, $GLOBALS['SOCKET_CONN_TIMEOUT']);
+		if(function_exists('stream_set_timeout'))
+			stream_set_timeout($fp, $GLOBALS['SOCKET_RW_TIMEOUT']);
+		if(! $fp) {
+			$result = FALSE;
+			$resultText="Can't connect to mail API";
+		}
+		else {
+			$out  = "POST $path HTTP/1.1\r\n";
+			$out .= "Host: $host:$port\r\n";
+			$out .= "Content-Type: application/json; charset=utf-8\r\n";
+			$out .= "Content-Length: " . strlen($jsonMsg) . "\r\n";
+			$out .= "Connection: Close\r\n\r\n";
+			$out .= "$jsonMsg\r\n";
+			
+			if($GLOBALS['debug']) {
+				print "DEBUG: MAIL: Anem a escriure això:<br/>\n<pre><code>$out</code></pre><br/>\n";
+			}
+			
+			fwrite($fp, $out);
+			while (!feof($fp)) {
+				// fgets($fp, 128);
+				$apiResponse .= fread($fp, $GLOBALS['MAIL_FJEAPI_MAX_BUFF']);
+				if (strlen($apiResponse) > $GLOBALS['MAIL_FJEAPI_MAX_RESPONSE_SIZE']) {
+					$result = FALSE;
+					$resultText="Mail API response exceeds max size (" . $GLOBALS['MAIL_FJEAPI_MAX_RESPONSE_SIZE'] . " bytes" ;
+					break;
+				}
+			}
+			fclose($fp);
+			
+			if($GLOBALS['debug']) {
+				print "DEBUG: API response complet:<br/>\n<pre><code>$apiResponse</code></pre><br/>\n";
+			}
+ 
+			list($apiResponseHeaders, $apiResponseBody) = explode("\r\n\r\n", $apiResponse, 2);
+
+			$simplifiedApiResponseBody = preg_replace('/[\s"]+/S', "", $apiResponseBody);
+
+			if($GLOBALS['debug']) {
+				print "DEBUG: API response body: [$apiResponseBody]<br/>\n";
+				print "DEBUG: API response body sesgat: [$simplifiedApiResponseBody]<br/>\n";
+				print "DEBUG: Referència = [" . $GLOBALS['MAIL_FJEAPI_OKRESPONSE_SIMPLIFIED'] . "]<br/>\n";
+			}
+
+			$sarbLower = strtolower($simplifiedApiResponseBody);
+			$refLower  = strtolower($GLOBALS['MAIL_FJEAPI_OKRESPONSE_SIMPLIFIED']);
+			
+			if (strcmp($sarbLower, $refLower) != 0) {
+				trigger_error("L'API per enviar correus sembla retornar errors ($apiResponseBody). Probablement el correu no s'enviï, et recomanem esperar i reintentar fins que funcioni." , E_USER_WARNING);
+				return FALSE;
+			}
+			else {
+				// Ok!!
+				// print "<b> hem enviat un correu de confirmació a $theAdUserMail</b></br>\n";
 				return TRUE;
 			}
 

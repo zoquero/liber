@@ -71,127 +71,7 @@ class Dao {
 	public function isErrConnecting() {
 		return $this->errConnecting;
 	}
-
-/** 
-	public function getCurrentUser() {
-		die ("Dao.getCurrentUser deprecated");
-		$u = ''; // PENDENT de veure com agafar-ho de la sessió FJE
-		if($GLOBALS['mockSess']) {
-			if(! empty($_SESSION["dummyUsername"])) {
-				$u = $_SESSION["dummyUsername"];
-			}
-			else {
-				trigger_error("Error de programa: Sempre ha d'haver una sessi&oacute; d'usuari", E_USER_WARNING);
-				return NULL;
-			}
-		}
-		if($u === '') {
-			if($GLOBALS['mockSess']) {
-				trigger_error("Error d'aplicaci&oacute;: Sempre ha d'haver una sessi&oacute; d'usuari", E_USER_WARNING);
-				return NULL;
-			}
-			else {
-				trigger_error("Error d'aplicaci&oacute;: Sempre ha d'haver una sessi&oacute; d'usuari", E_USER_WARNING);
-				return NULL;
-			}
-		}
-		return $this->getUserByMail($u);
-	}
- */
-
-/*
-
-	 **
-	 * Retorna l'objecte User a partir de l'entrada a taula d'usuaris amb tal mail
-	 * @param String $m El mail
-	 * @return User|NULL L'objecte User o NULL si no es troba.
-	 * @deprecated Finalment no hi ha taula de membres
-	 *
-	public function getUserByMail($m) {
-		die ("deprecated Finalment no hi ha taula de membres");
-		if($m == NULL || $m == ''){
-			trigger_error("Error de programació: Rebut mail NULL fent getUserByMail", E_USER_WARNING);
-			return NULL;
-		}
-		$aId='';
-		$aMail='';
-		$aFullname='';
-		// La consulta
-		$sql = "SELECT id, mail, fullname FROM members where mail = ?";
-
-		// utilitzem un prepared statement
-		if($stmt = $this->mysqliCon->prepare($sql)) {
-			$stmt->bind_param("s", $m);
-			// executem la consulta
-			if( $stmt->execute() === FALSE) {
-				trigger_error("No s'ha pogut executar l'acció sobre la base de dades: <br/>(" .  $this->mysqliCon->errno . ") " . $this->mysqliCon->error, E_USER_WARNING);
-				return NULL;
-			}
-			// associem resposta a variables
-			$stmt->bind_result($aId, $aMail, $aFullname);
-			// llegim la resposta
-			if ($stmt->fetch()) {
-				//				echo '<table><tr><td>'.$aId.'</td><td>'.$aMail.'</td><td>'.$aFullname.'</td></tr></table>';
-				return new User($aId, $aMail, $aFullname);
-			}
-			if (! $stmt->close()) {
-				trigger_error("Error tancant l'statement de la Base de Dades: <br/>(" .  $this->mysqliCon->errno . ") " . $this->mysqliCon->error, E_USER_WARNING);
-				return NULL;
-			}
-		}
-		else {
-			trigger_error("No s'ha pogut preparar l'acció sobre la base de dades: <br/>(" .  $this->mysqliCon->errno . ") " . $this->mysqliCon->error, E_USER_WARNING);
-			return NULL;
-		}
-		return NULL;
-	}
-
-	 **
-	 * Retorna l'objecte User a partir de l'entrada a taula d'usuaris amb tal id
-	 * @param String $i L'id de l'usuari
-	 * @return User|NULL L'objecte User o NULL si no es troba.
- 	 * @deprecated Finalment no hi ha taula de membres	 
-	 * 
-	public function getUserById($i) {
-		die ("Finalment no hi ha taula de membres");
-		$aId='';
-		$aMail='';
-		$aFullname='';
-		// La consulta
-		$sql = "SELECT id, mail, fullname FROM members where id = ?";
-
-		// utilitzem un prepared statement
-		if($stmt = $this->mysqliCon->prepare($sql)) {
-			if($stmt->bind_param("i", $i) === FALSE) {
-				trigger_error("Errors associant variables a la consulta a la base de dades", E_USER_WARNING);
-				return NULL;
-			}
-			// executem la consulta
-			if( $stmt->execute() === FALSE) {
-				trigger_error("No s'ha pogut executar la consulta a la base de dades: <br/>(" .  $this->mysqliCon->errno . ") " . $this->mysqliCon->error, E_USER_WARNING);
-				return NULL;
-			}
-				
-			// associem resposta a variables
-			$stmt->bind_result($aId, $aMail, $aFullname);
-			// llegim la resposta
-			if ($stmt->fetch()) {
-				//				echo '<table><tr><td>'.$aId.'</td><td>'.$aMail.'</td><td>'.$aFullname.'</td></tr></table>';
-				return new User($aId, $aMail, $aFullname);
-			}
-			if (! $stmt->close()) {
-				trigger_error("Error tancant l'statement de la Base de Dades: <br/>(" .  $this->mysqliCon->errno . ") " . $this->mysqliCon->error, E_USER_WARNING);
-				return NULL;
-			}
-		}
-		else {
-			trigger_error("No s'ha pogut preparar l'acció sobre la base de dades: <br/>(" .  $this->mysqliCon->errno . ") " . $this->mysqliCon->error, E_USER_WARNING);
-			return NULL;
-		}
-		return NULL;
-	}
-
-*/
+	
 
 	public function createAd($user, $fIsbn, $fSummary, $fDescription, $fImage, $grade, $notified = FALSE) {
 		if($user == NULL){
@@ -953,7 +833,7 @@ class Dao {
 		$aName='';
 		$aEnabled=FALSE;
 		// La consulta
-		$sql = "SELECT id, name, enabled FROM grades where enabled = TRUE";
+		$sql = "SELECT id, name, enabled FROM grades where enabled = TRUE ORDER BY id";
 	
 		// utilitzem un prepared statement
 		if($stmt = $this->mysqliCon->prepare($sql)) {

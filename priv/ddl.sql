@@ -41,7 +41,7 @@ CREATE TABLE `ads` (
   KEY `idx_notified` (`notified`),
   FULLTEXT KEY `ftsearch` (`summary`,`description`) COMMENT 'full text search de textos',
   CONSTRAINT `gradefk` FOREIGN KEY (`grade`) REFERENCES `grades` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=43 DEFAULT CHARSET=utf8 COMMENT='Taula amb els anuncis de llibres a socialitzar';
+) ENGINE=InnoDB AUTO_INCREMENT=43 DEFAULT CHARSET=utf8 COMMENT='Taula amb els anuncis de llibres a reutilitzar';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --

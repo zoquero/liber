@@ -1,4 +1,4 @@
-# Summary
+# Sumari
 
 Aplicació web feta en PHP que té com a finalitat la **reutilització de llibres de l'escola Jesuïtes Bellvitge**. Permet que pares i mares cedeixin els seus llibres en desús a d'altres famílies que ho desitjin. És una iniciativa de l'**AMPA** que va en la línia del [consum col·laboratiu](https://ca.wikipedia.org/w/index.php?title=Consum_col%C2%B7laboratiu&oldid=18443245), convidant a fer-ne un ús desinteressat i totalment solidari amb d'altres famílies de l'escola.
 

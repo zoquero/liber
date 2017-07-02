@@ -347,8 +347,8 @@ switch($GLOBALS["actionId"]) {
 				}
 		    }
 		}
-		echo "<p><b>Hem enregistrat</b> els teus interessos en <b>ser notificat/da</b>.
-		         <br/>Sàpigues que les notificacions s'envien només <b>un cop al dia</b></p>\n";
+		echo "<p><b>Hem enregistrat</b> els teus interessos.
+		         <br/>Les notificacions s'enviaran només <b>un cop al dia</b></p>\n";
 		break;
 	case ACTION_ABOUT:
 		//

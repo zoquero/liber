@@ -2,7 +2,7 @@
 
 $GLOBALS['debug']          = FALSE;  // Mostrar info pel troubleshooting
 $GLOBALS['mockToken']      = FALSE;  // Fixar el token per codi, no cookie 
-$GLOBALS['mockSess']       = TRUE;  // Recuperar sessió de fitxer
+$GLOBALS['mockSess']       = FALSE;  // Recuperar sessió de fitxer
 $GLOBALS['mockInjectSess'] = FALSE;  // Injectar cookie de sessió
                                      // Estableix-la llavors a
                                      // $GLOBALS['SESS_FJEAPI_MOCKING_COOKIE_VALUE']
@@ -61,16 +61,17 @@ $GLOBALS['WEB_AMPA']  = "http://bit.ly/ampajoan23";
 $GLOBALS['WEB_FJE']   = "http://www.fje.edu";
 $GLOBALS['LIBER_URL'] = 'http://liber.net.fje.edu/';
 
+$GLOBALS['NOM_AMPA'] = 'AMPA Jesuïtes Bellvitge CE Joan XXIII';
 $GLOBALS['MAIL_AMPA'] = 'ampa.joan23@fje.edu';
 $GLOBALS['FACEBOOK_AMPA'] = 'https://www.facebook.com/AMPAJesuitesBellvitge';
-$GLOBALS['CONTACTE'] = 'AMPA de Joan 23: <a href="mailto:' . $GLOBALS['MAIL_AMPA'] . '?subject=Liber">' . $GLOBALS['MAIL_AMPA'] . '</a>';
+$GLOBALS['CONTACTE'] = $GLOBALS['NOM_AMPA'] . ': <a href="mailto:' . $GLOBALS['MAIL_AMPA'] . '?subject=Liber">' . $GLOBALS['MAIL_AMPA'] . '</a>';
 
 
 /*** Llista dels usuaris bannejats als que se'ls impedeix utilitzar l'aplicació. */
 $GLOBALS['bannedUsers'] = array("zoquero2@gmail.com", "zoquero3@gmail.com");
 
 /*** Títol head de les pàgines */
-$GLOBALS['htmlHeadTitle'] = "FamiLyber: AMPA Jesuïtes Bellvitge CE Joan XXIII";
+$GLOBALS['htmlHeadTitle'] = "FamiLyber: " . $GLOBALS['NOM_AMPA'];
 /*** Títol body de les pàgines */
 $GLOBALS['htmlBodyTitle'] = "FamiLyber: Reutilització de llibres";
 

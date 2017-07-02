@@ -346,10 +346,14 @@ function showRegularBodyHeaders() {
 	<table>
 	  <tr bgcolor="#FFFFFF">
 	  	<td bgcolor="#FFFFFF">Aplicació per a la reutilització de llibres<br/>
-	<a href="<?php echo $GLOBALS['WEB_AMPA'] ?>">AMPA Jesuïtes Bellvitge CE Joan XXIII</a>
+	      <a href="<?php echo $GLOBALS['WEB_AMPA'] ?>">
+	        <?php echo $GLOBALS['NOM_AMPA'] ?>
+	      </a>
 	    </td>
 	  	<td bgcolor="#FFFFFF">
-	  	  	<img src="images/logo.png"/></a></p>
+	      <a href="<?php echo $GLOBALS['WEB_AMPA'] ?>">
+	  	    <img src="images/logo.png"/></a></p>
+	      </a>
 	    </td>
 	  </tr>
 	</table>
@@ -471,15 +475,13 @@ function showRegularOptionsMenu($dao) {
  * Mostra info sobre l'aplicació
  */
 function showAbout() {
+  $correu = $GLOBALS['MAIL_AMPA'];
 ?>
-<p> L'aplicació <strong>Liber</strong> té com a finalitat la <strong>reutilització de llibres</strong>.
-Permet que pares i mares cedeixin els seus llibres en desús a d'altre pares i mares que els necessitin.
-És una iniciativa en la línia del <a href="https://ca.wikipedia.org/w/index.php?title=Consum_col%C2%B7laboratiu&oldid=18443245" target="_blank">consum col·laboratiu</a> i
-els impulsors del projecte demanem que no es demanin diners a canvi dels llibres.</p>
-<p>L'aplicació <strong>ha estat desenvolupada per l'<a href="<?php echo $GLOBALS['WEB_AMPA'] ?>" target="_blank">AMPA del Centre d'Estudis Joan XXIII</a></strong> (Fundació Jesuïtes Educació Bellvitge),
-  amb la col·laboració dels Sistemes d'Informació i Comunicació de la <a href="<?php echo $GLOBALS['WEB_FJE'] ?>" target="_blank">Fundació Jesuïtes Educació</a>.</p>
-<p>Tens suggerients? Fes-nos-los arribar a l'<?php echo $GLOBALS['CONTACTE'] ?> , sisplau!</p>
-
+<p>L'aplicació <strong>FamiLyber</strong> té com a finalitat la reutilització de llibres de l'escola Jesuïtes Bellvitge. Permet que pares i mares cedeixin els seus llibres en desús a d'altres famílies que ho desitjin. És una iniciativa de l'AMPA que va en la línia del <a href="https://ca.wikipedia.org/w/index.php?title=Consum_col%C2%B7laboratiu&oldid=18443245" target="_blank">consum col·laboratiu</a> i és per això que us demanem que es faci d'una manera desinteressada i totalment solidària amb d'altres famílies de l'escola.</p>
+<p>Aquesta aplicació es troba dins de l'entorn informàtic de Fundació Jesuïtes Educació i n'està integrada de forma que hi has d'accedir amb les teves credencials de la NET. S'ha dissenyat tenint en compte la privacitat. No comparteix cap dada personal de qui publica llibres, simplement facilita que els interessats en llibres puguin enviar les dades de contacte que considerin als anunciants.</p>
+<p>Si tens suggeriments per millorar-la, estarem encantats que ens els facis arribar per correu electrònic a <?php echo $GLOBALS['CONTACTE'] ?> .</p>
+<p>Un agraïment molt especial a tots els que han col.laborat d'una manera o una altra, de forma totalment desinteressada en aquest projecte i especialment al departament de Sistemes de la informació i comunicació de la Fundació Jesuïtes Educació que ho ha fet tècnicament possible.</p>
+<p>Esperem que us resulti útil i la puguem utilitzar tots!</p>
 <?php
 }
 

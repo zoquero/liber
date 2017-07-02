@@ -1,4 +1,4 @@
-# Sumary
+# Summary
 
 Aplicació web per a la reutilització de llibres a l'escola Jesuïtes Bellvitge.
 

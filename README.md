@@ -4,6 +4,8 @@ Aplicació web feta en PHP que té com a finalitat la **reutilització de llibre
 
 S'ha desplegat sobre servidors de la plataforma informàtica de la [Fundació Jesuïtes Educació](http://www.fje.edu), s'ha integrat amb el seu Single-Sign-On (el de *la NET*) i utilitza el seu servei d'enviament de correus. S'ha dissenyat tenint en compte la privacitat. No comparteix cap dada personal de qui publica llibres, simplement facilita que els interessats en llibres puguin enviar les dades de contacte que considerin als anunciants.
 
+És software lliure, es distribueix amb llicència GPLv3 i pots trobar el seu codi font a [GitHub](https://github.com/zoquero/liber).
+
 Un agraïment molt especial a **Joan Gallifa** del departament de *Sistemes de la informació i comunicació de la Fundació Jesuïtes Educació* que ens va facilitar l'ús dels seus recursos informàtics.
 
 Angel Galindo Muñoz, zoquero *at* gmail.com

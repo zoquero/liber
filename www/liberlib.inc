@@ -1020,7 +1020,9 @@ table,tr,td {
 form {
      display:inline;
 }
-
+a {
+    text-decoration: none;
+}
 #Prova td,th {
   background-color: #101010;
 }

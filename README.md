@@ -1,8 +1,12 @@
 # Summary
 
-Aplicació web per a la reutilització de llibres a l'escola Jesuïtes Bellvitge.
+Aplicació web feta en PHP que té com a finalitat la **reutilització de llibres de l'escola Jesuïtes Bellvitge**. Permet que pares i mares cedeixin els seus llibres en desús a d'altres famílies que ho desitjin. És una iniciativa de l'**AMPA** que va en la línia del [consum col·laboratiu](https://ca.wikipedia.org/w/index.php?title=Consum_col%C2%B7laboratiu&oldid=18443245), convidant a fer-ne un ús desinteressat i totalment solidari amb d'altres famílies de l'escola.
 
-Angel Galindo Muñoz, zoquero@gmail.com
+S'ha desplegat sobre servidors de la plataforma informàtica de la [Fundació Jesuïtes Educació](http://www.fje.edu), s'ha integrat amb el seu Single-Sign-On (el de *la NET*) i utilitza el seu servei d'enviament de correus. S'ha dissenyat tenint en compte la privacitat. No comparteix cap dada personal de qui publica llibres, simplement facilita que els interessats en llibres puguin enviar les dades de contacte que considerin als anunciants.
+
+Un agraïment molt especial a **Joan Gallifa** del departament de *Sistemes de la informació i comunicació de la Fundació Jesuïtes Educació* que ens va facilitar l'ús dels seus recursos informàtics.
+
+Angel Galindo Muñoz, zoquero *at* gmail.com
 
 Maig de 2017
 

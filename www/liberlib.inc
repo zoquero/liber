@@ -342,13 +342,25 @@ function showRegularBodyHeaders() {
 	<h1>
 		<?php echo htmlentities($GLOBALS['htmlBodyTitle'], ENT_QUOTES, "UTF-8") ?>
 	</h1>
+	
+	<table>
+	  <tr bgcolor="#FFFFFF">
+	  	<td bgcolor="#FFFFFF">Aplicació per a la reutilització de llibres<br/>
+	<a href="<?php echo $GLOBALS['WEB_AMPA'] ?>">AMPA Jesuïtes Bellvitge CE Joan XXIII</a>
+	    </td>
+	  	<td bgcolor="#FFFFFF">
+	  	  	<img src="images/logo.png"/></a></p>
+	    </td>
+	  </tr>
+	</table>
+	<br/>
 <?php
 }
 
 function getEnabledGradesSelect($dao, $fGrade) {
 	$grades = $dao->getEnabledGrades();
 	$gradesSelect="<select name=\"grade\">\n";
-	$gradesSelect.="  <option value=\"-1\">Escull un curs</option>\n";
+	$gradesSelect.="  <option value=\"-1\">Tria un curs</option>\n";
 	foreach ($grades as $aGrade) {
 		if($fGrade != NULL && $fGrade->getId() == $aGrade->getId()) {
 			$selected=" selected";
@@ -388,11 +400,11 @@ function showRegularOptionsMenu($dao) {
 	$gradesSelect = getEnabledGradesSelect($dao, NULL);
 ?>
 	<table>
-		<tr><th>Opcions:</th></tr>
+		<tr><th>Donació de llibres</th></tr>
 		<tr><td align="center">
 		  <form action="?" method="post" accept-charset="utf-8">
 			<input type="submit" name="Envia"
-				value="Anuncia un nou llibre en donació" />
+				value="Vull donar un llibre" />
 			<input type="hidden" name="actionId"
 				value="<?php echo ACTION_NEW_AD_FORM ?>" />
 		  </form>
@@ -400,19 +412,20 @@ function showRegularOptionsMenu($dao) {
 		<tr><td align="center">
 		  <form action="?" method="post" accept-charset="utf-8">
 			<input type="submit" name="Envia"
-				value="Meus llibres anunciats" />
+				value="Els meus llibres publicats" />
 			<input type="hidden" name="actionId"
 				value="<?php echo ACTION_SHOW_MY_ADS ?>" />
 		  </form>
         </td></tr>
+		<tr><th>Petició de llibres</th></tr>
 		<tr><td align="center">
-			Veure els llibres anunciats d'un curs:<br/>			
+			Busca els llibres publicats per curs:<br/>			
 			<form action="?" method="post" accept-charset="utf-8">
 				<input type="hidden" name="actionId"
 					value="<?php echo ACTION_SEARCH_BY_GRADE ?>" />
-				<?php echo $gradesSelect ?>
+				1) <?php echo $gradesSelect ?> 2)
 				<input type="submit" name="Envia"
-					value="Mostra els resultats" />
+					value="Mostra resultats" />
 			</form>
         </td></tr>
 		<tr><td align="center">
@@ -421,7 +434,7 @@ function showRegularOptionsMenu($dao) {
 				<input type="hidden" name="actionId"
 					value="<?php echo ACTION_SEARCH_BY_ISBN ?>" />
 				<input type="text" name="isbn" placeholder="<Introdueix el ISBN>" />
-				<input type="submit" name="Envia" value="Mostra els resultats" />
+				<input type="submit" name="Envia" value="Mostra resultats" />
 			</form>			
         </td></tr>
 		<tr><td align="center">
@@ -431,25 +444,25 @@ function showRegularOptionsMenu($dao) {
 					value="<?php echo ACTION_SEARCH_BY_KEYWORDS ?>" /> <input
 					type="text" name="keywords"  placeholder="<Introdueix paraules>" />
 				<input type="submit" name="Envia"
-					value="Mostra els resultats" />
+					value="Mostra resultats" />
 			</form>
         </td></tr>
 		<tr><td align="center">
 		  <form action="?" method="post" accept-charset="utf-8">
 			<input type="submit" name="Envia"
-				value="Registra't per ser notificat sobre nous llibres anunciats" />
+				value="Enregistra't per ser notificat sobre nous llibres publicats" />
 			<input type="hidden" name="actionId"
 				value="<?php echo ACTION_NOTIFYME_SHOW ?>" />
 		  </form>
         </td></tr>
-		<tr><td align="center">
+		<tr><th align="center">
 		  <form action="?" method="post" accept-charset="utf-8">
 			<input type="submit" name="Envia"
 				value="Sobre Liber" />
 			<input type="hidden" name="actionId"
 				value="<?php echo ACTION_ABOUT ?>" />
 		  </form>
-        </td></tr>
+        </th></tr>
 	</table>
 <?php
 }
@@ -479,10 +492,8 @@ function showNotifyMeForm($dao, $user) {
 ?>
   <form action="?" method="post" accept-charset="utf-8">
 	<table>
-		<tr><th>Notificacions sobre<br/>nous llibres anunciats:</th></tr>
-		<tr><td align="center">Escull de quins cursos<br/>
-								vols ser notificat/da per correu<br/>
-								i dona-li a '<strong><i>Enviar</i></strong>'
+		<tr><th>Notificacions sobre nous llibres disponibles:</th></tr>
+		<tr><td align="center">T'enviarem un correu quan apareguin noves publicacions.<br/>Tria els cursos del teu interès. 
 		</td></tr>
 		<tr><td align="center">
 			<table align="center"><tr><td align="left" bgcolor="#e2e2f0">
@@ -521,7 +532,9 @@ function showAdminOptionsMenu() {
 <?php
 }
 
-
+/*
+ * Versió antiga
+ *
 function showFooter() {
 ?>
 <p>Aplicació per a la reutilització de llibres<br/>
@@ -529,11 +542,22 @@ de l'<a href="<?php echo $GLOBALS['WEB_AMPA'] ?>">AMPA
 del Centre d'Estudis Joan XXIII</a><br/>
 (Fundació Jesuïtes Educació Bellvitge)<br/>
 <a href="<?php echo $GLOBALS['WEB_AMPA'] ?>">
+<br/>
 <img src="images/logo.png"/></a></p>
 </body>
 </html>
 <?php
 }
+*/
+
+
+function showFooter() {
+?>
+</body>
+</html>
+<?php
+}
+
 
 function newAdFormShow($dao, $fIsbn, $fSummary, $fDescription, $fWhat, $fImageBasename, $fGrade) {
 
@@ -629,7 +653,7 @@ else {
 ?>
 
 			  <input type="file" name="imageBasenameF" id="imageBasenameF" accept="image/*" />
-			  <p>Avís: Sabem que la selecció de fitxers<br/>no funciona amb alguns mòbils</p>
+			  <p>Avís: És possible que les imatges no es carreguin des d'alguns dispositius mòbils</p>
 			</td>
 		</tr>
 		<tr>
@@ -680,9 +704,7 @@ else {
 
 		<tr>
 			<td colspan="2">
-			  &nbsp;<strong>Verifica</strong> les dades<br/>
-			  &nbsp;i torna a editar-ho<br/>
-			  &nbsp;o publica-ho finalment
+			  &nbsp;<strong>Verifica</strong> les dades i torna a editar o publicar finalment
 			</td>
 		</tr>
 		<tr>
@@ -976,15 +998,22 @@ function sendHtmlHeaders() {
 </title>
 
 <style> 
+
+html {
+  text-align: center;
+  font-family: Arial;
+}
+
 table,tr,td {
-	border: 1;
 	border-collapse: collapse;
-	border: 1px solid #aaaaaa;
+	border: 0px solid #aaaaaa;
 	cellspacing: 1;
 	cellpadding: 1;
 	margin:  2px;
 	padding: 2px 2px;
 	vertical-align:middle;
+	margin-left: auto;
+    margin-right: auto;
 }
 form {
      display:inline;
@@ -997,7 +1026,7 @@ form {
 tr:nth-child(even) {background-color: #eaeaea}
 tr:nth-child(odd)  {background-color: #f4f4f4}
 tr:hover           {background-color: #f8f8f8} 
-th                 {background-color: #e0c0d0} 
+th                 {background-color: #66b2ff} 
 
 input[type=text],textarea {
     width: 100%;
@@ -1073,9 +1102,9 @@ function showNoAdsFound() {
 
 function showAdsFoundPresentation() {
 ?>
-<p>Anuncis de libres trobats<br/>
-(NO s'hi inclouen els teus, els trobaràs a l'opció
-"<em><a href="?actionId=<?php echo ACTION_SHOW_MY_ADS ?>">Meus Llibres anunciats</a></em>"):</p>
+<p><strong>Anuncis de llibres trobats</strong><br/>
+(Aquí no trobaràs els teus llibres publicats. Si vols veure'ls ves a l'opció
+"<em><a href="?actionId=<?php echo ACTION_SHOW_MY_ADS ?>">Els meus llibres publicats</a></em>"):</p>
 <?php
 }
 
@@ -1185,7 +1214,7 @@ function showInterestForm($ad) {
 	<p>Si estàs interessat en el llibre
 		de ISBN <b><?php echo $ad->getIsbn() ?></b><br/>
 		i de t&iacute;tol &quot;<i><b><?php echo $ad->getSummary()?></i></b>&quot;<br/>
-		deixa aqu&iacute; les teves <b>dades de contacte</b><br/>
+		deixa aqu&iacute; les teves <b>dades de contacte</b> (e-mail o telèfon)<br/>
 		i qui l'hagi anunciat les utilitzar&agrave; per posar-se en contacte amb tu.</p>
 	<p>Recorda que <b>NO</b> li enviarem cap dada teva<br/>
 	    a part de les que escriguis a continuaci&oacute;:</p>
@@ -1261,19 +1290,22 @@ function getFjeApiJsonHtmlMsg($user, $theAd, $theAdUserMail, $fDescription) {
 	$isbn=$theAd->getIsbn();
 	$summary=$theAd->getSummary();
 	$url = $GLOBALS['LIBER_URL'];
+	$titol=$GLOBALS['htmlBodyTitle'];
+	$facebook=$GLOBALS['FACEBOOK_AMPA'];
 	$body = <<<EOBODY
 <html>
   <body>
-    <H1>Reutilització de llibres</H1>
+    <H1>$titol</H1>
     <p>Benvolgut/da:</p>
     <p>Alg&uacute; est&agrave; interessat en el llibre que vas anunciar amb ISBN <b>$isbn</b>
       i de t&iacute;tol <b><i>$summary</i></b>
       i t'ha enviat aquest missatge:</p><hr/><p><b>$fDescription</b><hr/></p>
     <p>Pots posar-te en contacte amb ell/ella. Tan de bo que pugui aprofitar el teu llibre</p>
     <p>Un cop hagis cedit el llibre pots accedir a l'aplicaci&oacute;
-      <a href='$url' target="_blank">'Liber' $url</a> per esborrar l'anunci.</p>
-    <p>Moltes gr&agrave;cies per utilitzar aquest servei de reutilitzaci&oacute;.</p>
-    <p>AMPA de Joan XXIII</p>
+      <a href='$url' target="_blank">'FamiLyber' $url</a> per esborrar l'anunci per evitar seguir rebent notificacions..</p>
+    <p>Moltes gr&agrave;cies per utilitzar aquest servei de reutilitzaci&oacute;. Ens agradaria que compartissis la teva experiència al nostre <a href='$facebook' target="_blank">mur de facebook</a>.</p>
+    
+    <p>AMPA Jesu&iuml;tes Bellvitge CE Joan XXIII</p>
     </body></html>
 EOBODY;
 	
@@ -1298,10 +1330,11 @@ function getFjeApiJsonHtmlMsgNotifyMe($theAd, $theAdUserMail, $grade) {
 	$summary=$theAd->getSummary();
 	$gradeName = $grade->getName();
 	$url = $GLOBALS['LIBER_URL'];
+	$titol=$GLOBALS['htmlBodyTitle'];
 	$body = <<<EOBODY
 <html>
   <body>
-  <H1>Reutilització de llibres</H1>
+  <H1>$titol</H1>
   <p>Benvolgut/da:</p>
   <p>Alg&uacute; ha publicat un anunci d'un llibre
      del curs <strong>$gradeName</strong> i vas subscriure't
@@ -1311,7 +1344,7 @@ function getFjeApiJsonHtmlMsgNotifyMe($theAd, $theAdUserMail, $grade) {
     a rebre notificacions de nous llibres anunciats</p>
   <p>Moltes gr&agrave;cies per utilitzar aquest
      servei de reutilitzaci&oacute;.</p>
-  <p>AMPA de Joan XXIII</p>
+  <p>AMPA Jesu&iuml;tes Bellvitge CE Joan XXIII</p>
   </body></html>
 EOBODY;
 	
@@ -1334,15 +1367,16 @@ EOJSON;
  */
 function getFjeApiJsonHtmlMsgConfirmNewAd($theAdTitle, $theAdUserMail) {
 	$url = $GLOBALS['LIBER_URL'];
+	$titol=$GLOBALS['htmlBodyTitle'];
 	$body = <<<EOBODY
 <html>
   <body>
-  <H1>Reutilització de llibres</H1>
+  <H1>$titol</H1>
   <p>Benvolgut/da:</p>
-  <p>Hem guardat el teu anunci de llibre "<em>$theAdTitle</em>". Et notificarem per correu si algú el necessita.</p>
-  <p>Un cop el donis, podràs utilitzar l'aplicació per indicar que ja ho has fet.</p>
+  <p>Hem guardat el teu anunci de llibre "<em>$theAdTitle</em>". Et notificarem per correu si algú n'està interessat.</p>
+  <p>Un cop el donis, et convidem a donar-lo de baixa a l'aplicació per evitar seguir rebent notificacions.</p>
   <p>Moltes gr&agrave;cies per utilitzar aquest servei.</p>
-  <p>AMPA de Joan XXIII</p>
+  <p>AMPA Jesu&iuml;tes Bellvitge CE Joan XXIII</p>
   </body></html>
 EOBODY;
 	
@@ -1414,6 +1448,7 @@ function sendMailAboutInterest($user, $theAd, $theAdUserMail, $fDescription) {
 		//	$mail->addAttachment('/tmp/image.jpg', 'new.jpg');	// Optional name
 		$mail->isHTML(true);								// Set email format to HTML
 		
+		$facebook=$GLOBALS['FACEBOOK_AMPA'];
 		$theBody = "<p>Benvolgut/da:</p>"
 				. "<p>Alg&uacute; est&agrave; interessat en el llibre que vas anunciar"
 				. " amb ISBN <b>" . $theAd->getIsbn() . "</b> i de t&iacute;tol "
@@ -1421,8 +1456,8 @@ function sendMailAboutInterest($user, $theAd, $theAdUserMail, $fDescription) {
 				. " i t'ha enviat aquest missatge:</p>"
 				. "<p><b>" . $fDescription . "</b></p>"
 				. "<p>Pots posar-te en contacte amb ell/ella, tan de bo que pugui aprofitar el teu llibre</p>"
-				. "<p>Moltes gr&agrave;cies per utilitzar aquest servei de reutilització.</p>"
-				. "<p>AMPA de Joan XXIII</p>";
+				. "<p>Moltes gr&agrave;cies per utilitzar aquest servei de reutilitzaci&oacute;. Ens agradaria que compartissis la teva experiència al nostre <a href='$facebook' target=\"_blank\">mur de facebook</a>.</p>"
+				. "<p>AMPA Jesu&iuml;tes Bellvitge CE Joan XXIII</p>";
 		
 		$mail->Subject = $GLOBALS['MAIL_SUBJECT'];
 		$mail->Body    = $theBody;

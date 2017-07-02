@@ -69,7 +69,7 @@ class Ad {
 						<form action=\"?\" method=\"post\" accept-charset=\"utf-8\">
 							<input type=\"hidden\" name=\"actionId\" value=" . ACTION_BE_INTERESTED_IN_ADD . " />
 							<input type=\"hidden\" name=\"id\" value=\"" . $this->getId() . "\"/>
-							<input type=\"submit\" name=\"Interessat\" value=\"Hi estic interessat\" />
+							<input type=\"submit\" name=\"Interessat\" value=\"Estic interessat\" />
 						</form></td>";
 			$url= "?actionId=" . ACTION_BE_INTERESTED_IN_ADD . "&id=" . $this->getId();
 		}
@@ -114,7 +114,7 @@ class Ad {
 					<form action=\"?\" method=\"post\" accept-charset=\"utf-8\">
 						<input type=\"hidden\" name=\"actionId\" value=" . ACTION_BE_INTERESTED_IN_ADD . " />
 						<input type=\"hidden\" name=\"id\" value=\"" . $this->getId() . "\"/>
-						<input type=\"submit\" name=\"Interessat\" value=\"Hi estic interessat\" />
+						<input type=\"submit\" name=\"Interessat\" value=\"Estic interessat\" />
 					</form></td>";
 		$url= "?actionId=" . ACTION_BE_INTERESTED_IN_ADD . "&id=" . $this->getId();
 		

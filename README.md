@@ -1,6 +1,6 @@
 # Sumary
 
-Aplicació web per a la reutilització de llibres
+Aplicació web per a la reutilització de llibres a l'escola Jesuïtes Bellvitge.
 
 Angel Galindo Muñoz, zoquero@gmail.com
 
@@ -51,6 +51,8 @@ $ ln -s /var/www/liber/priv/liber_site.conf /etc/apache2/sites-enabled/    ## Aj
 ```
 
 ## Base de dades
+
+Nota: Ara només suport MySQL. Podria suportar d'altres bases de dades com PostgreSQL amb canvis menors.
 
 * S'escull un servidor de bases de dades MySql (seu FQDN), nom de base de dades, nom d'usuari i seu password i s'estableixen respectivament sobre les següents variables del fitxer **`www/conf.inc`**
     * **`$GLOBALS['dbHostname']`**

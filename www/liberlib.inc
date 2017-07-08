@@ -481,12 +481,12 @@ function showRegularOptionsMenu($dao) {
 function showAbout() {
   $correu = $GLOBALS['MAIL_AMPA'];
 ?>
-<p>L'aplicació <strong>FamiLyber</strong> té com a finalitat la reutilització de llibres de l'escola Jesuïtes Bellvitge. Permet que pares i mares cedeixin els seus llibres en desús a d'altres famílies que ho desitjin. És una iniciativa de l'AMPA que va en la línia del <a href="https://ca.wikipedia.org/w/index.php?title=Consum_col%C2%B7laboratiu&oldid=18443245" target="_blank">consum col·laboratiu</a> i és per això que us demanem que es faci d'una manera desinteressada i totalment solidària amb d'altres famílies de l'escola.</p>
-<p>Aquesta aplicació es troba dins de l'entorn informàtic de Fundació Jesuïtes Educació i n'està integrada de forma que hi has d'accedir amb les teves credencials de la NET. S'ha dissenyat tenint en compte la privacitat. No comparteix cap dada personal de qui publica llibres, simplement facilita que els interessats en llibres puguin enviar les dades de contacte que considerin als anunciants.</p>
-<p>Aquest és un <em>programari lliure</em> i podràs trobar el seu codi font a <a href="https://github.com/zoquero/liber" target="_blank">GitHub</a> </p>
-<p>Si tens suggeriments per millorar-la, estarem encantats que ens els facis arribar per correu electrònic a <?php echo $GLOBALS['CONTACTE'] ?> .</p>
-<p>Un agraïment molt especial a tots els que han col.laborat d'una manera o una altra, de forma totalment desinteressada en aquest projecte i especialment al departament de Sistemes de la informació i comunicació de la Fundació Jesuïtes Educació que ho ha fet tècnicament possible.</p>
-<p>Esperem que us resulti útil i la puguem utilitzar tots!</p>
+<p style="margin-left:4em;margin-right:4em;">L'aplicació <strong><?php echo $GLOBALS['appAlias'] ?></strong> té com a finalitat la reutilització de llibres de l'escola Jesuïtes Bellvitge. Permet que pares i mares cedeixin els seus llibres en desús a d'altres famílies que ho desitjin. És una iniciativa de l'AMPA que va en la línia del <a href="https://ca.wikipedia.org/w/index.php?title=Consum_col%C2%B7laboratiu&oldid=18443245" target="_blank">consum col·laboratiu</a> i és per això que us demanem que es faci d'una manera desinteressada i totalment solidària amb d'altres famílies de l'escola.</p>
+<p style="margin-left:4em;margin-right:4em;">Aquesta aplicació es troba dins de l'entorn informàtic de Fundació Jesuïtes Educació i n'està integrada de forma que hi has d'accedir amb les teves credencials de la NET. S'ha dissenyat tenint en compte la privacitat. No comparteix cap dada personal de qui publica llibres, simplement facilita que els interessats en llibres puguin enviar les dades de contacte que considerin als anunciants.</p>
+<p style="margin-left:4em;margin-right:4em;">Aquest és un <em>programari lliure</em> i podràs trobar el seu codi font a <a href="https://github.com/zoquero/liber" target="_blank">GitHub</a> </p>
+<p style="margin-left:4em;margin-right:4em;">Si tens suggeriments per millorar-la, estarem encantats que ens els facis arribar per correu electrònic a <?php echo $GLOBALS['CONTACTE'] ?> .</p>
+<p style="margin-left:4em;margin-right:4em;">Un agraïment molt especial a tots els que han col.laborat d'una manera o una altra, de forma totalment desinteressada en aquest projecte i especialment al departament de Sistemes de la informació i comunicació de la Fundació Jesuïtes Educació que ho ha fet tècnicament possible.</p>
+<p style="margin-left:4em;margin-right:4em;">Esperem que us resulti útil i la puguem utilitzar tots!</p>
 <?php
 }
 

@@ -68,7 +68,7 @@ $GLOBALS['CONTACTE'] = $GLOBALS['NOM_AMPA'] . ': <a href="mailto:' . $GLOBALS['M
 
 
 /*** Llista dels usuaris bannejats als que se'ls impedeix utilitzar l'aplicació. */
-$GLOBALS['bannedUsers'] = array("zoquero2@gmail.com", "zoquero3@gmail.com");
+$GLOBALS['bannedUsers'] = array("banejat1@seudomini.com", "banejat2@seudomini.com");
 
 /*** Alias (nom) de l'aplicació */
 $GLOBALS['appAlias'] = "FamiLyber";
@@ -81,7 +81,6 @@ $GLOBALS['htmlBodyTitle'] = $GLOBALS['appAlias'] . ": " . $GLOBALS['htmlBodyTitl
 
 /*** URL amb ajuda sobre l'aplicació */
 $GLOBALS['helpUrl'] = 'http://bit.ly/ajudafamilyber';
-
 
 /*** FJEAPI */
 $GLOBALS['MAIL_LIB'] = "FJEAPI";

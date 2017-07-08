@@ -339,8 +339,9 @@ function getParamSanitizedString($paramName) {
 function showRegularBodyHeaders() {
 ?>
 <body>
+	<img src="images/logo.familyber.png" alt="Logo de <?php echo htmlentities($GLOBALS['htmlBodyTitle'], ENT_QUOTES, "UTF-8") ?>"/>
 	<h1>
-		<?php echo htmlentities($GLOBALS['htmlBodyTitle'], ENT_QUOTES, "UTF-8") ?>
+		<?php echo htmlentities($GLOBALS['htmlBodyTitleNoAlias'], ENT_QUOTES, "UTF-8") ?>
 	</h1>
 	
 	<table>
@@ -352,7 +353,7 @@ function showRegularBodyHeaders() {
 	    </td>
 	  	<td bgcolor="#FFFFFF">
 	      <a href="<?php echo $GLOBALS['WEB_AMPA'] ?>">
-	  	    <img src="images/logo.png"/></a></p>
+	  	    <img src="images/logo.ampa.joan23.png"/></a></p>
 	      </a>
 	    </td>
 	  </tr>
@@ -462,10 +463,13 @@ function showRegularOptionsMenu($dao) {
 		<tr><th align="center">
 		  <form action="?" method="post" accept-charset="utf-8">
 			<input type="submit" name="Envia"
-				value="Sobre Liber" />
+				value="Sobre <?php echo $GLOBALS['appAlias'] ?>" />
 			<input type="hidden" name="actionId"
 				value="<?php echo ACTION_ABOUT ?>" />
 		  </form>
+        </th></tr>
+		<tr><th align="center">
+		  <input type="button" onclick="window.open('<?php echo $GLOBALS['helpUrl'] ?>', '_blank');" value="Ajuda" />
         </th></tr>
 	</table>
 <?php

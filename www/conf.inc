@@ -70,10 +70,17 @@ $GLOBALS['CONTACTE'] = $GLOBALS['NOM_AMPA'] . ': <a href="mailto:' . $GLOBALS['M
 /*** Llista dels usuaris bannejats als que se'ls impedeix utilitzar l'aplicació. */
 $GLOBALS['bannedUsers'] = array("zoquero2@gmail.com", "zoquero3@gmail.com");
 
+/*** Alias (nom) de l'aplicació */
+$GLOBALS['appAlias'] = "FamiLyber";
 /*** Títol head de les pàgines */
-$GLOBALS['htmlHeadTitle'] = "FamiLyber: " . $GLOBALS['NOM_AMPA'];
+$GLOBALS['htmlHeadTitle'] = $GLOBALS['appAlias'] . ": " . $GLOBALS['NOM_AMPA'];
+/*** Títol body de les pàgines, però sense el nom de l'aplicació */
+$GLOBALS['htmlBodyTitleNoAlias'] = "Reutilització de llibres";
 /*** Títol body de les pàgines */
-$GLOBALS['htmlBodyTitle'] = "FamiLyber: Reutilització de llibres";
+$GLOBALS['htmlBodyTitle'] = $GLOBALS['appAlias'] . ": " . $GLOBALS['htmlBodyTitleNoAlias'];
+
+/*** URL amb ajuda sobre l'aplicació */
+$GLOBALS['helpUrl'] = 'http://bit.ly/ajudafamilyber';
 
 
 /*** FJEAPI */

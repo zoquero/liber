@@ -1,5 +1,13 @@
 <?php
 
+/**
+  * More info here: https://github.com/zoquero/liber
+  * Licensed with GPLv3
+  * Angel Galindo Muñoz
+  * zoquero@gmail.com
+  * 20170708
+  */
+
 define('ROOT_PATH', dirname(__FILE__));
 
 require_once(ROOT_PATH . "/conf.inc");

@@ -24,12 +24,13 @@ Maig de 2017
 
 ## Carpeta web
 
-* Es copia al servidor la carpeta "**`www`**" del zip entregat
+* Es copia al servidor la carpeta "**`www`**" del projecte
 
 Exemple:
 ```
 $ unzip liber.zip
-$ mv www/ /var/www/liber
+$ mv liber/www/ /var/www/liber
+$ rm -rf liber
 ```
 
 
@@ -47,18 +48,11 @@ $ chmod -R 0700 /var/www/liber/uploadstore/
 $ chmod -R 0700 /var/www/liber/uploadtmp/
 ```
 
-* Es configura la publicació de la carpeta web per a que
-    * No es puguin llegir els fitxers "**`*.inc`**"
-    * No es puguin accedir a la carpeta "**`www/lib`**"
-
-Per exemple pot fer-se així, utilitzant el fitxer "**`priv/liber_site.conf`**" :
-```
-$ ln -s /var/www/liber/priv/liber_site.conf /etc/apache2/sites-enabled/    ## Ajusta prèviament els paths que hi trobaràs dins
-```
+* Es configura la publicació de la carpeta web per a que no es puguin llegir els fitxers "**`*.inc`**". Per aconseguir-ho pot utilitzar-se el fitxer d'exemple "**`priv/liber_site.conf`**", pot copiar-se a la carpeta "**`/etc/apache2/sites-enabled/`**"
 
 ## Base de dades
 
-Nota: Ara només suport MySQL. Podria suportar d'altres bases de dades com PostgreSQL amb canvis menors.
+Nota: Ara només suporta MySQL. Podria suportar d'altres bases de dades com PostgreSQL amb canvis menors.
 
 * S'escull un servidor de bases de dades MySql (seu FQDN), nom de base de dades, nom d'usuari i seu password i s'estableixen respectivament sobre les següents variables del fitxer **`www/conf.inc`**
     * **`$GLOBALS['dbHostname']`**
@@ -99,15 +93,16 @@ Pot fer-se afegint una entrada com aquesta al cron. Pot fer-se amb qualsevol usu
 
 ## Test
 
-Es provar l'aplicació accedint-hi amb un navegador. És autoexplicativa. Per exemple pot pujar-s'hi un anunci de prova i després esborrar-lo.
+Es pot provar l'aplicació accedint-hi amb un navegador, és autoexplicativa. Per exemple pot pujar-s'hi un anunci de prova i després esborrar-lo.
 
 # Desinstal·lació
 Recorda que la configuració és a **`www/conf.inc`**
 
-* Esborra les carpetes
+* Esborra la carpeta del site del sistema de fitxers (ex: **`rm -rf /var/www/liber`**)
+* Esborra les carpetes: (només si les has mogut)
     * **`uploadstore/`**
     * **`uploadtmp/`**
-* Esborra la carpeta del site del sistema de fitxers
 * Esborra la configuració del site al servidor web
-* Esborra l'entrada al cron
-* Esborra la base de dades
+* Esborra l'entrada al **cron** per l'script que envia correus
+* Esborra la base de dades ( **`DROP DATABASE liberdb`** )
+
